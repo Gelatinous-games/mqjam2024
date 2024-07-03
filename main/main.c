@@ -70,12 +70,14 @@ int main()
     const int screenWidth = 1366;
     const int screenHeight = 768;
 
-    CameraScreenQuarter.x = screenWidth/2;
-    CameraScreenQuarter.y = screenHeight/2;
+    cameraScreenQuarter.x = screenWidth/2;
+    cameraScreenQuarter.y = screenHeight/2;
 
-    CameraBounds.x = 16;
-    CameraBounds.y = 9;
+    cameraBounds.x = 16;
+    cameraBounds.y = 9;
 
+    layerCount = 8;
+    
     GameObjPoolInit();
 
     InitWindow(screenWidth, screenHeight, "mqjam2024");

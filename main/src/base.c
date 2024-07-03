@@ -24,6 +24,8 @@ typedef struct {
     void* data_struct; 
     int _poolID;
 
+    int currentLayer;
+
     /// @brief Set to 1 to flag it to be destroyed after the next frame.
     int awaitDestroy;
 

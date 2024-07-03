@@ -125,9 +125,13 @@ void ProcessAllUpdates(float DeltaTime) {
 /// @brief Processes the draw function on all objects that are not waiting to be initialized.
 /// @param DeltaTime 
 void ProcessAllDraws(float DeltaTime) {
-    for (int i = 0; i < _gameObjPoolSize; i++) {
-        GameObj_Base* obj = _gameObjPool[i];
-        obj->Draw_Func(obj, DeltaTime);
+    for (int l = 0; l < layerCount; l++) {
+        for (int i = 0; i < _gameObjPoolSize; i++) {
+            GameObj_Base* obj = _gameObjPool[i];
+
+            if (obj->currentLayer == l)
+                obj->Draw_Func(obj, DeltaTime);
+        }
     }
 }
 

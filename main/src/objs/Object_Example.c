@@ -34,10 +34,7 @@
 #endif
 
 typedef struct {
-    int a;
-    int b;
-    int c;
-    int d;
+    float a;
 } ExampleObject_Data;
 
 int ExampleObject_Init(GameObj_Base* self, float DeltaTime) {
@@ -59,9 +56,9 @@ int ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
 
     // use data here.
 
-    self->velocity.x = 1;
+    data->a += DeltaTime;
 
-    self->position.x += (self->velocity.x * DeltaTime);
+    self->position.x = (float)(sin(data->a * PI) * 10);
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
@@ -110,12 +107,11 @@ GameObj_Base* CreateExampleObject() {
     // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = 0;
 
+    obj_ptr->currentLayer = 1;
+
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size.x = 50;
     obj_ptr->size.y = 50;
-
-    // also a pointer to main scene / list of objects.
-    // this hasn't been added yet, check back later.
 }

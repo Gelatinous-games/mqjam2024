@@ -8,6 +8,9 @@ Built for Windows & (later) WebGL.
 The project is located under `/main/`. To run it you must have the raylib installed:
 https://raysan5.itch.io/raylib
 
+You will also want mingw32
+https://www.mingw-w64.org
+
 Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be run from here.
 
 ## Developers:

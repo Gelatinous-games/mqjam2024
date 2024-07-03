@@ -14,20 +14,22 @@
     #include "raymath.h"
 #endif
 
-Vector2 CameraPosition;
-Vector2 CameraBounds; // object must be within this range.
-Vector2 CameraScreenQuarter; // maps an object via the bounds to this
+Vector2 cameraPosition;
+Vector2 cameraBounds; // object must be within this range.
+Vector2 cameraScreenQuarter; // maps an object via the bounds to this
+
+int layerCount;
 
 /// @brief Computes a screenspace position relative to (0, 0) for rendering.
 /// @param pos 
 /// @return 
 Vector2 GetScreenspacePositionAbsolute(Vector2 pos, Vector2 size) {
-    pos.x = pos.x / CameraBounds.x;
-    pos.y = pos.y / CameraBounds.y;
+    pos.x = pos.x / cameraBounds.x;
+    pos.y = pos.y / cameraBounds.y;
 
-    pos = Vector2Multiply(pos, CameraScreenQuarter);
+    pos = Vector2Multiply(pos, cameraScreenQuarter);
 
-    pos = Vector2Add(pos, CameraScreenQuarter);
+    pos = Vector2Add(pos, cameraScreenQuarter);
     
     size.x /= 2; size.y /= 2;
 
@@ -40,7 +42,7 @@ Vector2 GetScreenspacePositionAbsolute(Vector2 pos, Vector2 size) {
 /// @param pos 
 /// @return 
 Vector2 GetScreenspacePositionRelative(Vector2 pos, Vector2 size) {
-    pos = Vector2Subtract(pos, CameraPosition);
+    pos = Vector2Subtract(pos, cameraPosition);
     
     return GetScreenspacePositionAbsolute(pos, size);
 }
