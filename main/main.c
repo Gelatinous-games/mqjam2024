@@ -22,20 +22,9 @@
 #define invoken(a, b) a->b(a->self)
 #define invoke(a, b, ...) a->b(a->self, __VA_ARGS__)
 
-#ifndef _stdio
-    #define _stdio
-    #include <stdio.h>
-#endif
+#include <stdio.h>
+#include <stdlib.h>
 
-#ifndef _stdlib
-    #define _stdlib
-    #include <stdlib.h>
-#endif
-
-#ifndef _malloc
-    #define _malloc
-    #include <malloc.h>
-#endif
 
 #ifndef _raylib
     #define _raylib
@@ -65,6 +54,7 @@ static void UpdateDrawFrame(void);          // Update and draw one frame
 
 int main()
 {
+    printf("%s\n","aaaaa");
     const int screenWidth = 1366;
     const int screenHeight = 768;
 
