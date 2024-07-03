@@ -35,6 +35,7 @@
 typedef struct {
     Vector2 position;
     Vector2 velocity;
+    Vector2 acceleration;
     Vector2 size;
 
     int state;
@@ -67,10 +68,13 @@ int _ParticleObject_Update(void* self, float DeltaTime) {
     for (int i = 0; i < _particleCount; i++) {
         _Particle particle = _particles[i];
 
-        particle.position.x += particle.velocity.x * DeltaTime;
-        particle.position.y += particle.velocity.y * DeltaTime;
+        particle.position = Vector2Add(particle.position, Vector2Scale(particle.velocity, DeltaTime));
+
+        particle.velocity = Vector2Add(particle.velocity, Vector2Scale(particle.acceleration, DeltaTime));
 
         particle.timeout -= DeltaTime;
+
+        particle.color.a = (char)((float)particle.oAlpha * (particle.timeout / particle.maxTime));
 
         if (particle.func) {
             particle.func_ptr(&particle, DeltaTime);
@@ -114,17 +118,21 @@ int _ParticleObject_Destroy(void* self, float DeltaTime) {
     return 0;
 }
 
-int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 size, float lifetime, Color color, int state, char doOutline) {
+int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, int state, char doOutline) {
     if (_particleCount >= PARTICLE_COUNT) return -1;
     _Particle tmp;
     tmp.color = color;
     tmp.timeout = lifetime;
     tmp.position = pos;
     tmp.velocity = vel;
+    tmp.acceleration = acc;
     tmp.size = size;
     tmp.state = state;
     tmp.doOutline = doOutline;
     tmp.func = 0;
+
+    tmp.maxTime = lifetime;
+    tmp.oAlpha = color.a;
 
     _particles[_particleCount] = tmp;
     _particleCount++;

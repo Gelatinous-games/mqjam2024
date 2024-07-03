@@ -109,6 +109,7 @@ static void UpdateDrawFrame(void)
     float DeltaTime = GetFrameTime();
     ProcessAllUpdates(DeltaTime);
 
+    UpdateCamera3D();
     BeginDrawing();
         ClearBackground(BLACK);
         ProcessAllDraws(DeltaTime);

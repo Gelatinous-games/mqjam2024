@@ -62,15 +62,13 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
     data->a += DeltaTime;
     ((GameObj_Base *)self)->position.x = (float)(sin(data->a * (PI / 2)) * 5);
 
+    // An example of spawning a particle
     data->tmr += DeltaTime;
-    if (data->tmr >= 1) {
+    if (data->tmr >= 0.4) {
         data->tmr = 0;
-        Color spawnColor;
-        spawnColor.r = 255;
-        spawnColor.g = 127;
-        spawnColor.b = 0;
-        spawnColor.a = 127;
-        SpawnParticle(((GameObj_Base *)self)->position, Vector2Zero(), Vector2Scale(Vector2One(), 0.125), 2, spawnColor, 0, 1);
+        SpawnParticle(((GameObj_Base *)self)->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
+                        (Vector2) {0.25, 0.25}, 2, 
+                        (Color) { 255, 127, 0, 127 }, 0, 1);
     }
 
     for (int i = 0; i != -1; ) {
