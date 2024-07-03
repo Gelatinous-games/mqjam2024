@@ -37,6 +37,11 @@ if (${PLATFORM} STREQUAL "Web")
     # Tell Emscripten to build an example.html file.
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
 endif()
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} "-lopengl32")
+    target_link_libraries(${PROJECT_NAME} "-lgdi32")
+    target_link_libraries(${PROJECT_NAME} "-lwinmm")
+endif()
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)
