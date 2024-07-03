@@ -3,15 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
-#endif
-
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
+#include "raylib.h"
+#include "raymath.h"
 
 Vector2 cameraPosition;
 Vector2 cameraBounds; // object must be within this range.

@@ -19,40 +19,53 @@
 *
 ********************************************************************************************/
 
+// what da henk
 #define invoken(a, b) a->b(a->self)
 #define invoke(a, b, ...) a->b(a->self, __VA_ARGS__)
 
+#define FRAMERATE 60
+
+// standard library includes
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FRAMERATE 60
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
+// library includes
+#include "raylib.h"
+#include "raymath.h"
+#if defined(PLATFORM_WEB)
+    #include <emscripten/emscripten.h>
 #endif
 
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
-
+// project header includes
 #include "src/base.h"
 #include "src/obj_register.h"
-#include "src/objs/Object_Example.c"
-#include "src/objs/particle.c"
+#include "src/objs/asteroid.h"
 
+// project source includes
+
+#ifndef _object_example
+    #define _object_example
+    #include "src/objs/object_example.c"
+#endif
+
+#ifndef _particle
+    #define _particle
+    #include "src/objs/particle.c"
+#endif
 
 #ifndef _obj_pool
     #define _obj_pool
     #include "src/obj_pool.c"
 #endif
 
-#if defined(PLATFORM_WEB)
-    #include <emscripten/emscripten.h>
-#endif
+
+
 
 static void UpdateDrawFrame(void);          // Update and draw one frame
+
+// let C know this exists
+void generateObjects();
 
 int main()
 {
@@ -65,39 +78,38 @@ int main()
     cameraBounds.x = 16;
     cameraBounds.y = 9;
 
-    printf("%s\n",">> main() :: init game pool");
+    // printf("%s\n",">> main() :: init game pool");
     layerCount = 8;
     
     GameObjPoolInit();
 
-    printf("%s\n",">> main() :: initialising window");
+    // printf("%s\n",">> main() :: initialising window");
     InitWindow(screenWidth, screenHeight, "mqjam2024");
     
-    printf("%s\n",">> main() :: create example obj");
+    generateObjects();
+    
+// Asteroid_Draw
 
-    GameObj_Base* obj = CreateExampleObject();
-    printf("%s\n",">> main() :: add example obj");
-    AddToPool(obj);
 
-    printf("%s\n",">> main() :: process fresh add");
+    // printf("%s\n",">> main() :: process fresh add");
     ProcessFreshAdd();
 
-    printf("%s\n",">> main() :: try");
+    // printf("%s\n",">> main() :: try");
 #ifndef PLATFORM_WEB
-    printf("%s\n",">> main() :: set fps");
+    // printf("%s\n",">> main() :: set fps");
     SetTargetFPS(FRAMERATE);               // Set our game to run at 60 frames-per-second
 
-    printf("%s\n",">> main() :: pre loop");
+    // printf("%s\n",">> main() :: pre loop");
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         UpdateDrawFrame();
     }
 #else
-    printf("%s\n",">> main() :: emscripten");
+    // printf("%s\n",">> main() :: emscripten");
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
 
-    printf("%s\n",">> main() :: closing");
+    // printf("%s\n",">> main() :: closing");
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();                  // Close window and OpenGL context
@@ -121,4 +133,20 @@ static void UpdateDrawFrame(void)
 
     ProcessFreshAdd();
     ProcessAllDestroys();
+}
+
+
+// define the thing we promised
+void generateObjects(){
+    // printf("%s\n",">> main() :: create example obj");
+    GameObj_Base* obj = CreateExampleObject();
+    // printf("%s\n",">> main() :: add example obj");
+    AddToPool(obj);
+
+
+
+    // printf("%s\n",">> main() :: create asteroid obj");
+    GameObj_Base* asteroid = CreateAsteroid();
+    // printf("%s\n",">> main() :: add asteroid obj");
+    AddToPool(asteroid);
 }

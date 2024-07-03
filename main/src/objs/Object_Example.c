@@ -23,8 +23,6 @@ typedef struct {
     float a;
 } ExampleObject_Data;
 
-#define THIS ((GameObj_Base *)self)
-
 int _ExampleObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
