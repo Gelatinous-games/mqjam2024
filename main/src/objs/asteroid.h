@@ -60,6 +60,20 @@ typedef struct {
 Sprite** _asteroidSprites;
 
 void _Asteroid_Randomize(void *self) {
+    Vector2 originPos;
+    Vector2 originVel;
+    GameObj_Base* player;
+    if (!GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player)) {
+        // if no player found, default to camera pos.
+        // 0/0; // hollistic debugging.
+        originPos = cameraPosition;
+        originVel = Vector2Zero();
+    }
+    else {
+        originPos = player->position;
+        originVel = player->velocity;
+    }
+
     // sprite
     ASTEROIDDATA->spriteID = (int)(FLOAT_RAND * 4);
     if (ASTEROIDDATA->spriteID == 4) ASTEROIDDATA->spriteID = 3;
@@ -68,8 +82,13 @@ void _Asteroid_Randomize(void *self) {
     float rng = (FLOAT_RAND * 2.25) + .25;
     THIS->size = (Vector2) { rng, rng };
 
-    // X position
-    THIS->position = (Vector2) { FLOAT_RAND * cameraBounds.x, -cameraBounds.y - THIS->size.y};
+    THIS->mass = rng * 1000;
+
+    // we'll shave off just a bit to make it a bit more forgiving.
+    THIS->radius = (rng - 0.125) / 2;
+
+    // X position, always near player x and generates within camera bounds
+    THIS->position = (Vector2) { (FLOAT_RAND * cameraBounds.x * 2) - cameraBounds.x + originPos.x, -cameraBounds.y - THIS->size.y};
 
     // Horizontal velocity: between 1 and -1
     THIS->velocity = (Vector2) { (FLOAT_RAND * 2) - 1, 1 };
@@ -88,6 +107,10 @@ void _Asteroid_Randomize(void *self) {
 
     // we're also going to use the random velocity to decide the rotation speed plus a bit of wiggle.
     ASTEROIDDATA->degreeRotationSpeed = (rng + (((FLOAT_RAND * 0.4) - 0.2) * rng)) * 37;
+
+    // Finally we'll add our origin velocity on the X axis to our velocity.
+
+    THIS->velocity.x = originVel.x; 
 }
 
 int _Asteroid_Init(void* self, float DeltaTime) {
@@ -125,7 +148,8 @@ int _Asteroid_Update(void* self, float DeltaTime) {
 
     THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
     
-    if(THIS->position.y > cameraBounds.y + THIS->size.y || THIS->position.y < -(cameraBounds.y + THIS->size.y)){
+    if(THIS->position.y > cameraBounds.y + THIS->size.y || THIS->position.y < -(cameraBounds.y + THIS->size.y)
+     || abs(cameraPosition.x - THIS->position.x) > 4 * cameraBounds.x ){
         // destroy me! release me from this realm of hurt!
         // (and, also, let the asteroid_processor create a new one if it so chooses.)
         // TODO: figure out an asteroid handler!
@@ -140,6 +164,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
 int _Asteroid_Draw(void* self, float DeltaTime) {
     // TODO: red/blue shift calculation.
     RenderSpriteRelative(_asteroidSprites[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
+    // RenderColliderRelative(THIS->position, THIS->radius); // debug function
     return 0;
 }
 

@@ -55,7 +55,7 @@ int _ParticleObject_Update(void* self, float DeltaTime) {
 
         particle.timeout -= DeltaTime;
 
-        particle.color.a = (char)((float)particle.oAlpha * (particle.timeout / particle.maxTime));
+        particle.color.a = (unsigned char)((float)particle.oAlpha * (particle.timeout / particle.maxTime));
 
         if (particle.func) {
             particle.func_ptr(&particle, DeltaTime);
@@ -83,7 +83,7 @@ int _ParticleObject_Draw(void* self, float DeltaTime) {
         if (particle.doOutline) {
             pos = GetScreenspacePositionRelative(particle.position, Vector2Scale(particle.size, 2));
             Color tmp = particle.color;
-            tmp.a = tmp.a/2;
+            tmp.a = tmp.a/(float)2;
             DrawRectangleV(pos, GetScaledSize(Vector2Scale(particle.size, 2)), tmp);
 
         }

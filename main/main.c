@@ -68,6 +68,8 @@ static void generateObjects();
 
 int main()
 {
+    SetExitKey(KEY_F4); // Lets not make it *too* easy to leave lol
+
     cameraScreenQuarter.x = WINDOW_WIDTH/2;
     cameraScreenQuarter.y = WINDOW_HEIGHT/2;
 
@@ -130,8 +132,11 @@ static void generateObjects(){
     AddToPool(CreateParticleObject());
 
     // Player object.
-    AddToPool(CreatePlayer(WINDOW_WIDTH, WINDOW_HEIGHT));
+    AddToPool(CreatePlayer());
 
     // Asteroid object.
+    // TODO: succeed with an asteroid handler that can scale up & down asteroids.
+    // Decide upon some criteria for how asteroid handler should work - should it control the scene?
+    // Place stars and other elements down?
     AddToPool(CreateAsteroid());
 }

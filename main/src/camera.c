@@ -120,3 +120,13 @@ void RenderSquareAbsolute(Vector2 pos, Vector2 size, float rotation, Color color
 
     DrawRectangleV(pos, size, color);
 }
+
+void RenderColliderRelative(Vector2 pos, float radius) {
+    Vector2 size = (Vector2) { radius*2,  radius*2};
+    pos = GetScreenspacePositionRelative(pos, size);
+    size = GetScaledSize(size);
+    radius = size.x / 2;
+
+    // DrawEllipse(pos.x, pos.y, radius, radius, (Color) { 255, 0, 0, 127 });
+    DrawCircle(pos.x + radius, pos.y + radius, radius, (Color) { 255, 0, 0, 127 });
+}

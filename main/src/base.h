@@ -9,6 +9,7 @@
 
 #define THIS ((GameObj_Base *)self)
 #define FLOAT_RAND ((float)(rand()) / (float)RAND_MAX)
+#define CHAR_RAND ((char)(rand() & 0xff))
 
 typedef struct {
     // a structure to refer to for all unique data on this object. void type, so will require casting to the particular func type.

@@ -20,196 +20,168 @@
     #include "../obj_pool.c"
 #endif
 
+#ifndef _misc
+    #define _misc
+    #include "../misc.c"
+#endif
 
-// Generate a simple triangle mesh from code
-static Mesh GenMeshCustom(void);
+#ifndef _obj_particle
+    #define _obj_particle
+    #include "src/objs/particle.c"
+#endif
+
 
 typedef struct {
-    Model model;
-    Vector3 pos3D;
-    Camera3D modelCamera;
-    float a;
+    Sprite* sprite;
+    Vector2 headingVector;
+    float rotateJerk;
+    float rotateRate;
+    float accelRate;
+    float health;
 
-} Player_DataContainer;
+} Player_Data;
 
-#define PLAYERDATA ((Player_DataContainer *)(THIS->data_struct))
+#define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
 
-#define PLAYERPOSITION3D (PLAYERDATA->pos3D)
+int _Player_Init(void* self, float DeltaTime) {
+    PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
+    PLAYER_DATA->health = 100; //idk!
+    PLAYER_DATA->rotateRate = 0; // velocity for rotation. affected by rotatejerk.
+    PLAYER_DATA->rotateJerk = 3; // veryy low.
+    PLAYER_DATA->accelRate = 6.5; // 5u/s
 
-int Player_Init(void* self, float DeltaTime) {
-    // we have a reference to our own gameobject from which we can do things.
-    
-    PLAYERDATA->model = LoadModelFromMesh(GenMeshCustom());
-
-    // cursed
-    Image checked = GenImageChecked(2, 2, 1, 1, ORANGE, BLUE);
-    Texture2D baseTexture = LoadTextureFromImage(checked);
-    UnloadImage(checked);
-
-    // even more cursed
-    PLAYERDATA->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = baseTexture;
-
-    // PLAYERDATA->model.materialCount = 1;
-
-    PLAYERDATA->pos3D = Vector3Zero();
-
-    // superdooper cursed
-
-
-    
-    PLAYERDATA->modelCamera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Camera position
-    PLAYERDATA->modelCamera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    
-    PLAYERDATA->modelCamera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    PLAYERDATA->modelCamera.fovy = 45.0f;                                // Camera field-of-view Y
-    PLAYERDATA->modelCamera.projection = CAMERA_ORTHOGRAPHIC;             // Camera projection type
-
+    PLAYER_DATA->sprite = CreateSprite("resources/spaceship.png");
     return 0;
 }
 
-int Player_Update(void* self, float DeltaTime) {
-    // see above
-    // use data here.
+int _Player_Update(void* self, float DeltaTime) {
 
+    // Default steering movement NOT STRAFING mode.
+    int rotate_delta = GetKeyDelta(KEY_D, KEY_A);
+    if (rotate_delta) {
+        // PLAYER_DATA->rotateRate += PLAYER_DATA->rotateJerk * rotate_delta * DeltaTime; // Disabled this as its a headache to control.
+        PLAYER_DATA->headingVector = Vector2Rotate(PLAYER_DATA->headingVector, rotate_delta * PLAYER_DATA->rotateJerk * DeltaTime);
+    }
+    // PLAYER_DATA->headingVector = Vector2Rotate(PLAYER_DATA->headingVector, PLAYER_DATA->rotateRate * DeltaTime); // Ibid
 
-    // UpdateCamera(&(PLAYERDATA->modelCamera), CAMERA_ORTHOGRAPHIC);
+    // Acceleration control.
+    int accel_delta = GetKeyDelta(KEY_W, KEY_S);
+    if (accel_delta) {
+        THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(PLAYER_DATA->headingVector, accel_delta * DeltaTime * PLAYER_DATA->accelRate));
+    }
+    THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
 
-    
+    // COSMETIC, CREATES PARTICLES WHEN ACCELERATING.
+    if (accel_delta) {
+        float vel = Vector2Length(THIS->velocity);
+        Vector2 ang = Vector2Normalize(PLAYER_DATA->headingVector);
+        Vector2 rorth = (Vector2) { -ang.y, ang.x };
+        Vector2 pos = THIS->position;
 
-    PLAYERDATA->a += DeltaTime;
+        Vector2 origin = pos;
+        float tmp = accel_delta == -1 ? 0.05 : -0.5;
+        origin = Vector2Add(origin, Vector2Scale(ang, tmp));
 
-    THIS->position.x += THIS->velocity.x;
-    THIS->position.y += THIS->velocity.y;
+        if (accel_delta == 1) ang = Vector2Negate(ang);
 
-    for (int i = 0; i != -1; ) {
-        GameObj_Base* obj;
-        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
+        SpawnParticle(Vector2Add(origin, Vector2Scale(rorth, -0.225)), Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)), Vector2Zero(), (Vector2) {0.0625, 0.0625}, 0.5, (Color) {255, 127, 0, 127 }, (FLOAT_RAND * 1) + 0.5);
 
-        // Check if obj is not null
-        if (!obj || i == -1) break;
+        SpawnParticle(Vector2Add(origin, Vector2Scale(rorth, +0.225)), Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)), Vector2Zero(), (Vector2) {0.0625, 0.0625}, 0.5, (Color) {255, 127, 0, 127 }, (FLOAT_RAND * 1) + 0.5);
 
-        // Do an operation with the result...
     }
 
-    // copy to the fake 3d pos
-    PLAYERDATA->pos3D.x = THIS->position.x;
-    PLAYERDATA->pos3D.y = THIS->position.y;
-
-    return 0;
-}
-
-int Player_Draw(void* self, float DeltaTime) {
-    // ibid
-    // Vector2 screenPosition = GetScreenspacePositionRelative(THIS->position, THIS->size);
-
-
-    // DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
-    // DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, WHITE);
-
-
-    // ultra cursed
-
-    BeginMode3D(PLAYERDATA->modelCamera);
-    DrawCube((Vector3){ 0.0f, 0.0f, 0.0f }, 2.0f, 2.0f, 2.0f, RED);
-    // DrawModel(PLAYERDATA->model, PLAYERPOSITION3D, 1.0f, WHITE);
-    EndMode3D();
+    // bind position within camerabounds y
+    if (THIS->position.y > cameraBounds.y + THIS->size.y) {
+        THIS->position.y = -cameraBounds.y - THIS->size.y;
+    }
+    else if (THIS->position.y <= -cameraBounds.y - THIS->size.y) {
+        THIS->position.y = cameraBounds.y + THIS->size.y;
+    }
     
+    // check asteroid collisions
+    GameObj_Base* extobj;
+    for (int sIDX = 0; sIDX != -1; ) {
+        sIDX = GetObjectWithFlagsExact(FLAG_ASTEROID, sIDX, &extobj);
+
+        if (sIDX == -1) break;
+
+        Vector2 impartSelf, impartAsteroid;
+        // Check if collision occurs
+        if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
+            THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
+            extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
+
+            PLAYER_DATA->health -= 20;
+
+            // create a spark effect or something
+
+            int randNum = (FLOAT_RAND * 4) + 4;
+            for (int i = 0; i < randNum; i++) {
+                // pick a palette of 4
+                Color col;
+                int k = (FLOAT_RAND * 4);
+                switch (k) {
+                    case 0: col = (Color) {245, 141, 38, 200};
+                    break;
+                    case 1: col = (Color) {38, 217, 245, 200};
+                    break;
+                    case 2: col = (Color) {252, 233, 112, 200};
+                    break;
+                    case 3: col = (Color) {216, 214, 203, 200};
+                    break;
+                }
+                SpawnParticle(THIS->position, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .25), (FLOAT_RAND * 1.75) + .25, col, 1);
+            }
+        }
+    }   
+
+    // lock the camera position to myself.
+    cameraPosition.x = THIS->position.x + (THIS->velocity.x * DeltaTime * 2);
+    return 0;
+}
+
+int _Player_Draw(void* self, float DeltaTime) {
+    RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+    // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
+    return 0;
+}
+
+int _Player_Destroy(void* self, float DeltaTime) {
+    free(PLAYER_DATA);
 
     return 0;
 }
 
-int Player_Destroy(void* self, float DeltaTime) {
-    // ibid.
-    // if you malloc anything, destroy it here. this includes your data package.
-
-    // free our data struct here. free anything contained.
-    free(THIS->data_struct);
-
-    return 0;
-}
-
-GameObj_Base* CreatePlayer(int windowWidth, int windowHeight) {
+GameObj_Base* CreatePlayer() {
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     // ============================================================
     // ==== setup the data scruct data
-    obj_ptr->data_struct = malloc(sizeof(Player_DataContainer)); 
+    obj_ptr->data_struct = malloc(sizeof(Player_Data)); 
 
     // ============================================================
-    // ==== assign the ufnctions
-    obj_ptr->Init_Func = &Player_Init;
-    obj_ptr->Update_Func = &Player_Update;
-    obj_ptr->Draw_Func = &Player_Draw;
-    obj_ptr->Destroy_Func = &Player_Destroy;
+    obj_ptr->Init_Func = _Player_Init;
+    obj_ptr->Update_Func = _Player_Update;
+    obj_ptr->Draw_Func = _Player_Draw;
+    obj_ptr->Destroy_Func = _Player_Destroy;
     // ============================================================
-    // huh
+
     obj_ptr->awaitDestroy = 0;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = FLAG_PLAYER_OBJECT;
 
-    // FIXME
-    obj_ptr->currentLayer = LAYER_GUI;
+    obj_ptr->currentLayer = LAYER_PLAYER;
+
+    obj_ptr->radius = 0.45;
+    obj_ptr->mass = 1000;
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
-    obj_ptr->size.x = 50;
-    obj_ptr->size.y = 50;
-
-
-    // use this stuffs
-    obj_ptr->position.x = 25;
-    obj_ptr->position.y = (windowHeight)/2.0f;
-
+    obj_ptr->size.x = 1;
+    obj_ptr->size.y = 1;
 
     return obj_ptr;
-}
-
-
-
-static Mesh GenMeshCustom(void)
-{
-    Mesh mesh = { 0 };
-    mesh.triangleCount = 1;
-    mesh.vertexCount = mesh.triangleCount*3;
-    mesh.vertices = (float *)MemAlloc(mesh.vertexCount*3*sizeof(float));    // 3 vertices, 3 coordinates each (x, y, z)
-    mesh.texcoords = (float *)MemAlloc(mesh.vertexCount*2*sizeof(float));   // 3 vertices, 2 coordinates each (x, y)
-    mesh.normals = (float *)MemAlloc(mesh.vertexCount*3*sizeof(float));     // 3 vertices, 3 coordinates each (x, y, z)
-
-    // Vertex at (0, 0, 0)
-    mesh.vertices[0] = 0;
-    mesh.vertices[1] = 0;
-    mesh.vertices[2] = 0;
-    mesh.normals[0] = 0;
-    mesh.normals[1] = 1;
-    mesh.normals[2] = 0;
-    mesh.texcoords[0] = 0;
-    mesh.texcoords[1] = 0;
-
-    // Vertex at (1, 0, 2)
-    mesh.vertices[3] = 1;
-    mesh.vertices[4] = 0;
-    mesh.vertices[5] = 2;
-    mesh.normals[3] = 0;
-    mesh.normals[4] = 1;
-    mesh.normals[5] = 0;
-    mesh.texcoords[2] = 0.5f;
-    mesh.texcoords[3] = 1.0f;
-
-    // Vertex at (2, 0, 0)
-    mesh.vertices[6] = 2;
-    mesh.vertices[7] = 0;
-    mesh.vertices[8] = 0;
-    mesh.normals[6] = 0;
-    mesh.normals[7] = 1;
-    mesh.normals[8] = 0;
-    mesh.texcoords[4] = 1;
-    mesh.texcoords[5] =0;
-
-    // Upload mesh data from CPU (RAM) to GPU (VRAM) memory
-    UploadMesh(&mesh, false);
-
-    return mesh;
 }
