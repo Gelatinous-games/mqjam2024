@@ -151,5 +151,8 @@ GameObj_Base* CreateParticleObject() {
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size = Vector2Zero();
 
+    obj_ptr->radius = 0;
+    obj_ptr->mass = 0;
+
     return obj_ptr;
 }

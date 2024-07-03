@@ -46,36 +46,80 @@
     int (*Destroy_Func)(void* self, float DeltaTime);
 */
 typedef struct {
-    Sprite* sprite;
+    int spriteID;
     float ageTime;
     float degreeRotationSpeed;
     float degreeRotation;
+
+
 } Asteroid_Data;
 
 #define ASTEROIDDATA ((Asteroid_Data *)(THIS->data_struct))
+#define ASTEROID_SPRITE_COUNT 4
 
-int Asteroid_Init(void* self, float DeltaTime) {
+Sprite** _asteroidSprites;
+
+void _Asteroid_Randomize(void *self) {
+    // sprite
+    ASTEROIDDATA->spriteID = (int)(FLOAT_RAND * 4);
+    if (ASTEROIDDATA->spriteID == 4) ASTEROIDDATA->spriteID = 3;
+
+    // size
+    float rng = (FLOAT_RAND * 2.25) + .25;
+    THIS->size = (Vector2) { rng, rng };
+
+    // X position
+    THIS->position = (Vector2) { FLOAT_RAND * cameraBounds.x, -cameraBounds.y - THIS->size.y};
+
+    // Horizontal velocity: between 1 and -1
+    THIS->velocity = (Vector2) { (FLOAT_RAND * 2) - 1, 1 };
+    THIS->velocity = Vector2Normalize(THIS->velocity);
+
+    // Now scale it for a random velocity. Smaller they are, the faster they can move (up to 2.25x faster for smallest)
+    THIS->velocity = Vector2Scale(THIS->velocity, (FLOAT_RAND * 2 * (3-rng)) + 1);
+
+    // flip it vertically if flip a coin
+    if (FLOAT_RAND < 0.5) {
+        THIS->velocity.y *= -1;
+        THIS->position.y *= -1;
+    }
+
+    rng = Vector2Length(THIS->velocity);
+
+    // we're also going to use the random velocity to decide the rotation speed plus a bit of wiggle.
+    ASTEROIDDATA->degreeRotationSpeed = (rng + (((FLOAT_RAND * 0.4) - 0.2) * rng)) * 37;
+}
+
+int _Asteroid_Init(void* self, float DeltaTime) {
+    // If they havent yet been loaded, load all the asteroid sprites.
+    if (!_asteroidSprites) {
+        _asteroidSprites = malloc(sizeof(Sprite*) * ASTEROID_SPRITE_COUNT);
+
+        _asteroidSprites[0] = CreateSprite("resources/asteroids/A0.png");
+        _asteroidSprites[1] = CreateSprite("resources/asteroids/A1.png");
+        _asteroidSprites[2] = CreateSprite("resources/asteroids/A2.png");
+        _asteroidSprites[3] = CreateSprite("resources/asteroids/A3.png");
+    }
+
     // Set a random position & size.
     // Position should be somewhere off top or bottom of screen.
     // Velocity should be within an angle to go across the screen.
     // Size should be within a certain range for big asteroids & small asteroids.
 
-    // ==================================================
-
-    ASTEROIDDATA->sprite = CreateSprite("resources/asteroid.png");
-
-    // ==================================================
-    
-    
+    _Asteroid_Randomize(self);
     ASTEROIDDATA->degreeRotation = 0.0f;
-    ASTEROIDDATA->degreeRotationSpeed = 10;
-    
+
+    // ==================================================
+
+    // ASTEROIDDATA->sprite = CreateSprite("resources/asteroid_temp.png");
+
+    // ==================================================
     // ==================================================
 
     return 0;
 }
 
-int Asteroid_Update(void* self, float DeltaTime) {
+int _Asteroid_Update(void* self, float DeltaTime) {
     ASTEROIDDATA->ageTime += DeltaTime;
     ASTEROIDDATA->degreeRotation += DeltaTime * ASTEROIDDATA->degreeRotationSpeed;
 
@@ -87,19 +131,20 @@ int Asteroid_Update(void* self, float DeltaTime) {
         // TODO: figure out an asteroid handler!
 
         // for now we will just reposition the asteroid similar to above.
+        _Asteroid_Randomize(self);
     }
 
     return 0;
 }
 
-int Asteroid_Draw(void* self, float DeltaTime) {
+int _Asteroid_Draw(void* self, float DeltaTime) {
     // TODO: red/blue shift calculation.
-    RenderSpriteRelative(ASTEROIDDATA->sprite, THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
+    RenderSpriteRelative(_asteroidSprites[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
     return 0;
 }
 
-int Asteroid_Destroy(void* self, float DeltaTime) {
-    DestroySprite(ASTEROIDDATA->sprite);
+int _Asteroid_Destroy(void* self, float DeltaTime) {
+    // DestroySprite(ASTEROIDDATA->sprite);
     free(ASTEROIDDATA);
     return 0;
 }
@@ -113,10 +158,10 @@ GameObj_Base* CreateAsteroid() {
 
     // ============================================================
     // ==== assign the ufnctions
-    obj_ptr->Init_Func = Asteroid_Init;
-    obj_ptr->Update_Func = Asteroid_Update;
-    obj_ptr->Draw_Func = Asteroid_Draw;
-    obj_ptr->Destroy_Func = Asteroid_Destroy;
+    obj_ptr->Init_Func = _Asteroid_Init;
+    obj_ptr->Update_Func = _Asteroid_Update;
+    obj_ptr->Draw_Func = _Asteroid_Draw;
+    obj_ptr->Destroy_Func = _Asteroid_Destroy;
     // ============================================================
     
     obj_ptr->awaitDestroy = 0;

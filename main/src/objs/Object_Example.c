@@ -44,7 +44,7 @@ int _ExampleObject_Init(void* self, float DeltaTime) {
 
     data->a = 0;
     data->tmr = 0;
-    data->sprite = CreateSprite("resources/kitr.png");
+    data->sprite = CreateSprite("resources/kitr_temp.png");
 
     ((GameObj_Base *)self)->data_struct = (void *)data; 
 
@@ -119,6 +119,9 @@ GameObj_Base* CreateExampleObject() {
     obj_ptr->flags = FLAG_UNDEFINED_OBJ;
 
     obj_ptr->currentLayer = LAYER_GUI;
+
+    obj_ptr->radius = 0;
+    obj_ptr->mass = 100;
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
