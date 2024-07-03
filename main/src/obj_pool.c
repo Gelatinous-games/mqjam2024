@@ -130,3 +130,22 @@ void ProcessAllDraws(float DeltaTime) {
         obj->Draw_Func(obj, DeltaTime);
     }
 }
+
+/// @brief Searches for any gameobjects seeking to be destroyed and obliterates them. Call after freshAdd so that there are no pendings.
+/// @param obj 
+/// @return 
+void ProcessAllDestroys() {
+    for (int i = 0; i < _gameObjPoolSize; i++) {
+        GameObj_Base* obj = _gameObjPool[i];
+
+        if (obj->awaitDestroy) {
+            _gameObjPool[i] = _gameObjPool[_gameObjPoolSize-1];
+            _gameObjPool[_gameObjPoolSize-1] = 0;
+            _gameObjPool -=1;
+            i -=1;
+
+            obj->Destroy_Func(obj, 0);
+            free(obj);
+        }
+    }
+}

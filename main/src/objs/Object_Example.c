@@ -71,8 +71,6 @@ int ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
         if (!obj || i == -1) break;
 
         // Do an operation with the result...
-
-        break;
     }
 
     return 0;
@@ -84,8 +82,6 @@ int ExampleObject_Draw(GameObj_Base* self, float DeltaTime) {
     Vector2 sp = GetScreenspacePositionRelative(self->position, self->size);
 
     DrawRectangle(sp.x, sp.y, self->size.x, self->size.y, WHITE);
-
-    printf("TEST\n");
 
     return 0;
 }
@@ -107,6 +103,8 @@ GameObj_Base* CreateExampleObject() {
     obj_ptr->Update_Func = ExampleObject_Update;
     obj_ptr->Draw_Func = ExampleObject_Draw;
     obj_ptr->Destroy_Func = ExampleObject_Destroy;
+
+    obj_ptr->awaitDestroy = 0;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.

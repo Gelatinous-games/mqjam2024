@@ -22,6 +22,8 @@
 #define invoken(a, b) a->b(a->self)
 #define invoke(a, b, ...) a->b(a->self, __VA_ARGS__)
 
+#define FRAMERATE 60
+
 #ifndef _stdio
     #define _stdio
     #include <stdio.h>
@@ -77,16 +79,16 @@ int main()
     GameObjPoolInit();
 
     InitWindow(screenWidth, screenHeight, "mqjam2024");
-    
+
     GameObj_Base* obj = CreateExampleObject();
     AddToPool(obj);
 
     ProcessFreshAdd();
 
 #if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
+    emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #else
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(FRAMERATE);               // Set our game to run at 60 frames-per-second
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -116,4 +118,5 @@ static void UpdateDrawFrame(void)
     EndDrawing();
 
     ProcessFreshAdd();
+    ProcessAllDestroys();
 }
