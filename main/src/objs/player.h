@@ -20,24 +20,61 @@
     #include "../obj_pool.c"
 #endif
 
+
+// Generate a simple triangle mesh from code
+static Mesh GenMeshCustom(void);
+
 typedef struct {
+    Model model;
+    Vector3 pos3D;
+    Camera3D modelCamera;
     float a;
+
 } Player_DataContainer;
 
 #define PLAYERDATA ((Player_DataContainer *)(THIS->data_struct))
 
+#define PLAYERPOSITION3D (PLAYERDATA->pos3D)
 
 int Player_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     
+    PLAYERDATA->model = LoadModelFromMesh(GenMeshCustom());
+
+    // cursed
+    Image checked = GenImageChecked(2, 2, 1, 1, ORANGE, BLUE);
+    Texture2D baseTexture = LoadTextureFromImage(checked);
+    UnloadImage(checked);
+
+    // even more cursed
+    PLAYERDATA->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = baseTexture;
+
+    // PLAYERDATA->model.materialCount = 1;
+
+    PLAYERDATA->pos3D = Vector3Zero();
+
+    // superdooper cursed
+
+
+    
+    PLAYERDATA->modelCamera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Camera position
+    PLAYERDATA->modelCamera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
+    
+    PLAYERDATA->modelCamera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+    PLAYERDATA->modelCamera.fovy = 45.0f;                                // Camera field-of-view Y
+    PLAYERDATA->modelCamera.projection = CAMERA_ORTHOGRAPHIC;             // Camera projection type
+
     return 0;
 }
 
 int Player_Update(void* self, float DeltaTime) {
     // see above
-
-
     // use data here.
+
+
+    // UpdateCamera(&(PLAYERDATA->modelCamera), CAMERA_ORTHOGRAPHIC);
+
+    
 
     PLAYERDATA->a += DeltaTime;
 
@@ -54,6 +91,10 @@ int Player_Update(void* self, float DeltaTime) {
         // Do an operation with the result...
     }
 
+    // copy to the fake 3d pos
+    PLAYERDATA->pos3D.x = THIS->position.x;
+    PLAYERDATA->pos3D.y = THIS->position.y;
+
     return 0;
 }
 
@@ -63,10 +104,16 @@ int Player_Draw(void* self, float DeltaTime) {
 
 
     // DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
-    DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, WHITE);
+    // DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, WHITE);
 
 
+    // ultra cursed
 
+    BeginMode3D(PLAYERDATA->modelCamera);
+    DrawCube((Vector3){ 0.0f, 0.0f, 0.0f }, 2.0f, 2.0f, 2.0f, RED);
+    // DrawModel(PLAYERDATA->model, PLAYERPOSITION3D, 1.0f, WHITE);
+    EndMode3D();
+    
 
     return 0;
 }
@@ -118,4 +165,51 @@ GameObj_Base* CreatePlayer(int windowWidth, int windowHeight) {
 
 
     return obj_ptr;
+}
+
+
+
+static Mesh GenMeshCustom(void)
+{
+    Mesh mesh = { 0 };
+    mesh.triangleCount = 1;
+    mesh.vertexCount = mesh.triangleCount*3;
+    mesh.vertices = (float *)MemAlloc(mesh.vertexCount*3*sizeof(float));    // 3 vertices, 3 coordinates each (x, y, z)
+    mesh.texcoords = (float *)MemAlloc(mesh.vertexCount*2*sizeof(float));   // 3 vertices, 2 coordinates each (x, y)
+    mesh.normals = (float *)MemAlloc(mesh.vertexCount*3*sizeof(float));     // 3 vertices, 3 coordinates each (x, y, z)
+
+    // Vertex at (0, 0, 0)
+    mesh.vertices[0] = 0;
+    mesh.vertices[1] = 0;
+    mesh.vertices[2] = 0;
+    mesh.normals[0] = 0;
+    mesh.normals[1] = 1;
+    mesh.normals[2] = 0;
+    mesh.texcoords[0] = 0;
+    mesh.texcoords[1] = 0;
+
+    // Vertex at (1, 0, 2)
+    mesh.vertices[3] = 1;
+    mesh.vertices[4] = 0;
+    mesh.vertices[5] = 2;
+    mesh.normals[3] = 0;
+    mesh.normals[4] = 1;
+    mesh.normals[5] = 0;
+    mesh.texcoords[2] = 0.5f;
+    mesh.texcoords[3] = 1.0f;
+
+    // Vertex at (2, 0, 0)
+    mesh.vertices[6] = 2;
+    mesh.vertices[7] = 0;
+    mesh.vertices[8] = 0;
+    mesh.normals[6] = 0;
+    mesh.normals[7] = 1;
+    mesh.normals[8] = 0;
+    mesh.texcoords[4] = 1;
+    mesh.texcoords[5] =0;
+
+    // Upload mesh data from CPU (RAM) to GPU (VRAM) memory
+    UploadMesh(&mesh, false);
+
+    return mesh;
 }

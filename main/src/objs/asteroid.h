@@ -75,7 +75,8 @@ int Asteroid_Init(void* self, float DeltaTime) {
     
     ASTEROIDDATA->scalarScale = 1.0f;
     ASTEROIDDATA->degreeRotation = 0.0f;
-    ASTEROIDDATA->degreeRotationSpeed = (int)(random()%360);
+    // ASTEROIDDATA->degreeRotationSpeed = (int)(random()%360);
+    ASTEROIDDATA->degreeRotationSpeed = 360;
     
     // ==================================================
 
