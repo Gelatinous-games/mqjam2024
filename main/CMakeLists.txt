@@ -25,10 +25,14 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
   endif()
 endif()
 
+if(LINUX)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLFW REQUIRED glfw3)
-find_package(OpenGL REQUIRED)
+else()
+find_package(glfw3 3.4 REQUIRED)
+endif()
 
+find_package(OpenGL REQUIRED)
 # Our Project
 
 add_executable(${PROJECT_NAME} main.c)
