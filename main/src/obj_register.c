@@ -8,5 +8,3 @@ enum OBJECT_FLAG {
     GRAVITY_WELL = 16,
     UNDEFINED = 32
 };
-
-#include "src/objs/Object_Example.c"
