@@ -10,7 +10,9 @@
 			"math.h": "c",
 			"blocks.h": "c",
 			"stdio.h": "c",
-			"*.m": "c"
+			"*.m": "c",
+			"malloc.h": "c",
+			"raymath.h": "c"
 		}
 	}
 }

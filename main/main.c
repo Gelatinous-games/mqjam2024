@@ -23,42 +23,67 @@
 #define invoke(a, b, ...) a->b(a->self, __VA_ARGS__)
 
 #ifndef _stdio
-    #include <stdio.h>
     #define _stdio
+    #include <stdio.h>
 #endif
 
 #ifndef _malloc
-    #include <malloc.h>
     #define _malloc
+    #include <malloc.h>
 #endif
 
 #ifndef _raylib
-    #include "raylib.h"
     #define _raylib
+    #include "raylib.h"
+#endif
+
+#ifndef _raymath
+    #define _raymath
+    #include "raymath.h"
+#endif
+
+#ifndef _game_base
+    #define _game_base
+    #include "src\base.c"
+#endif
+
+#ifndef _camera
+    #define _camera
+    #include "src\camera.c"
+#endif
+
+#ifndef _registry
+    #define _registry
+    #include "src/obj_register.c"
+#endif
+
+#ifndef _obj_pool
+    #define _obj_pool
+    #include "src/obj_pool.c"
 #endif
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
 #endif
 
-Camera camera = { 0 };
-Vector3 cubePosition = { 0 };
-
 static void UpdateDrawFrame(void);          // Update and draw one frame
 
+gameObj_Base* exampleObject;
 
 int main()
 {
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 1366;
+    const int screenHeight = 768;
 
-    InitWindow(screenWidth, screenHeight, "macsjam2024");
+    CameraScreenQuarter.x = screenWidth/2;
+    CameraScreenQuarter.y = screenHeight/2;
 
-    camera.position = (Vector3){ 10.0f, 10.0f, 8.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 60.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    exampleObject = CreateExampleObject();
+
+    CameraBounds.x = 16;
+    CameraBounds.y = 9;
+
+    InitWindow(screenWidth, screenHeight, "mqjam2024");
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
@@ -82,7 +107,10 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
+    exampleObject->update_func(exampleObject, 1/(float)60);
+
     BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(BLACK);
+        exampleObject->draw_func(exampleObject, 1);
     EndDrawing();
 }
