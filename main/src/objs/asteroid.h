@@ -21,12 +21,12 @@
 
 #ifndef _sprite
     #define _sprite
-    #include "src/sprite.c"
+    #include "../sprite.c"
 #endif
 
 #ifndef _obj_particle
     #define _obj_particle
-    #include "src/objs/particle.c"
+    #include "./particle.c"
 #endif
 
 #ifndef _misc

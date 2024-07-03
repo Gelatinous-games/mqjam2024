@@ -1,15 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
-#endif
+#include "raylib.h"
+#include "raymath.h"
 
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
 
 typedef struct {
     Texture2D tex;

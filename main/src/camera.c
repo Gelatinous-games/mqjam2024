@@ -8,7 +8,7 @@
 
 #ifndef _sprite
     #define _sprite
-    #include "src/sprite.c"
+    #include "./sprite.c"
 #endif
 
 // 2d easy-understand camera stuff
