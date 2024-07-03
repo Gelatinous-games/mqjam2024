@@ -36,7 +36,7 @@ typedef struct {
     float a;
 } ExampleObject_Data;
 
-int ExampleObject_Init(void* self, float DeltaTime) {
+int _ExampleObject_Init(GameObj_Base* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
@@ -46,7 +46,7 @@ int ExampleObject_Init(void* self, float DeltaTime) {
     return 0;
 }
 
-int ExampleObject_Update(void* self, float DeltaTime) {
+int _ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
     // see above
 
     // we can cast our data struct to the right data like so:
@@ -61,7 +61,7 @@ int ExampleObject_Update(void* self, float DeltaTime) {
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
-        i = GetObjectWithFlagsAny(NEUTRAL_OBJECT, i, &obj);
+        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
 
         // Check if obj is not null
         if (!obj || i == -1) break;
@@ -72,7 +72,7 @@ int ExampleObject_Update(void* self, float DeltaTime) {
     return 0;
 }
 
-int ExampleObject_Draw(void* self, float DeltaTime) {
+int _ExampleObject_Draw(GameObj_Base* self, float DeltaTime) {
     // ibid
 
     Vector2 sp = GetScreenspacePositionRelative(((GameObj_Base *)self)->position, ((GameObj_Base *)self)->size);
@@ -82,7 +82,7 @@ int ExampleObject_Draw(void* self, float DeltaTime) {
     return 0;
 }
 
-int ExampleObject_Destroy(void* self, float DeltaTime) {
+int _ExampleObject_Destroy(GameObj_Base* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
@@ -95,18 +95,18 @@ int ExampleObject_Destroy(void* self, float DeltaTime) {
 GameObj_Base* CreateExampleObject() {
     GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
 
-    obj_ptr->Init_Func = &ExampleObject_Init;
-    obj_ptr->Update_Func = &ExampleObject_Update;
-    obj_ptr->Draw_Func = &ExampleObject_Draw;
-    obj_ptr->Destroy_Func = &ExampleObject_Destroy;
+    obj_ptr->Init_Func = _ExampleObject_Init;
+    obj_ptr->Update_Func = _ExampleObject_Update;
+    obj_ptr->Draw_Func = _ExampleObject_Draw;
+    obj_ptr->Destroy_Func = _ExampleObject_Destroy;
 
     obj_ptr->awaitDestroy = 0;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = 0;
+    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
 
-    obj_ptr->currentLayer = 1;
+    obj_ptr->currentLayer = LAYER_GUI;
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
