@@ -42,16 +42,6 @@
     #include "raymath.h"
 #endif
 
-#ifndef _game_base
-    #define _game_base
-    #include "src\base.c"
-#endif
-
-#ifndef _camera
-    #define _camera
-    #include "src\camera.c"
-#endif
-
 #ifndef _registry
     #define _registry
     #include "src/obj_register.c"
@@ -68,8 +58,6 @@
 
 static void UpdateDrawFrame(void);          // Update and draw one frame
 
-gameObj_Base* exampleObject;
-
 int main()
 {
     const int screenWidth = 1366;
@@ -78,12 +66,17 @@ int main()
     CameraScreenQuarter.x = screenWidth/2;
     CameraScreenQuarter.y = screenHeight/2;
 
-    exampleObject = CreateExampleObject();
-
     CameraBounds.x = 16;
     CameraBounds.y = 9;
 
+    GameObjPoolInit();
+
     InitWindow(screenWidth, screenHeight, "mqjam2024");
+
+    GameObj_Base* obj = CreateExampleObject();
+    AddToPool(obj);
+
+    ProcessFreshAdd();
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
@@ -101,16 +94,21 @@ int main()
     CloseWindow();                  // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
+    GameObjPoolDestroy();
+
     return 0;
 }
 
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
-    exampleObject->update_func(exampleObject, 1/(float)60);
+    float DeltaTime = GetFrameTime();
+    ProcessAllUpdates(DeltaTime);
 
     BeginDrawing();
         ClearBackground(BLACK);
-        exampleObject->draw_func(exampleObject, 1);
+        ProcessAllDraws(DeltaTime);
     EndDrawing();
+
+    ProcessFreshAdd();
 }

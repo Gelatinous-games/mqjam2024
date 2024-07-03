@@ -15,12 +15,22 @@
 
 #ifndef _game_base
     #define _game_base
-    #include "base.c"
+    #include "src/base.c"
 #endif
 
 #ifndef _camera
     #define _camera
     #include "src\camera.c"
+#endif
+
+#ifndef _registry
+    #define _registry
+    #include "src/obj_register.c"
+#endif
+
+#ifndef _obj_pool
+    #define _obj_pool
+    #include "src/obj_pool.c"
 #endif
 
 typedef struct {
@@ -30,7 +40,7 @@ typedef struct {
     int d;
 } ExampleObject_Data;
 
-int ExampleObject_Init(gameObj_Base* self, float DeltaTime) {
+int ExampleObject_Init(GameObj_Base* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
@@ -40,7 +50,7 @@ int ExampleObject_Init(gameObj_Base* self, float DeltaTime) {
     return 0;
 }
 
-int ExampleObject_Update(gameObj_Base* self, float DeltaTime) {
+int ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
     // see above
 
     // we can cast our data struct to the right data like so:
@@ -53,20 +63,32 @@ int ExampleObject_Update(gameObj_Base* self, float DeltaTime) {
 
     self->position.x += (self->velocity.x * DeltaTime);
 
+    for (int i = 0; i != -1; ) {
+        // GameObj_Base* obj = GetObjectWithFlagsExact(NEUTRAL_OBJECT, &i);
+        // Check if obj is not null
+        // if (!obj) break;
+
+        // Do an operation with the result...
+
+        break;
+    }
+
     return 0;
 }
 
-int ExampleObject_Draw(gameObj_Base* self, float DeltaTime) {
+int ExampleObject_Draw(GameObj_Base* self, float DeltaTime) {
     // ibid
 
     Vector2 sp = GetScreenspacePositionRelative(self->position, self->size);
 
     DrawRectangle(sp.x, sp.y, self->size.x, self->size.y, WHITE);
 
+    printf("TEST\n");
+
     return 0;
 }
 
-int ExampleObject_Destroy(gameObj_Base* self, float DeltaTime) {
+int ExampleObject_Destroy(GameObj_Base* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
@@ -76,13 +98,13 @@ int ExampleObject_Destroy(gameObj_Base* self, float DeltaTime) {
     return 0;
 }
 
-gameObj_Base* CreateExampleObject() {
-    gameObj_Base* obj_ptr = malloc(sizeof(gameObj_Base));
+GameObj_Base* CreateExampleObject() {
+    GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
 
-    obj_ptr->init_func = ExampleObject_Init;
-    obj_ptr->update_func = ExampleObject_Update;
-    obj_ptr->draw_func = ExampleObject_Draw;
-    obj_ptr->destroy_func = ExampleObject_Destroy;
+    obj_ptr->Init_Func = ExampleObject_Init;
+    obj_ptr->Update_Func = ExampleObject_Update;
+    obj_ptr->Draw_Func = ExampleObject_Draw;
+    obj_ptr->Destroy_Func = ExampleObject_Destroy;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.

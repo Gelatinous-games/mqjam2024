@@ -14,9 +14,15 @@
     #include "raymath.h"
 #endif
 
+#ifndef _registry
+    #define _registry
+    #include "src/obj_register.c"
+#endif
+
 typedef struct {
     // a structure to refer to for all unique data on this object. void type, so will require casting to the particular func type.
     void* data_struct; 
+    int _poolID;
 
     // generic data; position, velocity, size.
     Vector2 position;
@@ -24,8 +30,8 @@ typedef struct {
     Vector2 size;
     long unsigned int flags;
 
-    int (*init_func)(void* self, float DeltaTime);
-    int (*update_func)(void* self, float DeltaTime);
-    int (*draw_func)(void* self, float DeltaTime);
-    int (*destroy_func)(void* self, float DeltaTime);
-} gameObj_Base;
+    int (*Init_Func)(void* self, float DeltaTime);
+    int (*Update_Func)(void* self, float DeltaTime);
+    int (*Draw_Func)(void* self, float DeltaTime);
+    int (*Destroy_Func)(void* self, float DeltaTime);
+} GameObj_Base;
