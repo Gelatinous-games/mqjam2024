@@ -1,7 +1,6 @@
-#ifndef _malloc
-    #define _malloc
-    #include <malloc.h>
-#endif 
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef _raylib
     #define _raylib
@@ -15,22 +14,22 @@
 
 #ifndef _game_base
     #define _game_base
-    #include "src/base.c"
+    #include "../base.h"
 #endif
 
 #ifndef _camera
     #define _camera
-    #include "src\camera.c"
+    #include "../camera.c"
 #endif
 
 #ifndef _registry
     #define _registry
-    #include "src/obj_register.c"
+    #include "../obj_register.c"
 #endif
 
 #ifndef _obj_pool
     #define _obj_pool
-    #include "src/obj_pool.c"
+    #include "../obj_pool.c"
 #endif
 
 typedef struct {
@@ -40,28 +39,28 @@ typedef struct {
     int d;
 } ExampleObject_Data;
 
-int ExampleObject_Init(GameObj_Base* self, float DeltaTime) {
+int ExampleObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
     ExampleObject_Data* data = malloc(sizeof(ExampleObject_Data));
-    self->data_struct = (void*)data; 
+    ((GameObj_Base *)self)->data_struct = (void*)data; 
 
     return 0;
 }
 
-int ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
+int ExampleObject_Update(void* self, float DeltaTime) {
     // see above
 
     // we can cast our data struct to the right data like so:
 
-    ExampleObject_Data* data = self->data_struct;
+    ExampleObject_Data* data = ((GameObj_Base *)self)->data_struct;
 
     // use data here.
 
-    self->velocity.x = 1;
+    ((GameObj_Base *)self)->velocity.x = 1;
 
-    self->position.x += (self->velocity.x * DeltaTime);
+    ((GameObj_Base *)self)->position.x += (((GameObj_Base *)self)->velocity.x * DeltaTime);
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
@@ -78,24 +77,24 @@ int ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
     return 0;
 }
 
-int ExampleObject_Draw(GameObj_Base* self, float DeltaTime) {
+int ExampleObject_Draw(void* self, float DeltaTime) {
     // ibid
 
-    Vector2 sp = GetScreenspacePositionRelative(self->position, self->size);
+    Vector2 sp = GetScreenspacePositionRelative(((GameObj_Base *)self)->position, ((GameObj_Base *)self)->size);
 
-    DrawRectangle(sp.x, sp.y, self->size.x, self->size.y, WHITE);
+    DrawRectangle(sp.x, sp.y, ((GameObj_Base *)self)->size.x, ((GameObj_Base *)self)->size.y, WHITE);
 
     printf("TEST\n");
 
     return 0;
 }
 
-int ExampleObject_Destroy(GameObj_Base* self, float DeltaTime) {
+int ExampleObject_Destroy(void* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    free(self->data_struct);
+    free(((GameObj_Base *)self)->data_struct);
 
     return 0;
 }
@@ -103,10 +102,10 @@ int ExampleObject_Destroy(GameObj_Base* self, float DeltaTime) {
 GameObj_Base* CreateExampleObject() {
     GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
 
-    obj_ptr->Init_Func = ExampleObject_Init;
-    obj_ptr->Update_Func = ExampleObject_Update;
-    obj_ptr->Draw_Func = ExampleObject_Draw;
-    obj_ptr->Destroy_Func = ExampleObject_Destroy;
+    obj_ptr->Init_Func = &ExampleObject_Init;
+    obj_ptr->Update_Func = &ExampleObject_Update;
+    obj_ptr->Draw_Func = &ExampleObject_Draw;
+    obj_ptr->Destroy_Func = &ExampleObject_Destroy;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.

@@ -1,8 +1,7 @@
 // Camera data: we're going for simplicity, not scale.
-#ifndef _malloc
-    #define _malloc
-    #include <malloc.h>
-#endif 
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef _raylib
     #define _raylib

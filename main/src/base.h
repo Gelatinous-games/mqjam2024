@@ -1,7 +1,12 @@
+#pragma once
 
 #ifndef _malloc
     #define _malloc
+#ifndef __APPLE__
     #include <malloc.h>
+#endif
+    #include <memory.h>
+#else
 #endif 
 
 #ifndef _raylib
@@ -16,7 +21,7 @@
 
 #ifndef _registry
     #define _registry
-    #include "src/obj_register.c"
+    #include "obj_register.c"
 #endif
 
 typedef struct {
@@ -35,3 +40,6 @@ typedef struct {
     int (*Draw_Func)(void* self, float DeltaTime);
     int (*Destroy_Func)(void* self, float DeltaTime);
 } GameObj_Base;
+
+
+// typedef struct GameObj_BaseStruct ;

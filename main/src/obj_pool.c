@@ -1,12 +1,7 @@
-#ifndef _stdio
-    #define _stdio
-    #include <stdio.h>
-#endif
 
-#ifndef _malloc
-    #define _malloc
-    #include <malloc.h>
-#endif
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef _raylib
     #define _raylib
@@ -20,12 +15,12 @@
 
 #ifndef _game_base
     #define _game_base
-    #include "src\base.c"
+    #include "base.h"
 #endif
 
 #ifndef _registry
     #define _registry
-    #include "src/obj_register.c"
+    #include "obj_register.c"
 #endif
 
 #define OBJECT_POOL_CAPACITY 256
