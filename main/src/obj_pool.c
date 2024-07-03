@@ -33,6 +33,7 @@ void GameObjPoolInit() {
 }
 /// @brief Frees the object pool.
 void GameObjPoolDestroy() {
+    // TODO: Destroy all active game objects.
     free(_gameObjPool);
 }
 

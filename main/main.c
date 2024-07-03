@@ -39,9 +39,16 @@
 
 #include "src/base.h"
 #include "src/obj_register.h"
-#include "src/objs/Object_Example.c"
-#include "src/objs/particle.c"
 
+#ifndef _obj_example
+    #define _obj_example
+    #include "src/objs/Object_Example.c"
+#endif
+
+#ifndef _obj_particle
+    #define _obj_particle
+    #include "src/objs/particle.c"
+#endif
 
 #ifndef _obj_pool
     #define _obj_pool
@@ -56,48 +63,36 @@ static void UpdateDrawFrame(void);          // Update and draw one frame
 
 int main()
 {
-    const int screenWidth = 1366;
-    const int screenHeight = 768;
+    const int screenWidth = 1920;
+    const int screenHeight = 1080;
 
     cameraScreenQuarter.x = screenWidth/2;
     cameraScreenQuarter.y = screenHeight/2;
-
-    cameraBounds.x = 16;
-    cameraBounds.y = 9;
-
-    printf("%s\n",">> main() :: init game pool");
+    cameraBounds.x = 8;
+    cameraBounds.y = 4.5;
+    cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
     layerCount = 8;
-    
-    GameObjPoolInit();
 
-    printf("%s\n",">> main() :: initialising window");
+
+    GameObjPoolInit();
     InitWindow(screenWidth, screenHeight, "mqjam2024");
-    
-    printf("%s\n",">> main() :: create example obj");
 
     GameObj_Base* obj = CreateExampleObject();
-    printf("%s\n",">> main() :: add example obj");
     AddToPool(obj);
-
-    printf("%s\n",">> main() :: process fresh add");
+    obj = CreateParticleObject();
+    AddToPool(obj);
     ProcessFreshAdd();
 
-    printf("%s\n",">> main() :: try");
 #ifndef PLATFORM_WEB
-    printf("%s\n",">> main() :: set fps");
     SetTargetFPS(FRAMERATE);               // Set our game to run at 60 frames-per-second
-
-    printf("%s\n",">> main() :: pre loop");
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         UpdateDrawFrame();
     }
 #else
-    printf("%s\n",">> main() :: emscripten");
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
-
-    printf("%s\n",">> main() :: closing");
+    
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();                  // Close window and OpenGL context
