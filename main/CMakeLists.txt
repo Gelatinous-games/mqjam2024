@@ -6,7 +6,6 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 # Dependencies
 set(RAYLIB_VERSION 5.0)
 find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
@@ -50,6 +49,7 @@ endif()
 if(CMAKE_HOST_LINUX)
 
     target_link_libraries(${PROJECT_NAME} "-lGL")
+    target_link_libraries(${PROJECT_NAME} "-lglfw")
     target_link_libraries(${PROJECT_NAME} "-lm")
     target_link_libraries(${PROJECT_NAME} "-lpthread")
     target_link_libraries(${PROJECT_NAME} "-ldl")
