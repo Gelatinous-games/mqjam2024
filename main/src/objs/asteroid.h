@@ -42,7 +42,11 @@
     int (*Destroy_Func)(void* self, float DeltaTime);
 */
 typedef struct {
-    float a;
+    Texture2D spriteTexture;
+    float ageTime;
+    float degreeRotationSpeed;
+    float degreeRotation;
+    float scalarScale;
 } Asteroid_Data;
 
 #define ASTEROIDDATA ((Asteroid_Data *)(THIS->data_struct))
@@ -61,6 +65,20 @@ int Asteroid_Init(void* self, float DeltaTime) {
 
     // ==================================================
 
+    // printf("exist in: [%s]\n",GetWorkingDirectory());
+    ASTEROIDDATA->spriteTexture = LoadTexture("resources/asteroid.png");
+
+    THIS->size.x = ASTEROIDDATA->spriteTexture.width;
+    THIS->size.y = ASTEROIDDATA->spriteTexture.height;
+
+    // ==================================================
+    
+    ASTEROIDDATA->scalarScale = 1.0f;
+    ASTEROIDDATA->degreeRotation = 0.0f;
+    ASTEROIDDATA->degreeRotationSpeed = (int)(random()%360);
+    
+    // ==================================================
+
     return 0;
 }
 
@@ -69,7 +87,8 @@ int Asteroid_Update(void* self, float DeltaTime) {
 
     // use data here.
 
-    ASTEROIDDATA->a += DeltaTime;
+    ASTEROIDDATA->ageTime += DeltaTime;
+    ASTEROIDDATA->degreeRotation += DeltaTime*ASTEROIDDATA->degreeRotationSpeed;
 
     THIS->position.x += THIS->velocity.x;
     THIS->position.y += THIS->velocity.y;
@@ -96,9 +115,19 @@ int Asteroid_Update(void* self, float DeltaTime) {
 
 int Asteroid_Draw(void* self, float DeltaTime) {
     // ibid
-
+    
     // DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
-    DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, DARKGRAY);
+    // DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, DARKGRAY);
+    
+
+    // DrawTexture(ASTEROIDDATA->spriteTexture, (int)(THIS->position.x), (int)(THIS->position.y), WHITE);
+
+
+    // void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint)
+    DrawTextureEx(ASTEROIDDATA->spriteTexture, THIS->position, ASTEROIDDATA->degreeRotation, ASTEROIDDATA->scalarScale, WHITE);
+    
+    
+
 
 
     return 0;
@@ -108,8 +137,10 @@ int Asteroid_Destroy(void* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
+    UnloadTexture(ASTEROIDDATA->spriteTexture);
     // free our data struct here. free anything contained.
     free(THIS->data_struct);
+
 
     return 0;
 }
