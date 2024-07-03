@@ -27,6 +27,11 @@
     #include <stdio.h>
 #endif
 
+#ifndef _stdlib
+    #define _stdlib
+    #include <stdlib.h>
+#endif
+
 #ifndef _malloc
     #define _malloc
     #include <malloc.h>
@@ -72,7 +77,7 @@ int main()
     GameObjPoolInit();
 
     InitWindow(screenWidth, screenHeight, "mqjam2024");
-
+    
     GameObj_Base* obj = CreateExampleObject();
     AddToPool(obj);
 

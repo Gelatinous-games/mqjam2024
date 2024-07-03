@@ -64,9 +64,11 @@ int ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
     self->position.x += (self->velocity.x * DeltaTime);
 
     for (int i = 0; i != -1; ) {
-        // GameObj_Base* obj = GetObjectWithFlagsExact(NEUTRAL_OBJECT, &i);
+        GameObj_Base* obj;
+        i = GetObjectWithFlagsAny(NEUTRAL_OBJECT, i, &obj);
+
         // Check if obj is not null
-        // if (!obj) break;
+        if (!obj || i == -1) break;
 
         // Do an operation with the result...
 

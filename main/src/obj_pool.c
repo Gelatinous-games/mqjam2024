@@ -75,38 +75,42 @@ int ProcessFreshAdd() {
     return 0;
 }
 
-/// @brief Provided a pointer to an index integer and a flag string, identifies the next object in the pool 
-/// that exactly matches the flag string. The integer value will be -1 if it has reached the end of the usable pool.
+/// @brief Returns the next object in the object pool from idx sIDX that matches the given flag string. 
+/// The object is stored under retobj.
+/// The next index to check from is returned.
 /// @param flags 
-/// @param i 
+/// @param sIDX 
+/// @param retobj 
 /// @return 
-GameObj_Base* GetObjectWithFlagsExact(long unsigned int flags, int* i) {
-    if (*i < 0) return 0;
-    for (; *i < _gameObjPoolSize + _gameObjPoolDelta; *i++) {
-        GameObj_Base* obj = _gameObjPool[*i];
+int GetObjectWithFlagsExact(long unsigned int flags, int sIDX, GameObj_Base** retobj) {
+    for (int i = sIDX; i < _gameObjPoolSize + _gameObjPoolDelta; i++) {
+        GameObj_Base* obj = _gameObjPool[i];
         if (obj->flags == flags) {
-            return obj;
+            *retobj = obj;
+            return i+1;
         }
     }
-    *i = -1;
-    return 0;
+    *retobj = 0;
+    return -1;
 }
 
-/// @brief Provided a flag string and a int pointer, identifies the next object in the pool that has any of 
-/// the given flags. The index will be -1 if it has reached the end of the usable pool.
+/// @brief Returns the next object in the object pool from idx sIDX that has any of the given flag string. 
+/// The object is stored under retobj.
+/// The next index to check from is returned.
 /// @param flags 
-/// @param i 
+/// @param sIDX 
+/// @param retobj 
 /// @return 
-GameObj_Base* GetObjectWithFlagsAny(long unsigned int flags, int* i) {
-    if (*i < 0) return 0;
-    for (; *i < _gameObjPoolSize + _gameObjPoolDelta; *i++) {
-        GameObj_Base* obj = _gameObjPool[*i];
+int GetObjectWithFlagsAny(long unsigned int flags, int sIDX, GameObj_Base** retobj) {
+    for (int i = sIDX; i < _gameObjPoolSize + _gameObjPoolDelta; i++) {
+        GameObj_Base* obj = _gameObjPool[i];
         if (obj->flags & flags) {
-            return obj;
+            *retobj = obj;
+            return i+1;
         }
     }
-    *i = -1;
-    return 0;
+    *retobj = 0;
+    return -1;
 }
 
 /// @brief Processes the update function on all objects that are not waiting to be initialized.
