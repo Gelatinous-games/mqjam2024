@@ -2,20 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
-#endif
+#include "raylib.h"
+#include "raymath.h"
 
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
-
-#ifndef _game_base
-    #define _game_base
-    #include "../base.h"
-#endif
+#include "../base.h"
 
 
 #ifndef _camera
@@ -66,13 +56,13 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
 
     // we can cast our data struct to the right data like so:
 
-    ExampleObject_Data* data = ((GameObj_Base *)self)->data_struct;
+    ExampleObject_Data* data = THIS->data_struct;
 
     // use data here.
 
 
+    THIS->position.x = (float)(sin(data->a * (PI / 2)) * 5);
     data->a += DeltaTime;
-    ((GameObj_Base *)self)->position.x = (float)(sin(data->a * (PI / 2)) * 5);
 
     // An example of spawning a particle
     data->tmr += DeltaTime;

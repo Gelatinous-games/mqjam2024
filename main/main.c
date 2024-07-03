@@ -19,26 +19,30 @@
 *
 ********************************************************************************************/
 
+// what da henk
 #define invoken(a, b) a->b(a->self)
 #define invoke(a, b, ...) a->b(a->self, __VA_ARGS__)
 
+#define FRAMERATE 60
+
+// standard library includes
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FRAMERATE 60
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
+// library includes
+#include "raylib.h"
+#include "raymath.h"
+#if defined(PLATFORM_WEB)
+    #include <emscripten/emscripten.h>
 #endif
 
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
-
+// project header includes
+#include "src/settings.h"
 #include "src/base.h"
 #include "src/obj_register.h"
+#include "src/objs/asteroid.h"
+#include "src/objs/player.h"
 
 #ifndef _obj_example
     #define _obj_example
@@ -55,19 +59,18 @@
     #include "src/obj_pool.c"
 #endif
 
-#if defined(PLATFORM_WEB)
-    #include <emscripten/emscripten.h>
-#endif
+
 
 static void UpdateDrawFrame(void);          // Update and draw one frame
 
+// let C know this exists
+static void generateObjects();
+
 int main()
 {
-    const int screenWidth = 1920;
-    const int screenHeight = 1080;
+    cameraScreenQuarter.x = WINDOW_WIDTH/2;
+    cameraScreenQuarter.y = WINDOW_HEIGHT/2;
 
-    cameraScreenQuarter.x = screenWidth/2;
-    cameraScreenQuarter.y = screenHeight/2;
     cameraBounds.x = 8;
     cameraBounds.y = 4.5;
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
@@ -75,12 +78,10 @@ int main()
 
 
     GameObjPoolInit();
-    InitWindow(screenWidth, screenHeight, "mqjam2024");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
+    
+    generateObjects();
 
-    GameObj_Base* obj = CreateExampleObject();
-    AddToPool(obj);
-    obj = CreateParticleObject();
-    AddToPool(obj);
     ProcessFreshAdd();
 
 #ifndef PLATFORM_WEB
@@ -90,9 +91,10 @@ int main()
         UpdateDrawFrame();
     }
 #else
+    // printf("%s\n",">> main() :: emscripten");
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
-    
+
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();                  // Close window and OpenGL context
@@ -117,4 +119,28 @@ static void UpdateDrawFrame(void)
 
     ProcessFreshAdd();
     ProcessAllDestroys();
+}
+
+
+// define the thing we promised
+static void generateObjects(){
+
+    GameObj_Base* obj = CreateExampleObject();
+    AddToPool(obj);
+    // GameObj_Base* obj = CreateParticleObject();
+    obj = CreateParticleObject();
+    AddToPool(obj);
+
+
+    // printf("%s\n",">> main() :: create example obj");
+    GameObj_Base* player = CreatePlayer(WINDOW_WIDTH, WINDOW_HEIGHT);
+    // printf("%s\n",">> main() :: add example obj");
+    AddToPool(player);
+
+
+
+    // printf("%s\n",">> main() :: create asteroid obj");
+    GameObj_Base* asteroid = CreateAsteroid();
+    // printf("%s\n",">> main() :: add asteroid obj");
+    AddToPool(asteroid);
 }

@@ -15,7 +15,7 @@ Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be
 
 ## Developers:
 
-The code you should worry about is creating objects. The data structure of an object can be found under `/main/src/base.c`, and an example on how to create a unique object is under `main/src/objs/Object_Example.c`.
+The code you should worry about is creating objects. The data structure of an object can be found under `/main/src/base.h`, and an example on how to create a unique object is under `main/src/objs/Object_Example.h`.
 If you encounter problems contact Harris.
 
 ### Important notes:
@@ -25,7 +25,6 @@ destruction, frame logic & rendering. Make sure to destroy all resources.
 
 A little wrapper for sprites is found under sprite.c, with the CreateSprite function. Make sure to destroy this sprite once your object is destroyed.
 This sprite object can be passed to the variants of RenderSprite to draw it at any position. This supports rotations.
-
 
 
 * UNIX uses:

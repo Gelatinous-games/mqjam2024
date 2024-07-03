@@ -1,28 +1,13 @@
 
+#include "raylib.h"
+#include "raymath.h"
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
-#endif
-
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
-
-#ifndef _game_base
-    #define _game_base
-    #include "../base.h"
-#endif
+#include "../base.h"
+#include "../obj_register.h"
 
 #ifndef _camera
     #define _camera
     #include "../camera.c"
-#endif
-
-#ifndef _registry
-    #define _registry
-    #include "../obj_register.h"
 #endif
 
 #ifndef _obj_pool
