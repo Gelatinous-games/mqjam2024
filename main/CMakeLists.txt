@@ -50,18 +50,12 @@ if(CMAKE_HOST_LINUX)
     target_link_libraries(${PROJECT_NAME} "-ldl")
     target_link_libraries(${PROJECT_NAME} "-lrt")
     target_link_libraries(${PROJECT_NAME} "-lX11")
-    
-        # # NOTE: It seems additional libraries are not required any more, latest GLFW just dlopen them
-        # #LDLIBS += -lXrandr -lXinerama -lXi -lXxf86vm -lXcursor
-
-        # # On Wayland windowing system, additional libraries requires
-        # ifeq ($(USE_WAYLAND_DISPLAY),TRUE)
-        #     LDLIBS += -lwayland-client -lwayland-cursor -lwayland-egl -lxkbcommon
-        # endif
-        # # Explicit link to libc
-        # ifeq ($(RAYLIB_LIBTYPE),SHARED)
-        #     LDLIBS += -lc
-        # endif
+    if(USE_WAYLAND_DISPLAY)
+      target_link_libraries(${PROJECT_NAME} "-lwayland-client")
+      target_link_libraries(${PROJECT_NAME} "-lwayland-cursor")
+      target_link_libraries(${PROJECT_NAME} "-lwayland-egl")
+      target_link_libraries(${PROJECT_NAME} "-lxkbcommon")
+    endif()
 endif()
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)
