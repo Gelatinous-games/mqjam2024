@@ -13,15 +13,9 @@
     #include "raymath.h"
 #endif
 
-#ifndef _game_base
-    #define _game_base
-    #include "base.h"
-#endif
+#include "base.h"
+#include "obj_register.h"
 
-#ifndef _registry
-    #define _registry
-    #include "obj_register.c"
-#endif
 
 #define OBJECT_POOL_CAPACITY 256
 

@@ -4,20 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
-#endif
+#include "raylib.h"
+#include "raymath.h"
 
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
-
-#ifndef _registry
-    #define _registry
-    #include "obj_register.c"
-#endif
 
 typedef struct {
     // a structure to refer to for all unique data on this object. void type, so will require casting to the particular func type.

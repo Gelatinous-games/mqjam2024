@@ -38,12 +38,10 @@
 #endif
 
 #include "src/base.h"
+#include "src/obj_register.h"
 #include "src/objs/Object_Example.c"
+#include "src/objs/particle.c"
 
-#ifndef _registry
-    #define _registry
-    #include "src/obj_register.c"
-#endif
 
 #ifndef _obj_pool
     #define _obj_pool

@@ -1,3 +1,4 @@
+#pragma once
 // a registry of all objects. do an #include for it here.
 
 enum OBJECT_FLAG {
@@ -21,5 +22,3 @@ enum LAYER_ID {
     LAYER_GUI = 7
 };
 
-#include "src/objs/Object_Example.c"
-#include "src/objs/particle.c"

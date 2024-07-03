@@ -11,6 +11,7 @@
 	"files.associations": {
 		"obj_register.c": "cpp",
 		"memory.h": "c",
-		"stdlib.h": "c"
+		"stdlib.h": "c",
+		"base.h": "c"
 	}
 }

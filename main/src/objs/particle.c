@@ -1,7 +1,4 @@
-#ifndef _malloc
-    #define _malloc
-    #include <malloc.h>
-#endif 
+
 
 #ifndef _raylib
     #define _raylib
@@ -15,17 +12,17 @@
 
 #ifndef _game_base
     #define _game_base
-    #include "src/base.c"
+    #include "../base.h"
 #endif
 
 #ifndef _camera
     #define _camera
-    #include "src\camera.c"
+    #include "../camera.c"
 #endif
 
 #ifndef _registry
     #define _registry
-    #include "src/obj_register.c"
+    #include "../obj_register.h"
 #endif
 
 #ifndef _obj_pool
@@ -55,16 +52,16 @@ typedef struct {
 
 } _ParticleObject_Data;
 
-int _ParticleObject_Init(GameObj_Base* self, float DeltaTime) {
+int _ParticleObject_Init(void* self, float DeltaTime) {
 
 }
-int _ParticleObject_Update(GameObj_Base* self, float DeltaTime) {
+int _ParticleObject_Update(void* self, float DeltaTime) {
 
 }
-int _ParticleObject_Draw(GameObj_Base* self, float DeltaTime) {
+int _ParticleObject_Draw(void* self, float DeltaTime) {
 
 }
-int _ParticleObject_Destroy(GameObj_Base* self, float DeltaTime) {
+int _ParticleObject_Destroy(void* self, float DeltaTime) {
 
 }
 
@@ -72,10 +69,10 @@ int _ParticleObject_Destroy(GameObj_Base* self, float DeltaTime) {
 GameObj_Base* CreateParticleObject() {
     GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
 
-    obj_ptr->Init_Func = _ParticleObject_Init;
-    obj_ptr->Update_Func = _ParticleObject_Update;
-    obj_ptr->Draw_Func = _ParticleObject_Draw;
-    obj_ptr->Destroy_Func = _ParticleObject_Destroy;
+    obj_ptr->Init_Func = &_ParticleObject_Init;
+    obj_ptr->Update_Func = &_ParticleObject_Update;
+    obj_ptr->Draw_Func = &_ParticleObject_Draw;
+    obj_ptr->Destroy_Func = &_ParticleObject_Destroy;
 
     obj_ptr->awaitDestroy = 0;
 

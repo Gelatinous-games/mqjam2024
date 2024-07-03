@@ -17,15 +17,12 @@
     #include "../base.h"
 #endif
 
+
 #ifndef _camera
     #define _camera
     #include "../camera.c"
 #endif
 
-#ifndef _registry
-    #define _registry
-    #include "../obj_register.c"
-#endif
 
 #ifndef _obj_pool
     #define _obj_pool
@@ -36,17 +33,17 @@ typedef struct {
     float a;
 } ExampleObject_Data;
 
-int _ExampleObject_Init(GameObj_Base* self, float DeltaTime) {
+int _ExampleObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
     ExampleObject_Data* data = malloc(sizeof(ExampleObject_Data));
-    ((GameObj_Base *)self)->data_struct = (void*)data; 
+    ((GameObj_Base *)self)->data_struct = (void *)data; 
 
     return 0;
 }
 
-int _ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
+int _ExampleObject_Update(void* self, float DeltaTime) {
     // see above
 
     // we can cast our data struct to the right data like so:
@@ -72,7 +69,7 @@ int _ExampleObject_Update(GameObj_Base* self, float DeltaTime) {
     return 0;
 }
 
-int _ExampleObject_Draw(GameObj_Base* self, float DeltaTime) {
+int _ExampleObject_Draw(void* self, float DeltaTime) {
     // ibid
 
     Vector2 sp = GetScreenspacePositionRelative(((GameObj_Base *)self)->position, ((GameObj_Base *)self)->size);
@@ -82,7 +79,7 @@ int _ExampleObject_Draw(GameObj_Base* self, float DeltaTime) {
     return 0;
 }
 
-int _ExampleObject_Destroy(GameObj_Base* self, float DeltaTime) {
+int _ExampleObject_Destroy(void* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
@@ -95,10 +92,10 @@ int _ExampleObject_Destroy(GameObj_Base* self, float DeltaTime) {
 GameObj_Base* CreateExampleObject() {
     GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
 
-    obj_ptr->Init_Func = _ExampleObject_Init;
-    obj_ptr->Update_Func = _ExampleObject_Update;
-    obj_ptr->Draw_Func = _ExampleObject_Draw;
-    obj_ptr->Destroy_Func = _ExampleObject_Destroy;
+    obj_ptr->Init_Func = &_ExampleObject_Init;
+    obj_ptr->Update_Func = &_ExampleObject_Update;
+    obj_ptr->Draw_Func = &_ExampleObject_Draw;
+    obj_ptr->Destroy_Func = &_ExampleObject_Destroy;
 
     obj_ptr->awaitDestroy = 0;
 
