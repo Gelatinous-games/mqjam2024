@@ -208,7 +208,9 @@ int _Asteroid_Update(void* self, float DeltaTime) {
         }
     return 0;
 }
+    return 0;
 }
+
 int _Asteroid_Draw(void* self, float DeltaTime) {
     // TODO: red/blue shift calculation.
     RenderSpriteRelative(_asteroidSprites[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);

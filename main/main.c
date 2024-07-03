@@ -76,7 +76,7 @@ int main()
     cameraBounds.x = 8;
     cameraBounds.y = 4.5;
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
-    layerCount = 8;
+    layerCount = 10;
 
 
     GameObjPoolInit();
@@ -138,5 +138,6 @@ static void generateObjects(){
     // TODO: succeed with an asteroid handler that can scale up & down asteroids.
     // Decide upon some criteria for how asteroid handler should work - should it control the scene?
     // Place stars and other elements down?
+    AddToPool(CreateAsteroid());
     AddToPool(CreateAsteroid());
 }
