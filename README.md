@@ -20,7 +20,7 @@ If you encounter problems contact Harris.
 
 
 
-
+* UNIX uses:
 ```bash
-cmake -B build && cmake --build build && ./build/gamer
+cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 ```
