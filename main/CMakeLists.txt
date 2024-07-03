@@ -42,7 +42,27 @@ if(WIN32)
     target_link_libraries(${PROJECT_NAME} "-lgdi32")
     target_link_libraries(${PROJECT_NAME} "-lwinmm")
 endif()
+if(CMAKE_HOST_LINUX)
 
+    target_link_libraries(${PROJECT_NAME} "-lGL")
+    target_link_libraries(${PROJECT_NAME} "-lm")
+    target_link_libraries(${PROJECT_NAME} "-lpthread")
+    target_link_libraries(${PROJECT_NAME} "-ldl")
+    target_link_libraries(${PROJECT_NAME} "-lrt")
+    target_link_libraries(${PROJECT_NAME} "-lX11")
+    
+        # # NOTE: It seems additional libraries are not required any more, latest GLFW just dlopen them
+        # #LDLIBS += -lXrandr -lXinerama -lXi -lXxf86vm -lXcursor
+
+        # # On Wayland windowing system, additional libraries requires
+        # ifeq ($(USE_WAYLAND_DISPLAY),TRUE)
+        #     LDLIBS += -lwayland-client -lwayland-cursor -lwayland-egl -lxkbcommon
+        # endif
+        # # Explicit link to libc
+        # ifeq ($(RAYLIB_LIBTYPE),SHARED)
+        #     LDLIBS += -lc
+        # endif
+endif()
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework IOKit")
