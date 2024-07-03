@@ -1,13 +1,8 @@
 #pragma once
 
-#ifndef _malloc
-    #define _malloc
-#ifndef __APPLE__
-    #include <malloc.h>
-#endif
-    #include <memory.h>
-#else
-#endif 
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef _raylib
     #define _raylib

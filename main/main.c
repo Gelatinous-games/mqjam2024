@@ -36,6 +36,9 @@
     #include "raymath.h"
 #endif
 
+#include "src/base.h"
+#include "src/objs/Object_Example.c"
+
 #ifndef _registry
     #define _registry
     #include "src/obj_register.c"
