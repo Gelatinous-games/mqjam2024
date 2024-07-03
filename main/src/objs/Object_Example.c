@@ -113,4 +113,5 @@ GameObj_Base* CreateExampleObject() {
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size.x = 50;
     obj_ptr->size.y = 50;
+    return obj_ptr;
 }

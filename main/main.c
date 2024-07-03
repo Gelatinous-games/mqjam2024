@@ -84,9 +84,8 @@ int main()
     printf("%s\n",">> main() :: process fresh add");
     ProcessFreshAdd();
 
-#if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
-#else
+    printf("%s\n",">> main() :: try");
+#ifndef PLATFORM_WEB
     printf("%s\n",">> main() :: set fps");
     SetTargetFPS(FRAMERATE);               // Set our game to run at 60 frames-per-second
 
@@ -95,8 +94,12 @@ int main()
     {
         UpdateDrawFrame();
     }
+#else
+    printf("%s\n",">> main() :: emscripten");
+    emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
 
+    printf("%s\n",">> main() :: closing");
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();                  // Close window and OpenGL context
