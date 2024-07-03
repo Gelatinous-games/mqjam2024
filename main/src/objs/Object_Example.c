@@ -34,9 +34,16 @@
     #include "src/objs/particle.c"
 #endif
 
+#ifndef _sprite
+    #define _sprite
+    #include "src/sprite.c"
+#endif
+
 typedef struct {
     float a;
     float tmr;
+
+    Sprite* sprite;
 } ExampleObject_Data;
 
 int _ExampleObject_Init(void* self, float DeltaTime) {
@@ -44,6 +51,11 @@ int _ExampleObject_Init(void* self, float DeltaTime) {
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
     ExampleObject_Data* data = malloc(sizeof(ExampleObject_Data));
+
+    data->a = 0;
+    data->tmr = 0;
+    data->sprite = CreateSprite("resources/kitr.png");
+
     ((GameObj_Base *)self)->data_struct = (void *)data; 
 
     return 0;
@@ -67,8 +79,8 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
     if (data->tmr >= 0.4) {
         data->tmr = 0;
         SpawnParticle(((GameObj_Base *)self)->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
-                        (Vector2) {0.25, 0.25}, 2, 
-                        (Color) { 255, 127, 0, 127 }, 0, 1);
+                        (Vector2) {0.125, 0.125}, 2, 
+                        (Color) { 255, 127, 0, 127 }, 1);
     }
 
     for (int i = 0; i != -1; ) {
@@ -86,11 +98,11 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
 
 int _ExampleObject_Draw(void* self, float DeltaTime) {
     // ibid
+    GameObj_Base* selfObj = ((GameObj_Base *)self);
+    ExampleObject_Data* data = ((GameObj_Base *)self)->data_struct;
 
-    Vector2 sp = GetScreenspacePositionRelative(((GameObj_Base *)self)->position, ((GameObj_Base *)self)->size);
-    Vector2 size = GetScaledSize(((GameObj_Base *)self)->size);
-
-    DrawRectangleV(sp, size, WHITE);
+    RenderSpriteRelative(data->sprite, selfObj->position, selfObj->size, sin(data->a)*90, WHITE);
+    //RenderSquareRelative(selfObj->position, selfObj->size, 0, WHITE);
 
     return 0;
 }
@@ -100,7 +112,9 @@ int _ExampleObject_Destroy(void* self, float DeltaTime) {
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    free(((GameObj_Base *)self)->data_struct);
+    ExampleObject_Data* data = ((GameObj_Base *)self)->data_struct;
+    free(data->sprite);
+    free(data);
 
     return 0;
 }

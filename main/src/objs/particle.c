@@ -55,16 +55,12 @@ _Particle* _particles;
 int _particleCount;
 
 int _ParticleObject_Init(void* self, float DeltaTime) {
-    GameObj_Base* selfObj = (GameObj_Base*)self;
-
     _particleCount = 0;
     _particles = malloc(sizeof(_Particle) * PARTICLE_COUNT);
 
     return 0;
 }
 int _ParticleObject_Update(void* self, float DeltaTime) {
-    GameObj_Base* selfObj = (GameObj_Base*)self;
-
     for (int i = 0; i < _particleCount; i++) {
         _Particle particle = _particles[i];
 
@@ -100,10 +96,11 @@ int _ParticleObject_Draw(void* self, float DeltaTime) {
 
         Vector2 pos;
         if (particle.doOutline) {
-            pos = GetScreenspacePositionRelative(particle.position, Vector2Scale(particle.size, 0.5));
+            pos = GetScreenspacePositionRelative(particle.position, Vector2Scale(particle.size, 2));
             Color tmp = particle.color;
             tmp.a = tmp.a/2;
-            DrawRectangleV(pos, GetScaledSize(Vector2Scale(particle.size, 0.5)), tmp);
+            DrawRectangleV(pos, GetScaledSize(Vector2Scale(particle.size, 2)), tmp);
+
         }
 
         pos = GetScreenspacePositionRelative(particle.position, particle.size);
@@ -118,7 +115,16 @@ int _ParticleObject_Destroy(void* self, float DeltaTime) {
     return 0;
 }
 
-int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, int state, char doOutline) {
+/// @brief Spawns a particle with the given parameters.
+/// @param pos The initial position of the particle.
+/// @param vel The initial velocity of the particle.
+/// @param acc The acceleration vector of the particle.
+/// @param size How big the particle is.
+/// @param lifetime How long the particle should persist for (in seconds). The particle will fade out.
+/// @param color The color of the particle.
+/// @param doOutline Set to 1 if the particle should have a bright center and a dimmer outer.
+/// @return An integer representing the success. -1 means the particle failed to add (max particles reached).
+int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline) {
     if (_particleCount >= PARTICLE_COUNT) return -1;
     _Particle tmp;
     tmp.color = color;
@@ -127,7 +133,8 @@ int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lif
     tmp.velocity = vel;
     tmp.acceleration = acc;
     tmp.size = size;
-    tmp.state = state;
+    // tmp.state = state;
+    tmp.state = 0;
     tmp.doOutline = doOutline;
     tmp.func = 0;
 

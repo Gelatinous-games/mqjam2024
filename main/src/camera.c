@@ -13,6 +13,11 @@
     #include "raymath.h"
 #endif
 
+#ifndef _sprite
+    #define _sprite
+    #include "src/sprite.c"
+#endif
+
 // 2d easy-understand camera stuff
 
 Vector2 cameraPosition;
@@ -65,4 +70,60 @@ void UpdateCamera3D() {
     cam3D.projection = CAMERA_ORTHOGRAPHIC;
 
     cam3D.fovy = cameraBounds.y * 2;
+}
+
+/// @brief Renders a sprite relative to the camera at the provided position, rotation & color.
+/// @param sprite 
+/// @param pos 
+/// @param size 
+/// @param rotation 
+/// @param color 
+void RenderSpriteRelative(Sprite* sprite, Vector2 pos, Vector2 size, float rotation, Color color) {
+    pos = GetScreenspacePositionRelative(pos, Vector2Zero());
+    size = GetScaledSize(size);
+
+    sprite->dst = (Rectangle) { pos.x, pos.y, size.x, size.y };
+    sprite->origin = Vector2Scale(size, 0.5);
+
+
+    DrawTexturePro(sprite->tex, sprite->src, sprite->dst, sprite->origin, rotation, color);
+}
+
+/// @brief Renders a given sprite at the absolute provided position, rotation & color.
+/// @param sprite 
+/// @param pos 
+/// @param size 
+/// @param rotation 
+/// @param color 
+void RenderSpriteAbsolute(Sprite* sprite, Vector2 pos, Vector2 size, float rotation, Color color) {
+    pos = GetScreenspacePositionAbsolute(pos, size);
+    size = GetScaledSize(size);
+
+    sprite->dst = (Rectangle) { pos.x, pos.y, size.x, size.y };
+
+    DrawTexturePro(sprite->tex, sprite->src, sprite->dst, sprite->origin, rotation, color);
+}
+
+/// @brief Renders a square relative to the camera at the provided position, rotation & color.
+/// @param pos 
+/// @param size 
+/// @param rotation 
+/// @param color 
+void RenderSquareRelative(Vector2 pos, Vector2 size, float rotation, Color color) {
+    pos = GetScreenspacePositionRelative(pos, size);
+    size = GetScaledSize(size);
+
+    DrawRectangleV(pos, size, color);
+}
+
+/// @brief Renders a square at the absolute provided position, rotation & color.
+/// @param pos 
+/// @param size 
+/// @param rotation 
+/// @param color 
+void RenderSquareAbsolute(Vector2 pos, Vector2 size, float rotation, Color color) {
+    pos = GetScreenspacePositionAbsolute(pos, size);
+    size = GetScaledSize(size);
+
+    DrawRectangleV(pos, size, color);
 }
