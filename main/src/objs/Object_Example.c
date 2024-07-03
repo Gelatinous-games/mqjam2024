@@ -2,20 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef _raylib
-    #define _raylib
-    #include "raylib.h"
-#endif
+#include "raylib.h"
+#include "raymath.h"
 
-#ifndef _raymath
-    #define _raymath
-    #include "raymath.h"
-#endif
-
-#ifndef _game_base
-    #define _game_base
-    #include "../base.h"
-#endif
+#include "../base.h"
 
 
 #ifndef _camera
@@ -33,12 +23,14 @@ typedef struct {
     float a;
 } ExampleObject_Data;
 
+#define THIS ((GameObj_Base *)self)
+
 int _ExampleObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
     ExampleObject_Data* data = malloc(sizeof(ExampleObject_Data));
-    ((GameObj_Base *)self)->data_struct = (void *)data; 
+    THIS->data_struct = (void *)data; 
 
     return 0;
 }
@@ -48,13 +40,13 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
 
     // we can cast our data struct to the right data like so:
 
-    ExampleObject_Data* data = ((GameObj_Base *)self)->data_struct;
+    ExampleObject_Data* data = THIS->data_struct;
 
     // use data here.
 
     data->a += DeltaTime;
 
-    ((GameObj_Base *)self)->position.x = (float)(sin(data->a * PI) * 10);
+    THIS->position.x = (float)(sin(data->a * PI) * 10);
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
@@ -72,9 +64,9 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
 int _ExampleObject_Draw(void* self, float DeltaTime) {
     // ibid
 
-    Vector2 sp = GetScreenspacePositionRelative(((GameObj_Base *)self)->position, ((GameObj_Base *)self)->size);
+    Vector2 sp = GetScreenspacePositionRelative(THIS->position, THIS->size);
 
-    DrawRectangle(sp.x, sp.y, ((GameObj_Base *)self)->size.x, ((GameObj_Base *)self)->size.y, WHITE);
+    DrawRectangle(sp.x, sp.y, THIS->size.x, THIS->size.y, WHITE);
 
     return 0;
 }
@@ -84,7 +76,7 @@ int _ExampleObject_Destroy(void* self, float DeltaTime) {
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    free(((GameObj_Base *)self)->data_struct);
+    free(THIS->data_struct);
 
     return 0;
 }
