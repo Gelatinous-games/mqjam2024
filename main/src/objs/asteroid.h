@@ -14,10 +14,14 @@
     #include "../camera.c"
 #endif
 
-
 #ifndef _obj_pool
     #define _obj_pool
     #include "../obj_pool.c"
+#endif
+
+#ifndef _sprite
+    #define _sprite
+    #include "src/sprite.c"
 #endif
 
 /** ====== PARENT OBJ DATA ======
@@ -42,41 +46,29 @@
     int (*Destroy_Func)(void* self, float DeltaTime);
 */
 typedef struct {
-    Texture2D spriteTexture;
+    Sprite* sprite;
     float ageTime;
     float degreeRotationSpeed;
     float degreeRotation;
-    float scalarScale;
 } Asteroid_Data;
 
 #define ASTEROIDDATA ((Asteroid_Data *)(THIS->data_struct))
 
 int Asteroid_Init(void* self, float DeltaTime) {
-    // we have a reference to our own gameobject from which we can do things.
-
-    // ==================================================
-    // idk some values now
-
-    THIS->position.x = 25;
-    THIS->position.y = 345;
-
-    THIS->velocity.x = 2;
-    THIS->velocity.y = 4;
+    // Set a random position & size.
+    // Position should be somewhere off top or bottom of screen.
+    // Velocity should be within an angle to go across the screen.
+    // Size should be within a certain range for big asteroids & small asteroids.
 
     // ==================================================
 
-    // printf("exist in: [%s]\n",GetWorkingDirectory());
-    ASTEROIDDATA->spriteTexture = LoadTexture("resources/asteroid.png");
-
-    THIS->size.x = ASTEROIDDATA->spriteTexture.width;
-    THIS->size.y = ASTEROIDDATA->spriteTexture.height;
+    ASTEROIDDATA->sprite = CreateSprite("resources/asteroid.png");
 
     // ==================================================
     
-    ASTEROIDDATA->scalarScale = 1.0f;
+    
     ASTEROIDDATA->degreeRotation = 0.0f;
-    // ASTEROIDDATA->degreeRotationSpeed = (int)(random()%360);
-    ASTEROIDDATA->degreeRotationSpeed = 360;
+    ASTEROIDDATA->degreeRotationSpeed = 10;
     
     // ==================================================
 
@@ -84,65 +76,31 @@ int Asteroid_Init(void* self, float DeltaTime) {
 }
 
 int Asteroid_Update(void* self, float DeltaTime) {
-    // see above
-
-    // use data here.
-
     ASTEROIDDATA->ageTime += DeltaTime;
-    ASTEROIDDATA->degreeRotation += DeltaTime*ASTEROIDDATA->degreeRotationSpeed;
+    ASTEROIDDATA->degreeRotation += DeltaTime * ASTEROIDDATA->degreeRotationSpeed;
 
-    THIS->position.x += THIS->velocity.x;
-    THIS->position.y += THIS->velocity.y;
+    THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
+    
+    if(THIS->position.y > cameraBounds.y + THIS->size.y || THIS->position.y < -(cameraBounds.y + THIS->size.y)){
+        // destroy me! release me from this realm of hurt!
+        // (and, also, let the asteroid_processor create a new one if it so chooses.)
+        // TODO: figure out an asteroid handler!
 
-    if(THIS->position.y > WINDOW_HEIGHT){
-        THIS->position.y = 0;
-    }
-    else if(THIS->position.y < 0){
-        THIS->position.y = WINDOW_HEIGHT;
-    }
-
-    for (int i = 0; i != -1; ) {
-        GameObj_Base* obj;
-        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
-
-        // Check if obj is not null
-        if (!obj || i == -1) break;
-
-        // Do an operation with the result...
+        // for now we will just reposition the asteroid similar to above.
     }
 
     return 0;
 }
 
 int Asteroid_Draw(void* self, float DeltaTime) {
-    // ibid
-    
-    // DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
-    // DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, DARKGRAY);
-    
-
-    // DrawTexture(ASTEROIDDATA->spriteTexture, (int)(THIS->position.x), (int)(THIS->position.y), WHITE);
-
-
-    // void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint)
-    DrawTextureEx(ASTEROIDDATA->spriteTexture, THIS->position, ASTEROIDDATA->degreeRotation, ASTEROIDDATA->scalarScale, WHITE);
-    
-    
-
-
-
+    // TODO: red/blue shift calculation.
+    RenderSpriteRelative(ASTEROIDDATA->sprite, THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
     return 0;
 }
 
 int Asteroid_Destroy(void* self, float DeltaTime) {
-    // ibid.
-    // if you malloc anything, destroy it here. this includes your data package.
-
-    UnloadTexture(ASTEROIDDATA->spriteTexture);
-    // free our data struct here. free anything contained.
-    free(THIS->data_struct);
-
-
+    DestroySprite(ASTEROIDDATA->sprite);
+    free(ASTEROIDDATA);
     return 0;
 }
 
@@ -150,31 +108,27 @@ GameObj_Base* CreateAsteroid() {
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     // ============================================================
-    // ==== setup the data scruct data
+    // ==== setup the data struct data
     obj_ptr->data_struct = malloc(sizeof(Asteroid_Data)); 
 
     // ============================================================
     // ==== assign the ufnctions
-    obj_ptr->Init_Func = &Asteroid_Init;
-    obj_ptr->Update_Func = &Asteroid_Update;
-    obj_ptr->Draw_Func = &Asteroid_Draw;
-    obj_ptr->Destroy_Func = &Asteroid_Destroy;
+    obj_ptr->Init_Func = Asteroid_Init;
+    obj_ptr->Update_Func = Asteroid_Update;
+    obj_ptr->Draw_Func = Asteroid_Draw;
+    obj_ptr->Destroy_Func = Asteroid_Destroy;
     // ============================================================
-    // huh
+    
     obj_ptr->awaitDestroy = 0;
 
-    // properly set up flags here (bitwise)
-    // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = FLAG_ASTEROID;
 
-    // FIXME
-    obj_ptr->currentLayer = LAYER_GUI;
+    obj_ptr->currentLayer = LAYER_ASTEROIDS;
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
-    obj_ptr->size.x = 35;
-    obj_ptr->size.y = 35;
+    obj_ptr->size = (Vector2) {2, 2};
 
     return obj_ptr;
 }

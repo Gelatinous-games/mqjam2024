@@ -122,25 +122,16 @@ static void UpdateDrawFrame(void)
 }
 
 
-// define the thing we promised
+/// @brief Generates all objects for initial gamestate.
 static void generateObjects(){
+    // An example object for testing purposes.
+    // AddToPool(CreateExampleObject());
+    // Particle handler.
+    AddToPool(CreateParticleObject());
 
-    GameObj_Base* obj = CreateExampleObject();
-    AddToPool(obj);
-    // GameObj_Base* obj = CreateParticleObject();
-    obj = CreateParticleObject();
-    AddToPool(obj);
+    // Player object.
+    AddToPool(CreatePlayer(WINDOW_WIDTH, WINDOW_HEIGHT));
 
-
-    // printf("%s\n",">> main() :: create example obj");
-    GameObj_Base* player = CreatePlayer(WINDOW_WIDTH, WINDOW_HEIGHT);
-    // printf("%s\n",">> main() :: add example obj");
-    AddToPool(player);
-
-
-
-    // printf("%s\n",">> main() :: create asteroid obj");
-    GameObj_Base* asteroid = CreateAsteroid();
-    // printf("%s\n",">> main() :: add asteroid obj");
-    AddToPool(asteroid);
+    // Asteroid object.
+    AddToPool(CreateAsteroid());
 }

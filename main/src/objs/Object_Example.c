@@ -52,14 +52,8 @@ int _ExampleObject_Init(void* self, float DeltaTime) {
 }
 
 int _ExampleObject_Update(void* self, float DeltaTime) {
-    // see above
-
     // we can cast our data struct to the right data like so:
-
     ExampleObject_Data* data = THIS->data_struct;
-
-    // use data here.
-
 
     THIS->position.x = (float)(sin(data->a * (PI / 2)) * 5);
     data->a += DeltaTime;
@@ -73,6 +67,7 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
                         (Color) { 255, 127, 0, 127 }, 1);
     }
 
+    // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
         i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
