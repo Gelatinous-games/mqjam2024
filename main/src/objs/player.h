@@ -20,15 +20,16 @@
     #include "../obj_pool.c"
 #endif
 
+#ifndef _obj_particle
+    #define _obj_particle
+    #include "src/objs/particle.c"
+#endif
+
 #ifndef _misc
     #define _misc
     #include "../misc.c"
 #endif
 
-#ifndef _obj_particle
-    #define _obj_particle
-    #include "src/objs/particle.c"
-#endif
 
 
 typedef struct {
@@ -108,6 +109,7 @@ int _Player_Update(void* self, float DeltaTime) {
         Vector2 impartSelf, impartAsteroid;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
+            Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
             THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
 
@@ -130,7 +132,7 @@ int _Player_Update(void* self, float DeltaTime) {
                     case 3: col = (Color) {216, 214, 203, 200};
                     break;
                 }
-                SpawnParticle(THIS->position, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .25), (FLOAT_RAND * 1.75) + .25, col, 1);
+                SpawnParticle(midPoint, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .25), (FLOAT_RAND * 1.75) + .25, col, 1);
             }
         }
     }   

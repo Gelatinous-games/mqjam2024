@@ -24,6 +24,19 @@
     #include "src/sprite.c"
 #endif
 
+#ifndef _obj_particle
+    #define _obj_particle
+    #include "src/objs/particle.c"
+#endif
+
+#ifndef _misc
+    #define _misc
+    #include "../misc.c"
+#endif
+
+
+
+
 /** ====== PARENT OBJ DATA ======
     // a structure to refer to for all unique data on this object. void type, so will require casting to the particular func type.
     void* data_struct; 
@@ -158,9 +171,44 @@ int _Asteroid_Update(void* self, float DeltaTime) {
         _Asteroid_Randomize(self);
     }
 
+    GameObj_Base* extobj;
+    for (int sIDX = 0; sIDX != -1; ) {
+        sIDX = GetObjectWithFlagsExact(FLAG_ASTEROID, sIDX, &extobj);
+
+        if (sIDX == -1) break;
+        if (extobj->_poolID == THIS->_poolID) continue;
+
+        Vector2 impartSelf, impartAsteroid;
+
+        // Check if collision occurs
+        if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
+            Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
+            THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
+            extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
+
+            // create a spark effect or something
+
+            int randNum = (FLOAT_RAND * 4) + 4;
+            for (int i = 0; i < randNum; i++) {
+                // pick a palette of 4
+                Color col;
+                int k = (FLOAT_RAND * 4);
+                switch (k) {
+                    case 0: col = (Color) {75, 35, 35, 127};
+                    break;
+                    case 1: col = (Color) {142, 27, 27, 127};
+                    break;
+                    case 2: col = (Color) {50, 44, 44, 127};
+                    break;
+                    case 3: col = (Color) {100, 100, 100, 127};
+                    break;
+                }
+                SpawnParticle(midPoint, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .125), (FLOAT_RAND * 1.75) + .25, col, 1);
+            }
+        }
     return 0;
 }
-
+}
 int _Asteroid_Draw(void* self, float DeltaTime) {
     // TODO: red/blue shift calculation.
     RenderSpriteRelative(_asteroidSprites[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
