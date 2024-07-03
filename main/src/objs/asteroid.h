@@ -44,12 +44,21 @@ typedef struct {
     float a;
 } Asteroid_Data;
 
+#define ASTEROIDDATA ((Asteroid_Data *)(THIS->data_struct))
+
 int Asteroid_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
-    // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
-    void* data = malloc(sizeof(Asteroid_Data));
-    THIS->data_struct = data; 
+    // ==================================================
+    // idk some values now
+
+    THIS->position.x = 25;
+    THIS->position.y = 345;
+
+    THIS->velocity.x = 2;
+    THIS->velocity.y = 4;
+
+    // ==================================================
 
     return 0;
 }
@@ -57,16 +66,12 @@ int Asteroid_Init(void* self, float DeltaTime) {
 int Asteroid_Update(void* self, float DeltaTime) {
     // see above
 
-    // we can cast our data struct to the right data like so:
-
-    Asteroid_Data* data = (Asteroid_Data *)(THIS->data_struct);
-
     // use data here.
 
-    data->a += DeltaTime;
+    ASTEROIDDATA->a += DeltaTime;
 
-    THIS->position.x = THIS->velocity.x;
-    THIS->position.y = THIS->velocity.y;
+    THIS->position.x += THIS->velocity.x;
+    THIS->position.y += THIS->velocity.y;
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
@@ -83,12 +88,10 @@ int Asteroid_Update(void* self, float DeltaTime) {
 
 int Asteroid_Draw(void* self, float DeltaTime) {
     // ibid
-    Vector2 screenPosition = GetScreenspacePositionRelative(THIS->position, THIS->size);
-
 
     // DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
-    DrawEllipse(screenPosition.x, screenPosition.y, THIS->size.x, THIS->size.y, WHITE);
-    // DrawRectangle(screenPosition.x, screenPosition.y, THIS->size.x, THIS->size.y, WHITE);
+    DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, DARKGRAY);
+
 
     return 0;
 }
@@ -106,23 +109,32 @@ int Asteroid_Destroy(void* self, float DeltaTime) {
 GameObj_Base* CreateAsteroid() {
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
+    // ============================================================
+    // ==== setup the data scruct data
+    obj_ptr->data_struct = malloc(sizeof(Asteroid_Data)); 
+
+    // ============================================================
+    // ==== assign the ufnctions
     obj_ptr->Init_Func = &Asteroid_Init;
     obj_ptr->Update_Func = &Asteroid_Update;
     obj_ptr->Draw_Func = &Asteroid_Draw;
     obj_ptr->Destroy_Func = &Asteroid_Destroy;
-
+    // ============================================================
+    // huh
     obj_ptr->awaitDestroy = 0;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
+    obj_ptr->flags = FLAG_ASTEROID;
 
+    // FIXME
     obj_ptr->currentLayer = LAYER_GUI;
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
-    obj_ptr->size.x = 50;
-    obj_ptr->size.y = 50;
+    obj_ptr->size.x = 35;
+    obj_ptr->size.y = 35;
+
     return obj_ptr;
 }

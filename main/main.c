@@ -38,15 +38,17 @@
 #endif
 
 // project header includes
+#include "src/settings.h"
 #include "src/base.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
+#include "src/objs/player.h"
 
 // project source includes
 
 #ifndef _object_example
     #define _object_example
-    #include "src/objs/object_example.c"
+    #include "src/objs/Object_Example.c"
 #endif
 
 #ifndef _particle
@@ -61,19 +63,16 @@
 
 
 
-
 static void UpdateDrawFrame(void);          // Update and draw one frame
 
 // let C know this exists
-void generateObjects();
+static void generateObjects();
 
 int main()
 {
-    const int screenWidth = 1366;
-    const int screenHeight = 768;
 
-    cameraScreenQuarter.x = screenWidth/2;
-    cameraScreenQuarter.y = screenHeight/2;
+    cameraScreenQuarter.x = WINDOW_WIDTH/2;
+    cameraScreenQuarter.y = WINDOW_HEIGHT/2;
 
     cameraBounds.x = 16;
     cameraBounds.y = 9;
@@ -84,7 +83,7 @@ int main()
     GameObjPoolInit();
 
     // printf("%s\n",">> main() :: initialising window");
-    InitWindow(screenWidth, screenHeight, "mqjam2024");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
     
     generateObjects();
     
@@ -137,11 +136,18 @@ static void UpdateDrawFrame(void)
 
 
 // define the thing we promised
-void generateObjects(){
+static void generateObjects(){
+    // // printf("%s\n",">> main() :: create example obj");
+    // GameObj_Base* obj = CreateExampleObject();
+    // // printf("%s\n",">> main() :: add example obj");
+    // AddToPool(obj);
+
+
+
     // printf("%s\n",">> main() :: create example obj");
-    GameObj_Base* obj = CreateExampleObject();
+    GameObj_Base* player = CreatePlayer(WINDOW_WIDTH, WINDOW_HEIGHT);
     // printf("%s\n",">> main() :: add example obj");
-    AddToPool(obj);
+    AddToPool(player);
 
 
 
