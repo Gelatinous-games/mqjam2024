@@ -26,11 +26,16 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
   endif()
 endif()
 
+find_package(glfw3 3.4 REQUIRED)
+find_package(OpenGL REQUIRED)
+
 # Our Project
 
 add_executable(${PROJECT_NAME} main.c)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
+target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 
 # Web Configurations
 if (${PLATFORM} STREQUAL "Web")
