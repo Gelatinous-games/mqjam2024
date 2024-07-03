@@ -57,7 +57,6 @@ static void UpdateDrawFrame(void);          // Update and draw one frame
 
 int main()
 {
-    printf("%s\n","aaaaa");
     const int screenWidth = 1366;
     const int screenHeight = 768;
 
@@ -67,20 +66,27 @@ int main()
     CameraBounds.x = 16;
     CameraBounds.y = 9;
 
+    printf("%s\n",">> main() :: init game pool");
     GameObjPoolInit();
 
+    printf("%s\n",">> main() :: initialising window");
     InitWindow(screenWidth, screenHeight, "mqjam2024");
     
+    printf("%s\n",">> main() :: create example obj");
     GameObj_Base* obj = CreateExampleObject();
+    printf("%s\n",">> main() :: add example obj");
     AddToPool(obj);
 
+    printf("%s\n",">> main() :: process fresh add");
     ProcessFreshAdd();
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
+    printf("%s\n",">> main() :: set fps");
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
+    printf("%s\n",">> main() :: pre loop");
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         UpdateDrawFrame();
