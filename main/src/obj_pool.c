@@ -120,8 +120,31 @@ void ProcessAllUpdates(float DeltaTime) {
 /// @brief Processes the draw function on all objects that are not waiting to be initialized.
 /// @param DeltaTime 
 void ProcessAllDraws(float DeltaTime) {
+    for (int l = 0; l < layerCount; l++) {
+        for (int i = 0; i < _gameObjPoolSize; i++) {
+            GameObj_Base* obj = _gameObjPool[i];
+
+            if (obj->currentLayer == l)
+                obj->Draw_Func(obj, DeltaTime);
+        }
+    }
+}
+
+/// @brief Searches for any gameobjects seeking to be destroyed and obliterates them. Call after freshAdd so that there are no pendings.
+/// @param obj 
+/// @return 
+void ProcessAllDestroys() {
     for (int i = 0; i < _gameObjPoolSize; i++) {
         GameObj_Base* obj = _gameObjPool[i];
-        obj->Draw_Func(obj, DeltaTime);
+
+        if (obj->awaitDestroy) {
+            _gameObjPool[i] = _gameObjPool[_gameObjPoolSize-1];
+            _gameObjPool[_gameObjPoolSize-1] = 0;
+            _gameObjPool -=1;
+            i -=1;
+
+            obj->Destroy_Func(obj, 0);
+            free(obj);
+        }
     }
 }

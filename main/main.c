@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define FRAMERATE 60
 
 #ifndef _raylib
     #define _raylib
@@ -60,19 +61,22 @@ int main()
     const int screenWidth = 1366;
     const int screenHeight = 768;
 
-    CameraScreenQuarter.x = screenWidth/2;
-    CameraScreenQuarter.y = screenHeight/2;
+    cameraScreenQuarter.x = screenWidth/2;
+    cameraScreenQuarter.y = screenHeight/2;
 
-    CameraBounds.x = 16;
-    CameraBounds.y = 9;
+    cameraBounds.x = 16;
+    cameraBounds.y = 9;
 
     printf("%s\n",">> main() :: init game pool");
+    layerCount = 8;
+    
     GameObjPoolInit();
 
     printf("%s\n",">> main() :: initialising window");
     InitWindow(screenWidth, screenHeight, "mqjam2024");
     
     printf("%s\n",">> main() :: create example obj");
+
     GameObj_Base* obj = CreateExampleObject();
     printf("%s\n",">> main() :: add example obj");
     AddToPool(obj);
@@ -81,10 +85,10 @@ int main()
     ProcessFreshAdd();
 
 #if defined(PLATFORM_WEB)
-    emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
+    emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #else
     printf("%s\n",">> main() :: set fps");
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(FRAMERATE);               // Set our game to run at 60 frames-per-second
 
     printf("%s\n",">> main() :: pre loop");
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -115,4 +119,5 @@ static void UpdateDrawFrame(void)
     EndDrawing();
 
     ProcessFreshAdd();
+    ProcessAllDestroys();
 }

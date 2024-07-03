@@ -24,6 +24,11 @@ typedef struct {
     void* data_struct; 
     int _poolID;
 
+    int currentLayer;
+
+    /// @brief Set to 1 to flag it to be destroyed after the next frame.
+    int awaitDestroy;
+
     // generic data; position, velocity, size.
     Vector2 position;
     Vector2 velocity;
@@ -35,6 +40,3 @@ typedef struct {
     int (*Draw_Func)(void* self, float DeltaTime);
     int (*Destroy_Func)(void* self, float DeltaTime);
 } GameObj_Base;
-
-
-// typedef struct GameObj_BaseStruct ;

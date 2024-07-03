@@ -33,10 +33,7 @@
 #endif
 
 typedef struct {
-    int a;
-    int b;
-    int c;
-    int d;
+    float a;
 } ExampleObject_Data;
 
 int ExampleObject_Init(void* self, float DeltaTime) {
@@ -58,9 +55,9 @@ int ExampleObject_Update(void* self, float DeltaTime) {
 
     // use data here.
 
-    ((GameObj_Base *)self)->velocity.x = 1;
+    data->a += DeltaTime;
 
-    ((GameObj_Base *)self)->position.x += (((GameObj_Base *)self)->velocity.x * DeltaTime);
+    ((GameObj_Base *)self)->position.x = (float)(sin(data->a * PI) * 10);
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
@@ -70,8 +67,6 @@ int ExampleObject_Update(void* self, float DeltaTime) {
         if (!obj || i == -1) break;
 
         // Do an operation with the result...
-
-        break;
     }
 
     return 0;
@@ -83,8 +78,6 @@ int ExampleObject_Draw(void* self, float DeltaTime) {
     Vector2 sp = GetScreenspacePositionRelative(((GameObj_Base *)self)->position, ((GameObj_Base *)self)->size);
 
     DrawRectangle(sp.x, sp.y, ((GameObj_Base *)self)->size.x, ((GameObj_Base *)self)->size.y, WHITE);
-
-    printf("TEST\n");
 
     return 0;
 }
@@ -107,16 +100,17 @@ GameObj_Base* CreateExampleObject() {
     obj_ptr->Draw_Func = &ExampleObject_Draw;
     obj_ptr->Destroy_Func = &ExampleObject_Destroy;
 
+    obj_ptr->awaitDestroy = 0;
+
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = 0;
+
+    obj_ptr->currentLayer = 1;
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size.x = 50;
     obj_ptr->size.y = 50;
-
-    // also a pointer to main scene / list of objects.
-    // this hasn't been added yet, check back later.
 }

@@ -46,7 +46,7 @@ if(WIN32)
     target_link_libraries(${PROJECT_NAME} "-lgdi32")
     target_link_libraries(${PROJECT_NAME} "-lwinmm")
 endif()
-if(CMAKE_HOST_LINUX)
+if(LINUX)
 
     target_link_libraries(${PROJECT_NAME} "-lGL")
     target_link_libraries(${PROJECT_NAME} "-lglfw")
