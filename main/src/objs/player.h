@@ -7,7 +7,7 @@
 #include "raymath.h"
 
 #include "../base.h"
-
+#include "../settings.h"
 
 #ifndef _camera
     #define _camera
@@ -29,7 +29,7 @@ typedef struct {
 
 int Player_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
-
+    
     return 0;
 }
 
@@ -66,7 +66,7 @@ int Player_Draw(void* self, float DeltaTime) {
     DrawEllipse(THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y, WHITE);
 
 
-    
+
 
     return 0;
 }

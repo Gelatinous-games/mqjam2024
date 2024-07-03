@@ -6,6 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../settings.h"
 
 
 #ifndef _camera
@@ -72,6 +73,13 @@ int Asteroid_Update(void* self, float DeltaTime) {
 
     THIS->position.x += THIS->velocity.x;
     THIS->position.y += THIS->velocity.y;
+
+    if(THIS->position.y > WINDOW_HEIGHT){
+        THIS->position.y = 0;
+    }
+    else if(THIS->position.y < 0){
+        THIS->position.y = WINDOW_HEIGHT;
+    }
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
