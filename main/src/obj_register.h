@@ -1,5 +1,6 @@
 #pragma once
 // a registry of all objects. do an #include for it here.
+// we should change the name of this if it doesnt include all obj code files. can we still do that?
 
 enum OBJECT_FLAG {
     FLAG_PLAYER_OBJECT = 1,

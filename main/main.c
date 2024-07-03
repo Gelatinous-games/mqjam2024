@@ -44,15 +44,13 @@
 #include "src/objs/asteroid.h"
 #include "src/objs/player.h"
 
-// project source includes
-
-#ifndef _object_example
-    #define _object_example
+#ifndef _obj_example
+    #define _obj_example
     #include "src/objs/Object_Example.c"
 #endif
 
-#ifndef _particle
-    #define _particle
+#ifndef _obj_particle
+    #define _obj_particle
     #include "src/objs/particle.c"
 #endif
 
@@ -70,35 +68,24 @@ static void generateObjects();
 
 int main()
 {
-
     cameraScreenQuarter.x = WINDOW_WIDTH/2;
     cameraScreenQuarter.y = WINDOW_HEIGHT/2;
 
-    cameraBounds.x = 16;
-    cameraBounds.y = 9;
-
-    // printf("%s\n",">> main() :: init game pool");
+    cameraBounds.x = 8;
+    cameraBounds.y = 4.5;
+    cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
     layerCount = 8;
-    
-    GameObjPoolInit();
 
-    // printf("%s\n",">> main() :: initialising window");
+
+    GameObjPoolInit();
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
     
     generateObjects();
-    
-// Asteroid_Draw
 
-
-    // printf("%s\n",">> main() :: process fresh add");
     ProcessFreshAdd();
 
-    // printf("%s\n",">> main() :: try");
 #ifndef PLATFORM_WEB
-    // printf("%s\n",">> main() :: set fps");
     SetTargetFPS(FRAMERATE);               // Set our game to run at 60 frames-per-second
-
-    // printf("%s\n",">> main() :: pre loop");
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         UpdateDrawFrame();
@@ -108,7 +95,6 @@ int main()
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
 
-    // printf("%s\n",">> main() :: closing");
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();                  // Close window and OpenGL context
@@ -137,11 +123,12 @@ static void UpdateDrawFrame(void)
 
 // define the thing we promised
 static void generateObjects(){
-    // // printf("%s\n",">> main() :: create example obj");
-    // GameObj_Base* obj = CreateExampleObject();
-    // // printf("%s\n",">> main() :: add example obj");
-    // AddToPool(obj);
 
+    GameObj_Base* obj = CreateExampleObject();
+    AddToPool(obj);
+    // GameObj_Base* obj = CreateParticleObject();
+    obj = CreateParticleObject();
+    AddToPool(obj);
 
 
     // printf("%s\n",">> main() :: create example obj");

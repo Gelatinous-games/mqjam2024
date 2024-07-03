@@ -19,8 +19,14 @@
     #include "../obj_pool.c"
 #endif
 
+#ifndef _obj_particle
+    #define _obj_particle
+    #include "./particle.c"
+#endif
+
 typedef struct {
     float a;
+    float tmr;
 } ExampleObject_Data;
 
 int _ExampleObject_Init(void* self, float DeltaTime) {
@@ -42,9 +48,20 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
 
     // use data here.
 
+
+    THIS->position.x = (float)(sin(data->a * (PI / 2)) * 5);
     data->a += DeltaTime;
 
-    THIS->position.x = (float)(sin(data->a * PI) * 10);
+    data->tmr += DeltaTime;
+    if (data->tmr >= 1) {
+        data->tmr = 0;
+        Color spawnColor;
+        spawnColor.r = 255;
+        spawnColor.g = 127;
+        spawnColor.b = 0;
+        spawnColor.a = 127;
+        SpawnParticle(THIS->position, Vector2Zero(), Vector2Scale(Vector2One(), 0.125), 2, spawnColor, 0, 1);
+    }
 
     for (int i = 0; i != -1; ) {
         GameObj_Base* obj;
@@ -63,8 +80,9 @@ int _ExampleObject_Draw(void* self, float DeltaTime) {
     // ibid
 
     Vector2 sp = GetScreenspacePositionRelative(THIS->position, THIS->size);
+    Vector2 size = GetScaledSize(THIS->size);
 
-    DrawRectangle(sp.x, sp.y, THIS->size.x, THIS->size.y, WHITE);
+    DrawRectangleV(sp, size, WHITE);
 
     return 0;
 }
@@ -98,7 +116,6 @@ GameObj_Base* CreateExampleObject() {
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
-    obj_ptr->size.x = 50;
-    obj_ptr->size.y = 50;
+    obj_ptr->size = Vector2One();
     return obj_ptr;
 }
