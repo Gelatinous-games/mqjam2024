@@ -25,7 +25,8 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
   endif()
 endif()
 
-find_package(glfw3 3.4 REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GLFW REQUIRED glfw3)
 find_package(OpenGL REQUIRED)
 
 # Our Project
