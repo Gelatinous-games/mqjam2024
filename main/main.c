@@ -72,6 +72,8 @@ static void UpdateDrawFrame(void); // Update and draw one frame
 
 // let C know this exists
 static void generateObjects();
+static void prepareSounds();
+static void cleanupSounds();
 
 int main()
 {
@@ -86,8 +88,16 @@ int main()
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
     layerCount = 10;
 
+    // Initialization
+    //--------------------------------------------------------------------------------------
     GameObjPoolInit();
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
+    InitAudioDevice();      // Initialize audio device
+    //--------------------------------------------------------------------------------------
+
+    prepareSounds();
+    SetMasterVolume(0.5f);
+    PlaySound(*MAINSOUNDLOOP);      // Play WAV sound
 
     generateObjects();
 
@@ -104,8 +114,11 @@ int main()
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
 
+    cleanupSounds();
+
     // De-Initialization
     //--------------------------------------------------------------------------------------
+    CloseAudioDevice();     // Close audio device
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
@@ -160,4 +173,18 @@ static void generateObjects()
     WORMHOLE_OBJECT_REF = CreateWormhole();
     //Wormhole Object
     AddToPool(WORMHOLE_OBJECT_REF);
+}
+
+static void prepareSounds(){
+    // init
+    MAINSOUNDLOOP = (Sound *)malloc(sizeof(Sound));
+    // load
+    *MAINSOUNDLOOP = LoadSound("resources/MQGameJam_Music_loop.wav");         // Load WAV audio file
+}
+
+static void cleanupSounds(){
+    // unload 
+    UnloadSound(*MAINSOUNDLOOP);     // Unload sound data
+    // deinit
+    free(MAINSOUNDLOOP);
 }

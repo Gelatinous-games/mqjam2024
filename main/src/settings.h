@@ -1,5 +1,7 @@
 #pragma once
 
+#include "raylib.h"
+#include "raymath.h"
 #include "base.h"
 
 #define TAU 6.28318530718f
@@ -12,3 +14,6 @@ static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *PLAYER_OBJECT_REF;
 static GameObj_Base *WORMHOLE_OBJECT_REF;
+
+
+static Sound *MAINSOUNDLOOP;
