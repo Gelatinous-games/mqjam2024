@@ -6,6 +6,7 @@
 #include "raylib.h"
 #include "raymath.h"
 
+#include "./sound.h"
 #include "./base.h"
 #include "./settings.h"
 
@@ -92,8 +93,12 @@ int _HealthBar_Update(void* self, float DeltaTime) {
     HEALTHBAR_DATA->currentHealthBarIndex = (int)((((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health)/((float)(HEALTHBAR_SPRITE_COUNT-1)));
 
     // TOO LOW
-    if(HEALTHBAR_DATA->currentHealthBarIndex < 0){ 
+    if(HEALTHBAR_DATA->currentHealthBarIndex <= 0){ 
+        // set to 0
         HEALTHBAR_DATA->currentHealthBarIndex = 0;
+
+        // also handle death
+        PlayDeathSound();
     }
     // TOO FAR
     else if(HEALTHBAR_DATA->currentHealthBarIndex >= HEALTHBAR_SPRITE_COUNT){ 
@@ -110,6 +115,10 @@ int _HealthBar_Update(void* self, float DeltaTime) {
 
         // Do an operation with the result...
     }
+
+
+
+    
 
     return 0;
 }
