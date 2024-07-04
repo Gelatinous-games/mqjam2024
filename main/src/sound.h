@@ -79,7 +79,7 @@ static void prepareSounds(){
     TRACKS[BGMUSIC_LOOP_ID]->baseVolume    = 0.7f;
     TRACKS[HIT_SOUND_ID]->baseVolume        = 0.5f;
     TRACKS[THRUST_LOOP_ID]->baseVolume     = 1.0f;
-    TRACKS[STAR_PROXIMITY_LOOP_ID]->baseVolume     = 1.0f;
+    TRACKS[STAR_PROXIMITY_LOOP_ID]->baseVolume = 1.0f;
     TRACKS[THRUST_END_ID]->baseVolume      = 1.0f;
     TRACKS[THRUST_START_ID]->baseVolume    = 1.0f;
     TRACKS[DEATH_SOUND_ID]->baseVolume     = 1.0f;
@@ -109,12 +109,26 @@ static void startSounds(){
         if (TRACKS[i]->loopingTrack)
         {
             /* code */
-            SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
             PlaySound(TRACKS[i]->track);      // Play WAV sound
+            SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
         }
         
     }
     
+}
+
+static void soundUpdate(){
+    for (int i = 0; i < TRACK_COUNT; i++)
+    {
+        /* code */
+        if (TRACKS[i]->loopingTrack && !IsSoundPlaying(TRACKS[i]->track))
+        {
+            /* code */
+            PlaySound(TRACKS[i]->track);      // Play WAV sound
+            SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
+        }
+        
+    }
 }
 
 
@@ -152,5 +166,10 @@ static void setTrackVolume(int soundID, float volume){
     
     TRACKS[soundID]->scaleOfBaseVolume = volume;
     SetSoundVolume(TRACKS[soundID]->track, (TRACKS[soundID]->baseVolume)*(TRACKS[soundID]->scaleOfBaseVolume));
+    
+}
+static float getTrackVolume(int soundID){
+    
+    return TRACKS[soundID]->scaleOfBaseVolume;
     
 }

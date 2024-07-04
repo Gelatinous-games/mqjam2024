@@ -13,6 +13,8 @@ https://www.mingw-w64.org
 
 Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be run from here.
 
+* itch page is [this page](https://refreshingcucumber.itch.io/light-shift)
+
 ## Developers:
 
 The code you should worry about is creating objects. The data structure of an object can be found under `/main/src/base.h`, and an example on how to create a unique object is under `main/src/objs/Object_Example.h`.

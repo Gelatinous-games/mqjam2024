@@ -69,6 +69,10 @@
 #define _wormhole_obj
 #include "src/objs/wormhole.c"
 #endif
+#ifndef _planet_obj
+#define _planet_obj
+#include "src/objs/planet.c"
+#endif
 
 #ifndef _background_stars
 #define _background_star
@@ -143,6 +147,7 @@ static void UpdateDrawFrame(void)
 {
     float DeltaTime = GetFrameTime();
     ProcessAllUpdates(DeltaTime);
+    soundUpdate();
 
     UpdateCamera3D();
     BeginDrawing();
@@ -180,9 +185,12 @@ static void generateObjects()
         AddToPool(ASTEROID_REF_LIST[i]);
     }
     
-    WORMHOLE_OBJECT_REF = CreateWormhole();
     //Wormhole Object
+    WORMHOLE_OBJECT_REF = CreateWormhole();
     AddToPool(WORMHOLE_OBJECT_REF);
+    //Planet Object
+    PLANET_OBJECT_REF = CreatePlanet();
+    AddToPool(PLANET_OBJECT_REF);
 
     STAR_OBJECT_REF = CreateStarObject();
     AddToPool(STAR_OBJECT_REF);

@@ -26,4 +26,3 @@ enum LAYER_ID {
     LAYER_PLAYER = 8,
     LAYER_GUI = 9
 };
-
