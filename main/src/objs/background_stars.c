@@ -32,7 +32,7 @@
 #define _misc
 #include "../misc.c"
 #endif
-
+int accel_delta;
 typedef struct
 {
     // unsigned int randomSeed;
@@ -40,9 +40,14 @@ typedef struct
     int minStars;
     int maxStars;
     int numStars;
-    Vector2 position;
     int tailLength;
+    int xVelocity;
 } BackgroundStars_Data;
+
+typedef struct
+{
+    Vector2 position;
+} BGStar_Data;
 
 #define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
 
@@ -57,18 +62,22 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->minStars = 10;
     BACKGROUNDSTARS_DATA->numStars = GetRandomValue(BACKGROUNDSTARS_DATA->minStars, BACKGROUNDSTARS_DATA->maxStars);
     BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, -100, 100);
-    BACKGROUNDSTARS_DATA->position = (Vector2){0, 0};
+    THIS->position = cameraPosition;
     BACKGROUNDSTARS_DATA->tailLength = 30;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
 
     camPos = cameraPosition;
+    // Horizontal velocity: between 1 and -1
+    THIS->velocity = (Vector2){1, 0};
+    THIS->velocity = Vector2Normalize(THIS->velocity);
 
     return 0;
 }
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
-    BACKGROUNDSTARS_DATA->position = (Vector2){BACKGROUNDSTARS_DATA->position.x * DeltaTime * 0.1, BACKGROUNDSTARS_DATA->position.y};
+    accel_delta = GetKeyDelta(KEY_W, KEY_S);
+    THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
 
     return 0;
 }
@@ -82,10 +91,11 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     {
         for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; j++)
         {
-            float xVal = (1 * (0.01 * BACKGROUNDSTARS_DATA->listRandomSequence[j]) + i * 0.05f) + cameraPosition.x;
+            float xVal = (1 * (0.01 * BACKGROUNDSTARS_DATA->listRandomSequence[j]) + i * 0.05f);
             float yVal = 1 * (0.01 * BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j]);
-            printf("%d", yVal);
+            // printf("%d", yVal);
             Vector2 pos = Vector2Subtract(cameraPosition, (Vector2){xVal, yVal});
+            pos = Vector2Add((Vector2){THIS->position.x, 0}, pos);
             RenderCircleAbsolute(pos, 0.1f - (0.01f * i), WHITE);
         }
     }
@@ -124,6 +134,11 @@ GameObj_Base *CreateBackgroundStars()
     obj_ptr->flags = FLAG_BACKGROUND;
 
     obj_ptr->currentLayer = LAYER_BACKGROUND_STARSCAPE_0;
+
+    // initialize vectors.
+    obj_ptr->position = Vector2Zero();
+    obj_ptr->velocity = Vector2Zero();
+    obj_ptr->size = (Vector2){2, 2};
 
     return obj_ptr;
 }
