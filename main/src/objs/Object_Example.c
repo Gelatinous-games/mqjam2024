@@ -40,7 +40,7 @@ int _ExampleObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
-    ExampleObject_Data* data = malloc(sizeof(ExampleObject_Data));
+    ExampleObject_Data* data = (ExampleObject_Data *)malloc(sizeof(ExampleObject_Data));
 
     data->a = 0;
     data->tmr = 0;

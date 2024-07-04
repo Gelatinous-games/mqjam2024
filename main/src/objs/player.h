@@ -85,9 +85,25 @@ int _Player_Update(void* self, float DeltaTime) {
 
         if (accel_delta == 1) ang = Vector2Negate(ang);
 
-        SpawnParticle(Vector2Add(origin, Vector2Scale(rorth, -0.225)), Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)), Vector2Zero(), (Vector2) {0.0625, 0.0625}, 0.5, (Color) {255, 127, 0, 127 }, (FLOAT_RAND * 1) + 0.5);
+        SpawnParticle(
+            Vector2Add(origin, Vector2Scale(rorth, -0.225)),
+            Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)),
+            Vector2Zero(),
+            (Vector2) {0.0625, 0.0625},
+            0.5,
+            (Color) {255, 127, 0, 255 },
+            (FLOAT_RAND * 1) + 0.5
+        );
 
-        SpawnParticle(Vector2Add(origin, Vector2Scale(rorth, +0.225)), Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)), Vector2Zero(), (Vector2) {0.0625, 0.0625}, 0.5, (Color) {255, 127, 0, 127 }, (FLOAT_RAND * 1) + 0.5);
+        SpawnParticle(
+            Vector2Add(origin, Vector2Scale(rorth, +0.225)),
+            Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)),
+            Vector2Zero(),
+            (Vector2) {0.0625, 0.0625},
+            0.5,
+            (Color) {255, 127, 0, 127 },
+            (FLOAT_RAND * 1) + 0.5
+        );
 
     }
 

@@ -76,6 +76,8 @@ int _ParticleObject_Update(void* self, float DeltaTime) {
     return 0;
 }
 int _ParticleObject_Draw(void* self, float DeltaTime) {
+    BeginBlendMode(BLEND_ALPHA);
+
     for (int i = 0; i < _particleCount; i++) {
         _Particle particle = _particles[i];
 
@@ -91,6 +93,9 @@ int _ParticleObject_Draw(void* self, float DeltaTime) {
         pos = GetScreenspacePositionRelative(particle.position, particle.size);
         DrawRectangleV(pos, GetScaledSize(particle.size), particle.color);
     }
+
+
+    EndBlendMode();
 
     return 0;
 }

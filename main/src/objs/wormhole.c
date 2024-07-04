@@ -32,28 +32,29 @@
 typedef struct {
     float a;
     float tmr;
-
     Sprite* sprite;
-} WormholeObject_Data;
+    float distanceFromStart;
+
+
+} Wormhole_Data;
 
 int _Wormhole_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
-    WormholeObject_Data* data = malloc(sizeof(WormholeObject_Data));
+    Wormhole_Data *data = (Wormhole_Data *)malloc(sizeof(Wormhole_Data));
 
-    data->a = 0;
-    data->tmr = 0;
+    data->distanceFromStart = 100;
     data->sprite = CreateSprite("resources/kitr_temp.png");
 
-    ((GameObj_Base *)self)->data_struct = (void *)data; 
+    THIS->data_struct = (void *)data; 
 
     return 0;
 }
 
 int _Wormhole_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
-    WormholeObject_Data* data = THIS->data_struct;
+    Wormhole_Data* data = THIS->data_struct;
 
     THIS->position.x = (float)(sin(data->a * (PI / 2)) * 5);
     data->a += DeltaTime;
@@ -83,11 +84,10 @@ int _Wormhole_Update(void* self, float DeltaTime) {
 
 int _Wormhole_Draw(void* self, float DeltaTime) {
     // ibid
-    GameObj_Base* selfObj = ((GameObj_Base *)self);
-    WormholeObject_Data* data = ((GameObj_Base *)self)->data_struct;
+    Wormhole_Data* data = THIS->data_struct;
 
-    RenderSpriteRelative(data->sprite, selfObj->position, selfObj->size, sin(data->a)*90, WHITE);
-    //RenderSquareRelative(selfObj->position, selfObj->size, 0, WHITE);
+    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, sin(data->a)*90, WHITE);
+    //RenderSquareRelative(THIS->position, THIS->size, 0, WHITE);
 
     return 0;
 }
@@ -97,7 +97,7 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    WormholeObject_Data* data = ((GameObj_Base *)self)->data_struct;
+    Wormhole_Data* data = THIS->data_struct;
     free(data->sprite);
     free(data);
 
@@ -107,10 +107,10 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
 GameObj_Base* CreateWormholeObject() {
     GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
 
-    obj_ptr->Init_Func = &_WormholeObject_Init;
-    obj_ptr->Update_Func = &_WormholeObject_Update;
-    obj_ptr->Draw_Func = &_WormholeObject_Draw;
-    obj_ptr->Destroy_Func = &_WormholeObject_Destroy;
+    obj_ptr->Init_Func = &_Wormhole_Init;
+    obj_ptr->Update_Func = &_Wormhole_Update;
+    obj_ptr->Draw_Func = &_Wormhole_Draw;
+    obj_ptr->Destroy_Func = &_Wormhole_Destroy;
 
     obj_ptr->awaitDestroy = 0;
 
