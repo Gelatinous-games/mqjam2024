@@ -12,7 +12,7 @@
 const static int WINDOW_WIDTH = 1366;
 const static int WINDOW_HEIGHT = 768;
 
-const static int NUMBER_OF_ASTEROIDS = 10;
+const static int NUMBER_OF_ASTEROIDS = 4;
 static GameObj_Base **ASTEROID_REF_LIST;
 
 struct timeval timerStart;

@@ -110,7 +110,7 @@ int _StarObject_Init(void* self, float DeltaTime) {
 int _StarObject_Update(void* self, float DeltaTime) {
     // stars dont move but for now, if it is too far behind player / far enough ahead, kill it and restart.
 
-    if (THIS->position.x + (2*cameraBounds.x) < cameraPosition.x) {
+    if (THIS->position.x + (2*cameraBounds.x) + STAR_DATA->maxRange < cameraPosition.x) {
         // printf("Re-randomizing star (pos %f and cam %f)\n", THIS->position.x, cameraPosition.x);
         _StarObject_Randomize(self);
     }
