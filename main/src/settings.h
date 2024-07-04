@@ -14,6 +14,7 @@ static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *PLAYER_OBJECT_REF;
 static GameObj_Base *WORMHOLE_OBJECT_REF;
+static GameObj_Base *STAR_OBJECT_REF;
 
 
 static Sound *MAINSOUNDLOOP;

@@ -179,6 +179,9 @@ static void generateObjects()
     WORMHOLE_OBJECT_REF = CreateWormhole();
     //Wormhole Object
     AddToPool(WORMHOLE_OBJECT_REF);
+
+    STAR_OBJECT_REF = CreateStarObject();
+    AddToPool(STAR_OBJECT_REF);
 }
 
 static void prepareSounds(){
