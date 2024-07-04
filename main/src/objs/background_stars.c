@@ -47,6 +47,7 @@ typedef struct
 #define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
 
 GameObj_Base *player;
+Vector2 camPos;
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
@@ -59,6 +60,8 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->position = (Vector2){0, 0};
     BACKGROUNDSTARS_DATA->tailLength = 30;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
+
+    camPos = cameraPosition;
 
     return 0;
 }
@@ -79,11 +82,11 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     {
         for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; j++)
         {
-            float xVal = 1 * (0.001 * BACKGROUNDSTARS_DATA->listRandomSequence[j]) + i * 0.05f;
-            float yVal = 1 * (0.001 * BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j]);
+            float xVal = (1 * (0.01 * BACKGROUNDSTARS_DATA->listRandomSequence[j]) + i * 0.05f) + cameraPosition.x;
+            float yVal = 1 * (0.01 * BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j]);
             printf("%d", yVal);
-            Vector2 pos = Vector2Add(cameraPosition, (Vector2){0, yVal});
-            RenderCircleAbsolute(pos, 0.1f + (0.01f * i), WHITE);
+            Vector2 pos = Vector2Subtract(cameraPosition, (Vector2){xVal, yVal});
+            RenderCircleAbsolute(pos, 0.1f - (0.01f * i), WHITE);
         }
     }
     return 0;
