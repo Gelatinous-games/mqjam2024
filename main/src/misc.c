@@ -24,6 +24,11 @@ float Vec2Angle(Vector2 a) {
     return atan2(-a.y, -a.x) * RAD2DEG;
 }
 
+float Vec2Dist(Vector2 a, Vector2 b) {
+    Vector2 d = Vector2Subtract(b, a);
+    return Vector2Length(d);
+}
+
 /// @brief Returns 1 if the two objects A & B collided, and imparted velocities on the two should they.
 /// Imparted velocities are calculated according to the sum of the effective velocity between the two, the exact angle, and the mass distribution.
 /// @param A Object A
@@ -32,8 +37,9 @@ float Vec2Angle(Vector2 a) {
 /// @param impartB The velocity imparted onto object B
 /// @return 
 char GetCollided(GameObj_Base* A, GameObj_Base* B, Vector2* impartA, Vector2* impartB) {
-    float dist = Vector2Distance(A->position, B->position);
-    if (dist >= A->radius + B->radius) return 0;
+    float dist = Vec2Dist(A->position, B->position);
+    printf("dist is %d to sum radius %d\n", dist, A->radius + B->radius);
+    if (dist >= fabsf(A->radius) + fabsf(B->radius)) return 0;
 
     // THE MESSY TASK OF CALCULATING IMPARTED VELOCITIES.
 
