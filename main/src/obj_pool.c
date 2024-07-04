@@ -79,6 +79,7 @@ int GetObjectWithFlagsExact(long unsigned int flags, int sIDX, GameObj_Base** re
             return i+1;
         }
     }
+    
     *retobj = 0;
     return -1;
 }

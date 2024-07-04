@@ -137,7 +137,7 @@ void RenderCircleAbsolute(Vector2 pos, float radius, Color color) {
 
     radius = size.x / 2;
 
-    DrawCircle(pos.x, pos.y, radius, color);
+    DrawCircle(pos.x + radius, pos.y + radius, radius, color);
 }
 
 /// @brief Draws a circle relative to the camera with the given radius (in units) and color.
@@ -151,7 +151,7 @@ void RenderCircleRelative(Vector2 pos, float radius, Color color) {
 
     radius = size.x / 2;
 
-    DrawCircle(pos.x, pos.y, radius, color);
+    DrawCircle(pos.x + radius, pos.y + radius, radius, color);
 }
 
 void RenderColliderRelative(Vector2 pos, float radius) {
