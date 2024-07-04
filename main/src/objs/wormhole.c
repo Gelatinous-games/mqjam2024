@@ -46,7 +46,7 @@ int _Wormhole_Init(void* self, float DeltaTime) {
     THIS->data_struct = malloc(sizeof(Wormhole_Data));
 
     WORMHOLE_DATA->distanceFromStart = 10;
-    WORMHOLE_DATA->sprite = CreateSprite("resources/kitr_temp.png");
+    WORMHOLE_DATA->sprite = CreateSprite("resources/wormhole/w1.png");
 
     THIS->position.x = WORMHOLE_DATA->distanceFromStart;
     THIS->position.y = WINDOW_HEIGHT/2.0f;

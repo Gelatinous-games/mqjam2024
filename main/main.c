@@ -111,6 +111,8 @@ int main()
 
     GameObjPoolDestroy();
 
+    free(ASTEROID_REF_LIST);
+
     return 0;
 }
 
@@ -147,9 +149,15 @@ static void generateObjects()
     // TODO: succeed with an asteroid handler that can scale up & down asteroids.
     // Decide upon some criteria for how asteroid handler should work - should it control the scene?
     // Place stars and other elements down?
-    AddToPool(CreateAsteroid());
-    AddToPool(CreateAsteroid());
-
+    ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *)*NUMBER_OF_ASTEROIDS);
+    for (int i = 0; i < NUMBER_OF_ASTEROIDS; i++)
+    {
+        /* code */
+        ASTEROID_REF_LIST[i] = CreateAsteroid();
+        AddToPool(ASTEROID_REF_LIST[i]);
+    }
+    
+    WORMHOLE_OBJECT_REF = CreateWormhole();
     //Wormhole Object
-    AddToPool(CreateWormhole());
+    AddToPool(WORMHOLE_OBJECT_REF);
 }
