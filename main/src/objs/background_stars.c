@@ -39,15 +39,20 @@ typedef struct
     int minStars;
     int maxStars;
     Vector2 position;
+    int tailLength;
 } BackgroundStars_Data;
 
 #define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
+
+GameObj_Base *player;
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
     BACKGROUNDSTARS_DATA->maxStars = 10;
     BACKGROUNDSTARS_DATA->minStars = 1;
     BACKGROUNDSTARS_DATA->position = (Vector2){0, 0};
+    BACKGROUNDSTARS_DATA->tailLength = 30;
+    GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
 
     return 0;
 }
@@ -55,6 +60,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
     BACKGROUNDSTARS_DATA->position = (Vector2){BACKGROUNDSTARS_DATA->position.x * DeltaTime * 0.1, BACKGROUNDSTARS_DATA->position.y};
+
     return 0;
 }
 
@@ -63,9 +69,11 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     // BackgroundStars_Data *data = THIS->data_struct;
     // draw the random stars
 
-    Vector2 dotPos = (Vector2){0.0f, 0.0f};
-
-    RenderCircleAbsolute(dotPos, 0.1f, WHITE);
+    for (int i = 0; i < BACKGROUNDSTARS_DATA->tailLength; i++)
+    {
+        Vector2 pos = Vector2Add(cameraPosition, (Vector2){i * 0.1f, 0});
+        RenderCircleAbsolute(pos, 0.1f, WHITE);
+    }
     return 0;
 }
 
