@@ -36,32 +36,33 @@ typedef struct {
     Sprite* sprite;
 } ExampleObject_Data;
 
+
+#define EXAMPLEOBJECT_DATA ((ExampleObject_Data *)(THIS->data_struct))
+
 int _ExampleObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
-    ExampleObject_Data* data = (ExampleObject_Data *)malloc(sizeof(ExampleObject_Data));
+    THIS->data_struct = malloc(sizeof(ExampleObject_Data)); 
 
-    data->a = 0;
-    data->tmr = 0;
-    data->sprite = CreateSprite("resources/kitr_temp.png");
+    EXAMPLEOBJECT_DATA->a = 0;
+    EXAMPLEOBJECT_DATA->tmr = 0;
+    EXAMPLEOBJECT_DATA->sprite = CreateSprite("resources/kitr_temp.png");
 
-    ((GameObj_Base *)self)->data_struct = (void *)data; 
 
     return 0;
 }
 
 int _ExampleObject_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
-    ExampleObject_Data* data = THIS->data_struct;
 
-    THIS->position.x = (float)(sin(data->a * (PI / 2)) * 5);
-    data->a += DeltaTime;
+    THIS->position.x = (float)(sin(EXAMPLEOBJECT_DATA->a * (PI / 2)) * 5);
+    EXAMPLEOBJECT_DATA->a += DeltaTime;
 
     // An example of spawning a particle
-    data->tmr += DeltaTime;
-    if (data->tmr >= 0.4) {
-        data->tmr = 0;
+    EXAMPLEOBJECT_DATA->tmr += DeltaTime;
+    if (EXAMPLEOBJECT_DATA->tmr >= 0.4) {
+        EXAMPLEOBJECT_DATA->tmr = 0;
         SpawnParticle(((GameObj_Base *)self)->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
                         (Vector2) {0.125, 0.125}, 2, 
                         (Color) { 255, 127, 0, 127 }, 1);
@@ -83,11 +84,9 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
 
 int _ExampleObject_Draw(void* self, float DeltaTime) {
     // ibid
-    GameObj_Base* selfObj = ((GameObj_Base *)self);
-    ExampleObject_Data* data = ((GameObj_Base *)self)->data_struct;
 
-    RenderSpriteRelative(data->sprite, selfObj->position, selfObj->size, sin(data->a)*90, WHITE);
-    //RenderSquareRelative(selfObj->position, selfObj->size, 0, WHITE);
+    RenderSpriteRelative(EXAMPLEOBJECT_DATA->sprite, THIS->position, THIS->size, sin(EXAMPLEOBJECT_DATA->a)*90, WHITE);
+    //RenderSquareRelative(THIS->position, THIS->size, 0, WHITE);
 
     return 0;
 }
@@ -97,15 +96,14 @@ int _ExampleObject_Destroy(void* self, float DeltaTime) {
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    ExampleObject_Data* data = ((GameObj_Base *)self)->data_struct;
-    free(data->sprite);
-    free(data);
+    free(EXAMPLEOBJECT_DATA->sprite);
+    free(EXAMPLEOBJECT_DATA);
 
     return 0;
 }
 
 GameObj_Base* CreateExampleObject() {
-    GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
+    GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_ExampleObject_Init;
     obj_ptr->Update_Func = &_ExampleObject_Update;
@@ -127,5 +125,6 @@ GameObj_Base* CreateExampleObject() {
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size = Vector2One();
+    
     return obj_ptr;
 }

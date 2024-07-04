@@ -6,6 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../settings.h"
 
 
 #ifndef _camera
@@ -38,16 +39,22 @@ typedef struct {
 
 } Wormhole_Data;
 
+#define WORMHOLE_DATA ((Wormhole_Data *)(THIS->data_struct))
+
 int _Wormhole_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
-    Wormhole_Data *data = (Wormhole_Data *)malloc(sizeof(Wormhole_Data));
+    THIS->data_struct = malloc(sizeof(Wormhole_Data));
 
-    data->distanceFromStart = 100;
-    data->sprite = CreateSprite("resources/kitr_temp.png");
+    WORMHOLE_DATA->distanceFromStart = 10;
+    WORMHOLE_DATA->sprite = CreateSprite("resources/kitr_temp.png");
 
-    THIS->data_struct = (void *)data; 
+    THIS->position.x = WORMHOLE_DATA->distanceFromStart;
+    THIS->position.y = WINDOW_HEIGHT/2.0f;
+
+    THIS->size.x = 10.0f;
+    THIS->size.y = 10.0f;
 
     return 0;
 }
@@ -55,18 +62,6 @@ int _Wormhole_Init(void* self, float DeltaTime) {
 int _Wormhole_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
     Wormhole_Data* data = THIS->data_struct;
-
-    THIS->position.x = (float)(sin(data->a * (PI / 2)) * 5);
-    data->a += DeltaTime;
-
-    // An example of spawning a particle
-    data->tmr += DeltaTime;
-    if (data->tmr >= 0.4) {
-        data->tmr = 0;
-        SpawnParticle(((GameObj_Base *)self)->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
-                        (Vector2) {0.125, 0.125}, 2, 
-                        (Color) { 255, 127, 0, 127 }, 1);
-    }
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {
@@ -86,8 +81,7 @@ int _Wormhole_Draw(void* self, float DeltaTime) {
     // ibid
     Wormhole_Data* data = THIS->data_struct;
 
-    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, sin(data->a)*90, WHITE);
-    //RenderSquareRelative(THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
 
     return 0;
 }
@@ -105,7 +99,7 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
 }
 
 GameObj_Base* CreateWormholeObject() {
-    GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
+    GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_Wormhole_Init;
     obj_ptr->Update_Func = &_Wormhole_Update;
