@@ -59,6 +59,12 @@
     #include "src/obj_pool.c"
 #endif
 
+#ifndef _star_obj
+    #define _star_obj
+    #include "src/objs/star.c"
+#endif
+
+
 
 
 static void UpdateDrawFrame(void);          // Update and draw one frame
@@ -141,4 +147,16 @@ static void generateObjects(){
     // Place stars and other elements down?
     AddToPool(CreateAsteroid());
     AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+    AddToPool(CreateAsteroid());
+
+    AddToPool(CreateStarObject());
 }

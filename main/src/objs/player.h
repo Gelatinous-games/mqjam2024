@@ -30,6 +30,12 @@
     #include "../misc.c"
 #endif
 
+#ifndef _star_obj
+    #define _star_obj
+    #include "star.c"
+#endif
+
+
 #define CAMERA_COAST_SPEED 3
 
 typedef struct {
@@ -143,6 +149,26 @@ int _Player_Update(void* self, float DeltaTime) {
 
     // check for gravity interactions
     // TODO
+    for (int sIDX = 0; sIDX != -1; ) {
+        sIDX = GetObjectWithFlagsExact(FLAG_GRAVITY_WELL, sIDX, &extobj);
+
+        if (sIDX == -1) break;
+
+        Vector2 impartSelf, impartStar;
+        // Check if collision occurs
+        if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
+            PLAYER_DATA->health -= 100;
+
+            // END STATE
+
+            //create a billion particles as the ship disintegrates
+        }
+        else {
+            // apply gravity vector
+            Vector2 accel = GetAccelerationToSink(extobj, THIS);
+            THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(accel, DeltaTime));
+        }
+    }
 
     // if player is dragging behind camera bounds, slow down camera until cant slowdown anymore, then speed up player
     // if the player is too fast for camera, speed up camera then slow down player if needed.
