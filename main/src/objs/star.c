@@ -35,7 +35,7 @@
 
 #define STAR_RANDOM_RANGE 4
 
-#define STAR_SPRITE_COUNT 2
+#define STAR_SPRITE_COUNT 4
 
 typedef struct {
     float maxRange;
@@ -102,6 +102,8 @@ int _StarObject_Init(void* self, float DeltaTime) {
 
         _starSprites[0] = CreateSprite("resources/stars/S0.png");
         _starSprites[1] = CreateSprite("resources/stars/S1.png");
+        _starSprites[2] = CreateSprite("resources/stars/S2.png");
+        _starSprites[3] = CreateSprite("resources/stars/S3.png");
     }
     _StarObject_Randomize(self);
 
