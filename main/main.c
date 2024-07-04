@@ -75,6 +75,8 @@ static void generateObjects();
 
 int main()
 {
+    gettimeofday(&timerStart, NULL);
+
     SetExitKey(KEY_F4); // Lets not make it *too* easy to leave lol
 
     cameraScreenQuarter.x = WINDOW_WIDTH / 2;
