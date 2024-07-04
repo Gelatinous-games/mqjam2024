@@ -10,6 +10,11 @@
 #include "base.h"
 #include "obj_register.h"
 
+#ifndef _camera
+    #define _camera
+    #include "../camera.c"
+#endif
+
 
 #define OBJECT_POOL_CAPACITY 256
 
@@ -111,6 +116,8 @@ void ProcessAllUpdates(float DeltaTime) {
 void ProcessAllDraws(float DeltaTime) {
     for (int l = 0; l < layerCount; l++) {
         for (int i = 0; i < _gameObjPoolSize; i++) {
+
+            scaleFactor = Vector2One();
             GameObj_Base* obj = _gameObjPool[i];
 
             if (obj->currentLayer == l)

@@ -20,6 +20,9 @@ Vector2 cameraScreenQuarter; // maps an object via the bounds to this
 Vector2 cameraUnitSize; // maps shape sizes to this: what (1, 1) in size should be equivalent to. generally the camscreenquarter by the cambounds.
 int layerCount; // how many layers to try parse to render
 
+// Change this to make them seem further away from the screen.
+Vector2 scaleFactor; 
+
 // 3D camera just in case we needed it
 Camera3D cam3D = { 0 };
 
@@ -28,8 +31,8 @@ Camera3D cam3D = { 0 };
 /// @return 
 Vector2 GetScreenspacePositionAbsolute(Vector2 pos, Vector2 size) {
     pos = Vector2Subtract(pos, Vector2Scale(size, 0.5));
-    pos.x = pos.x / cameraBounds.x;
-    pos.y = pos.y / cameraBounds.y;
+    pos.x = pos.x / (cameraBounds.x * scaleFactor.x);
+    pos.y = pos.y / (cameraBounds.y * scaleFactor.x);
 
     pos = Vector2Multiply(pos, cameraScreenQuarter);
 
@@ -51,6 +54,7 @@ Vector2 GetScreenspacePositionRelative(Vector2 pos, Vector2 size) {
 /// @param size 
 /// @return 
 Vector2 GetScaledSize(Vector2 size) {
+    size = (Vector2) { size.x / scaleFactor.x, size.y / scaleFactor.y };
     return Vector2Multiply(size, cameraUnitSize);
 }
 
