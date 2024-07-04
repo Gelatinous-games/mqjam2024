@@ -58,6 +58,12 @@
 #include "src/obj_pool.c"
 #endif
 
+#ifndef _star_obj
+    #define _star_obj
+    #include "src/objs/star.c"
+#endif
+
+
 #ifndef _wormhole_obj
 #define _wormhole_obj
 #include "src/objs/wormhole.c"

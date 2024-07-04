@@ -60,10 +60,10 @@ int _Wormhole_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
     Wormhole_Data* data = THIS->data_struct;
 
-    // dont let the player past the wormhole
-    if (PLAYER_OBJECT_REF->position.x > THIS->position.x) {
-        PLAYER_OBJECT_REF->position.x = THIS->position.x;
-    }
+    // // dont let the player past the wormhole
+    // if (PLAYER_OBJECT_REF->position.x > THIS->position.x) {
+    //     PLAYER_OBJECT_REF->position.x = THIS->position.x;
+    // }
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {

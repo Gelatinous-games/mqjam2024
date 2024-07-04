@@ -33,9 +33,10 @@
     #include "../misc.c"
 #endif
 
+#define STAR_RANDOM_RANGE 4
+
 typedef struct {
     float maxRange;
-
     float maxPull;
 } _Star_Data;
 
@@ -56,24 +57,48 @@ void _StarObject_Randomize(void* self) {
         originVel = player->velocity;
     }
 
-    THIS->position.x = 8 * (FLOAT_RAND * cameraBounds.x); 
+    THIS->position.x = (STAR_RANDOM_RANGE * FLOAT_RAND * cameraBounds.x) + ( 2 * cameraBounds.x); 
     THIS->position.x += originPos.x;
 
     THIS->position.y = ((FLOAT_RAND) * cameraBounds.y * 2) - cameraBounds.y;
 
-    STAR_DATA->maxPull = (FLOAT_RAND * COLLIDE_MAX_SPEED) + 1;
-    STAR_DATA->maxRange = (FLOAT_RAND) * 8 + 2;
+    STAR_DATA->maxPull = (FLOAT_RAND * FREE_MAX_SPEED * 4) + FREE_MAX_SPEED;
+    STAR_DATA->maxRange = (FLOAT_RAND * 8) + 8;
+
+    // printf("Placed star at %f (elected origin at %f)\n", THIS->position.x, originPos.x);
     
 }
 
+Vector2 GetAccelerationToSink(GameObj_Base* star, GameObj_Base* obj) {
+    _Star_Data* starData = (_Star_Data*)star->data_struct;
+    float dist = Vector2Distance(obj->position, star->position);
+
+    if (dist > starData->maxRange) return Vector2Zero();
+
+    float delta = dist/starData->maxRange;
+    delta = 1-delta; // inverse it to get 1 when closest.
+    delta = delta * delta; // square it to get it reducing furher away
+
+    Vector2 ang = Vector2Subtract(star->position, obj->position);
+    ang = Vector2Normalize(ang);
+    ang = Vector2Scale(ang, delta * starData->maxPull);
+
+    return ang;
+}
+
 int _StarObject_Init(void* self, float DeltaTime) {
-    
     _StarObject_Randomize(self);
 
     return 0;
 }
 
 int _StarObject_Update(void* self, float DeltaTime) {
+    // stars dont move but for now, if it is too far behind player / far enough ahead, kill it and restart.
+
+    if (THIS->position.x + (2*cameraBounds.x) < cameraPosition.x) {
+        // printf("Re-randomizing star (pos %f and cam %f)\n", THIS->position.x, cameraPosition.x);
+        _StarObject_Randomize(self);
+    }
 
     return 0;
 }
@@ -81,12 +106,16 @@ int _StarObject_Update(void* self, float DeltaTime) {
 int _StarObject_Draw(void* self, float DeltaTime) {
 
     // todo: red/blueshift rendering.
-    RenderColliderRelative(THIS->position, THIS->radius);
+    
+    // render effective radius
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange, (Color) {255, 127, 0, 100 });
+    RenderCircleRelative(THIS->position, THIS->radius, (Color) { 255, 127, 0, 200 });
+
     return 0;
 }
 
 int _StarObject_Destroy(void* self, float DeltaTime) {
-
+    free(STAR_DATA);
     return 0;
 }
 

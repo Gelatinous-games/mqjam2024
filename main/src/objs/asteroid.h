@@ -34,6 +34,10 @@
     #include "../misc.c"
 #endif
 
+#ifndef _star_obj
+    #define _star_obj
+    #include "star.c"
+#endif
 
 
 
@@ -70,11 +74,12 @@ typedef struct {
 #define ASTEROIDDATA ((Asteroid_Data *)(THIS->data_struct))
 #define ASTEROID_SPRITE_COUNT 4
 
+#define ASTEROID_RANDOM_RANGE 4
+
 Sprite** _asteroidSprites;
 
 void _Asteroid_Randomize(void *self) {
-    Vector2 originPos;
-    Vector2 originVel;
+    Vector2 originVel, originPos;
     GameObj_Base* player;
     if (!GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player)) {
         // if no player found, default to camera pos.
@@ -101,7 +106,7 @@ void _Asteroid_Randomize(void *self) {
     THIS->radius = (rng - 0.125) / 2;
 
     // X position, always near player x and generates within camera bounds
-    THIS->position = (Vector2) { (FLOAT_RAND * cameraBounds.x * 2) + cameraPosition.x, -cameraBounds.y - THIS->size.y};
+    THIS->position = (Vector2) { (FLOAT_RAND * cameraBounds.x * ASTEROID_RANDOM_RANGE) + originPos.x, -cameraBounds.y - THIS->size.y};
     
     // Horizontal velocity: between 1 and -1
     THIS->velocity = (Vector2) { (FLOAT_RAND * 2) - 1, 1 };
@@ -171,6 +176,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
         _Asteroid_Randomize(self);
     }
 
+    // Check for collisions with other asteroids
     GameObj_Base* extobj;
     for (int sIDX = 0; sIDX != -1; ) {
         sIDX = GetObjectWithFlagsExact(FLAG_ASTEROID, sIDX, &extobj);
@@ -205,15 +211,34 @@ int _Asteroid_Update(void* self, float DeltaTime) {
                 SpawnParticle(midPoint, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .125), (FLOAT_RAND * 1.75) + .25, col, 1);
             }
         }
-    return 0;
-}
+    }
+    
+    // Check for gravity well
+    for (int sIDX = 0; sIDX != -1; ) {
+        sIDX = GetObjectWithFlagsExact(FLAG_GRAVITY_WELL, sIDX, &extobj);
+
+        if (sIDX == -1) break;
+
+        Vector2 impartSelf, impartStar;
+        // Check if collision occurs
+        if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
+            // Destroy asteroid
+            // create a billion particles as the asteroid disintegrates
+        }
+        else {
+            // apply gravity vector
+            Vector2 accel = GetAccelerationToSink(extobj, THIS);
+            THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(accel, DeltaTime));
+            printf("Gravity acting upon asteroid with %f units of accel\n", Vector2Length(accel));
+        }
+    }
     return 0;
 }
 
 int _Asteroid_Draw(void* self, float DeltaTime) {
     // TODO: red/blue shift calculation.
     RenderSpriteRelative(_asteroidSprites[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
-    RenderColliderRelative(THIS->position, THIS->radius); // debug function
+    // RenderColliderRelative(THIS->position, THIS->radius); // debug function
     return 0;
 }
 
