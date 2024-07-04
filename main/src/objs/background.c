@@ -41,15 +41,16 @@ typedef struct
     // the list of bg objects
     int *backgroundObjectIDs;
     Vector2 *backgroundObjectPositions;
+    float *backgroundObjectRotations;
     Vector2 *backgroundObjectScales;
 } Background_DataStruct;
 
 #define BACKGROUND_DATA ((Background_DataStruct *)(THIS->data_struct))
 
 
-#define BACKGROUND_OBJECT_COUNT 50
+#define BACKGROUND_OBJECT_COUNT 100
 
-#define MAX_BACKGROUND_SPAWN_DISTANCE_X 100.0f
+#define MAX_BACKGROUND_SPAWN_DISTANCE_X 400.0f
 #define MAX_BACKGROUND_SPAWN_DISTANCE_Y 10.0f
 
 
@@ -71,6 +72,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUND_SPRITE_LIST = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT * sizeof(Sprite *));
 
     // load
+    // BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/background/bg0.png");
     BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/kitr_temp.png");
     
 
@@ -81,6 +83,8 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     // printf("%s\n","making bg objects positions");
     // positions array
     BACKGROUND_DATA->backgroundObjectPositions = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
+    // roations
+    BACKGROUND_DATA->backgroundObjectRotations = (float *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(float));
     // scale array
     BACKGROUND_DATA->backgroundObjectScales = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
 
@@ -92,6 +96,8 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
             (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_X),
             (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_Y-MAX_BACKGROUND_SPAWN_DISTANCE_Y/2.0f)
         };
+        // rotater
+        BACKGROUND_DATA->backgroundObjectRotations[i] = FLOAT_RAND*360.0f;
 
         // generate two random percentage values 
         float xScaleRand = FLOAT_RAND;
@@ -108,9 +114,11 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
-    // THIS->position.x = -0.5f*(PLAYER_OBJECT_REF->position.x);
-    // THIS->position.y = -0.25f*(PLAYER_OBJECT_REF->position.y);
+    // parallax
+    THIS->position.x = -0.1f*(cameraPosition.x);
+    THIS->position.y = -0.1f*(cameraPosition.y);
 
+    
     return 0;
 }
 
@@ -130,7 +138,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
                 THIS->position.x + currSpritePosition.y
             },
             BACKGROUND_DATA->backgroundObjectScales[i],
-            0,
+            BACKGROUND_DATA->backgroundObjectRotations[i],
             WHITE
         );
     }
@@ -151,6 +159,7 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
 
     // scale/position data
     free(BACKGROUND_DATA->backgroundObjectScales);
+    free(BACKGROUND_DATA->backgroundObjectRotations);
     free(BACKGROUND_DATA->backgroundObjectPositions);
 
     // object reference array
