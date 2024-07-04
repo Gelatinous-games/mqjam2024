@@ -35,10 +35,10 @@
 
 enum BACKGROUND_SPRITE_TYPE {
     // ...
-    ARTWORK_SPRITE = 0,
-    TINTABLE_SPRITE_SMALL = 1,
-    TINTABLE_SPRITE_MEDIUM = 2,
-    TINTABLE_SPRITE_LARGE = 3
+    BG_SPRITETYPE_ARTWORK_SPRITE    = 0,
+    BG_SPRITETYPE_TINTABLE_SMALL    = 1,
+    BG_SPRITETYPE_TINTABLE_MEDIUM   = 2,
+    BG_SPRITETYPE_TINTABLE_LARGE    = 3
 };
 
 
@@ -342,7 +342,7 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     // TODO: implement selecting, but just mod for artwork count rn
     BACKGROUND_DATA->backgroundGeneratedObjects[backgroundObjectIndex] = (BackgroundSprite_GenerationData){
         // type
-        ARTWORK_SPRITE,
+        BG_SPRITETYPE_ARTWORK_SPRITE,
         // ID
         selectionRoll%BACKGROUND_SPRITE_COUNT_ARTWORKS,
         // tint
@@ -372,16 +372,16 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
 Sprite *getCurrentSprite(void *self, float DeltaTime, BackgroundSprite_GenerationData spriteGenerationData){
     Sprite **spriteListToUse;
     switch (spriteGenerationData.spriteType){
-        case ARTWORK_SPRITE:
+        case BG_SPRITETYPE_ARTWORK_SPRITE:
             spriteListToUse = backgroundSpriteList_artworks;
             break;
-        case TINTABLE_SPRITE_SMALL:
+        case BG_SPRITETYPE_TINTABLE_SMALL:
             spriteListToUse = backgroundSpriteList_small;
             break;
-        case TINTABLE_SPRITE_MEDIUM:
+        case BG_SPRITETYPE_TINTABLE_MEDIUM:
             spriteListToUse = backgroundSpriteList_medium;
             break;
-        case TINTABLE_SPRITE_LARGE:
+        case BG_SPRITETYPE_TINTABLE_LARGE:
             spriteListToUse = backgroundSpriteList_large;
             break;
         default:
