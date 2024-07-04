@@ -50,6 +50,10 @@ typedef struct {
 
 #define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
 
+// prepare
+void handleStarProximity(GameObj_Base *self, GameObj_Base *extobj);
+
+
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
     PLAYER_DATA->health = 100; //idk!
@@ -64,7 +68,6 @@ int _Player_Init(void* self, float DeltaTime) {
 }
 
 int _Player_Update(void* self, float DeltaTime) {
-
     // Default steering movement NOT STRAFING mode.
     int rotate_delta = GetKeyDelta(KEY_D, KEY_A);
     if (rotate_delta) {
@@ -188,6 +191,8 @@ int _Player_Update(void* self, float DeltaTime) {
             //create a billion particles as the ship disintegrates
         }
         else {
+            handleStarProximity(THIS,extobj);
+            
             // apply gravity vector
             Vector2 accel = GetAccelerationToSink(extobj, THIS);
             THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(accel, DeltaTime));
@@ -260,4 +265,16 @@ GameObj_Base* CreatePlayer() {
     obj_ptr->size.y = 1;
 
     return obj_ptr;
+}
+
+void handleStarProximity(GameObj_Base *self, GameObj_Base *extobj){
+    float distanceFromStar = Vector2Distance(THIS->position, extobj->position);
+    float starRange = ((_Star_Data *)(extobj->data_struct))->maxRange;
+    // when we're 
+    float proximity = 1.0f-((distanceFromStar) / starRange);
+    printf("unclamp proximity: %f\n", proximity);
+    if (proximity > 1.0f) proximity = 1.0f;
+    if (proximity < 0.0f) proximity = 0.0f;
+    printf("clamped proximity: %f\n", proximity);
+    setTrackVolume(STAR_PROXIMITY_LOOP_ID, proximity);
 }
