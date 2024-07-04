@@ -35,7 +35,7 @@
     #include "star.c"
 #endif
 
-
+#define MAXIMUM_HEALTH 100
 #define CAMERA_COAST_SPEED 3
 
 typedef struct {
@@ -65,7 +65,7 @@ void handleStarProximity(GameObj_Base *self, GameObj_Base *extobj);
 
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
-    PLAYER_DATA->health = 100; //idk!
+    PLAYER_DATA->health = MAXIMUM_HEALTH; //idk!
     PLAYER_DATA->rotateRate = 0; // velocity for rotation. affected by rotatejerk.
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
@@ -253,7 +253,7 @@ int _Player_Update(void* self, float DeltaTime) {
         Vector2 impartSelf, impartStar;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
-            PLAYER_DATA->health -= 100;
+            PLAYER_DATA->health -= MAXIMUM_HEALTH;
 
             // END STATE
 

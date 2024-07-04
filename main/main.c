@@ -78,6 +78,10 @@
 #define _background
 #include "src/objs/background.c"
 #endif
+#ifndef _healthbar
+#define _healthbar
+#include "src/healthbar.c"
+#endif
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
@@ -188,6 +192,7 @@ static void generateObjects()
     AddToPool(BACKGROUND_OBJECT_REF);
 
 
+    AddToPool(CreateHealthBar());
 
     //Wormhole Object
     WORMHOLE_OBJECT_REF = CreateWormhole();
