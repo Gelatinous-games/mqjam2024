@@ -35,9 +35,11 @@
 
 typedef struct
 {
-    long randomSeed;
+    // unsigned int randomSeed;
+    int *listRandomSequence;
     int minStars;
     int maxStars;
+    int numStars;
     Vector2 position;
     int tailLength;
 } BackgroundStars_Data;
@@ -48,8 +50,12 @@ GameObj_Base *player;
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
-    BACKGROUNDSTARS_DATA->maxStars = 10;
-    BACKGROUNDSTARS_DATA->minStars = 1;
+    SetRandomSeed(GetTime);
+    // BACKGROUNDSTARS_DATA->randomSeed =
+    BACKGROUNDSTARS_DATA->maxStars = 100;
+    BACKGROUNDSTARS_DATA->minStars = 10;
+    BACKGROUNDSTARS_DATA->numStars = GetRandomValue(BACKGROUNDSTARS_DATA->minStars, BACKGROUNDSTARS_DATA->maxStars);
+    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, -100, 100);
     BACKGROUNDSTARS_DATA->position = (Vector2){0, 0};
     BACKGROUNDSTARS_DATA->tailLength = 30;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
@@ -69,10 +75,16 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     // BackgroundStars_Data *data = THIS->data_struct;
     // draw the random stars
 
-    for (int i = 0; i < BACKGROUNDSTARS_DATA->tailLength; i++)
+    for (int i = 0; i < 10; i++)
     {
-        Vector2 pos = Vector2Add(cameraPosition, (Vector2){i * 0.1f, 0});
-        RenderCircleAbsolute(pos, 0.1f, WHITE);
+        for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; j++)
+        {
+            float xVal = 1 * (0.001 * BACKGROUNDSTARS_DATA->listRandomSequence[j]) + i * 0.05f;
+            float yVal = 1 * (0.001 * BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j]);
+            printf("%d", yVal);
+            Vector2 pos = Vector2Add(cameraPosition, (Vector2){0, yVal});
+            RenderCircleAbsolute(pos, 0.1f + (0.01f * i), WHITE);
+        }
     }
     return 0;
 }
