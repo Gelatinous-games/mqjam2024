@@ -3,6 +3,7 @@
 #include "base.h"
 
 #include "obj_register.h"
+#include "sound.h"
 
 #define COLLIDE_MAX_SPEED 3
 #define FREE_MAX_SPEED 10
@@ -12,11 +13,20 @@
 /// @param B 
 /// @return 
 int GetKeyDelta(int A, int B) {
-    if (IsKeyDown(A) && !IsKeyDown(B)) return 1;
+    if (IsKeyDown(A) && !IsKeyDown(B)){
+        setTrackVolume(THRUST_LOOP_ID, 1.0f);
+        return 1;
+    }
     else 
-    if (IsKeyDown(B) && !IsKeyDown(A)) return -1;
-    else
-    return 0;
+    if (IsKeyDown(B) && !IsKeyDown(A)){
+        setTrackVolume(THRUST_LOOP_ID, 1.0f);
+        return -1;
+    }
+    else{
+        // ..
+        setTrackVolume(THRUST_LOOP_ID, 0.0f);
+        return 0;
+    }
 }
 
 /// @brief Converts a vector to a degree angle.

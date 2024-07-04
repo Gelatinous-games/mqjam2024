@@ -272,9 +272,9 @@ void handleStarProximity(GameObj_Base *self, GameObj_Base *extobj){
     float starRange = ((_Star_Data *)(extobj->data_struct))->maxRange;
     // when we're 
     float proximity = 1.0f-((distanceFromStar) / starRange);
-    printf("unclamp proximity: %f\n", proximity);
+    // printf("unclamp proximity: %f\n", proximity);
     if (proximity > 1.0f) proximity = 1.0f;
     if (proximity < 0.0f) proximity = 0.0f;
-    printf("clamped proximity: %f\n", proximity);
+    // printf("clamped proximity: %f\n", proximity);
     setTrackVolume(STAR_PROXIMITY_LOOP_ID, proximity);
 }

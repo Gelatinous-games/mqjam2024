@@ -70,14 +70,14 @@ static void prepareSounds(){
     // looping
     TRACKS[BGMUSIC_LOOP_ID]->loopingTrack    = 1;
     TRACKS[HIT_SOUND_ID]->loopingTrack       = 0;
-    TRACKS[THRUST_LOOP_ID]->loopingTrack     = 0;
+    TRACKS[THRUST_LOOP_ID]->loopingTrack     = 1;
     TRACKS[STAR_PROXIMITY_LOOP_ID]->loopingTrack = 1;
     TRACKS[THRUST_END_ID]->loopingTrack      = 0;
     TRACKS[THRUST_START_ID]->loopingTrack    = 0;
     TRACKS[DEATH_SOUND_ID]->loopingTrack     = 0;
     // volumes
-    TRACKS[BGMUSIC_LOOP_ID]->baseVolume    = 1.0f;
-    TRACKS[HIT_SOUND_ID]->baseVolume        = 1.0f;
+    TRACKS[BGMUSIC_LOOP_ID]->baseVolume    = 0.7f;
+    TRACKS[HIT_SOUND_ID]->baseVolume        = 0.5f;
     TRACKS[THRUST_LOOP_ID]->baseVolume     = 1.0f;
     TRACKS[STAR_PROXIMITY_LOOP_ID]->baseVolume     = 1.0f;
     TRACKS[THRUST_END_ID]->baseVolume      = 1.0f;

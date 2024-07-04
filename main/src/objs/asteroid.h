@@ -229,7 +229,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
             // apply gravity vector
             Vector2 accel = GetAccelerationToSink(extobj, THIS);
             THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(accel, DeltaTime));
-            printf("Gravity acting upon asteroid with %f units of accel\n", Vector2Length(accel));
+            // printf("Gravity acting upon asteroid with %f units of accel\n", Vector2Length(accel));
         }
     }
     return 0;
