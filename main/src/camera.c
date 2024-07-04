@@ -125,6 +125,34 @@ void RenderSquareAbsolute(Vector2 pos, Vector2 size, float rotation, Color color
     DrawRectangleV(pos, size, color);
 }
 
+/// @brief Draws a circle at an absolute position with a given radius (in units) and color.
+/// @param pos 
+/// @param radius 
+/// @param color 
+void RenderCircleAbsolute(Vector2 pos, float radius, Color color) {
+    Vector2 size = (Vector2) { radius * 2, radius * 2 };
+    pos = GetScreenspacePositionAbsolute(pos, size);
+    size = GetScaledSize(size);
+
+    radius = size.x / 2;
+
+    DrawCircle(pos.x, pos.y, radius, color);
+}
+
+/// @brief Draws a circle relative to the camera with the given radius (in units) and color.
+/// @param pos 
+/// @param radius 
+/// @param color 
+void RenderCircleRelative(Vector2 pos, float radius, Color color) {
+    Vector2 size = (Vector2) { radius * 2, radius * 2 };
+    pos = GetScreenspacePositionRelative(pos, size);
+    size = GetScaledSize(size);
+
+    radius = size.x / 2;
+
+    DrawCircle(pos.x, pos.y, radius, color);
+}
+
 void RenderColliderRelative(Vector2 pos, float radius) {
     Vector2 size = (Vector2) { radius*2,  radius*2};
     pos = GetScreenspacePositionRelative(pos, size);
