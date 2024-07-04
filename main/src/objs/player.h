@@ -30,7 +30,7 @@
     #include "../misc.c"
 #endif
 
-
+#define CAMERA_COAST_SPEED 3
 
 typedef struct {
     Sprite* sprite;
@@ -50,6 +50,8 @@ int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->rotateRate = 0; // velocity for rotation. affected by rotatejerk.
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
+
+    cameraVelocity.x = CAMERA_COAST_SPEED;
 
     PLAYER_DATA->sprite = CreateSprite("resources/spaceship.png");
     return 0;
@@ -92,11 +94,13 @@ int _Player_Update(void* self, float DeltaTime) {
     }
 
     // bind position within camerabounds y
-    if (THIS->position.y > cameraBounds.y + THIS->size.y) {
-        THIS->position.y = -cameraBounds.y - THIS->size.y;
+    if (THIS->position.y > cameraBounds.y) {
+        THIS->position.y = cameraBounds.y;
+        THIS->velocity.y = 0;
     }
-    else if (THIS->position.y <= -cameraBounds.y - THIS->size.y) {
-        THIS->position.y = cameraBounds.y + THIS->size.y;
+    else if (THIS->position.y < -cameraBounds.y) {
+        THIS->position.y = -cameraBounds.y;
+        THIS->velocity.y = 0;
     }
     
     // check asteroid collisions
@@ -137,8 +141,27 @@ int _Player_Update(void* self, float DeltaTime) {
         }
     }   
 
-    // lock the camera position to myself.
-    cameraPosition.x = THIS->position.x + (THIS->velocity.x * DeltaTime * 2);
+    // check for gravity interactions
+    // TODO
+
+    // if player is dragging behind camera bounds, slow down camera until cant slowdown anymore, then speed up player
+    // if the player is too fast for camera, speed up camera then slow down player if needed.
+
+    if (THIS->position.x < cameraPosition.x - (cameraBounds.x - 1)) {
+        THIS->position.x = cameraPosition.x - (cameraBounds.x - 1);
+        THIS->velocity.x = cameraVelocity.x;
+        cameraVelocity.x = CAMERA_COAST_SPEED;
+    }
+    else if (THIS->position.x > cameraPosition.x) {
+        float delta = THIS->position.x - cameraPosition.x;
+        delta /= cameraBounds.x;
+        cameraVelocity.x = CAMERA_COAST_SPEED + (delta * ((FREE_MAX_SPEED - CAMERA_COAST_SPEED) + 1));
+    }
+
+    if (THIS->velocity.x > FREE_MAX_SPEED)
+        THIS->velocity.x = FREE_MAX_SPEED;
+
+    cameraPosition.x += cameraVelocity.x * DeltaTime;
     return 0;
 }
 
@@ -149,6 +172,7 @@ int _Player_Draw(void* self, float DeltaTime) {
 }
 
 int _Player_Destroy(void* self, float DeltaTime) {
+    DestroySprite(PLAYER_DATA->sprite);
     free(PLAYER_DATA);
 
     return 0;

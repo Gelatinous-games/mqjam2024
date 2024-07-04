@@ -14,6 +14,7 @@
 // 2d easy-understand camera stuff
 
 Vector2 cameraPosition;
+Vector2 cameraVelocity;
 Vector2 cameraBounds; // object must be within this range.
 float cameraExclude; // how far out from the camera range to cull objects. default to 10. (unimplemented)
 Vector2 cameraScreenQuarter; // maps an object via the bounds to this
