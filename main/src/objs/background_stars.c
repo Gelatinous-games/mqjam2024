@@ -10,27 +10,27 @@
 #include "../settings.h"
 
 #ifndef _camera
-    #define _camera
-    #include "../camera.c"
+#define _camera
+#include "../camera.c"
 #endif
 
 #ifndef _obj_pool
-    #define _obj_pool
-    #include "../obj_pool.c"
+#define _obj_pool
+#include "../obj_pool.c"
 #endif
 
 #ifndef _obj_particle
-    #define _obj_particle
-    #include "./particle.c"
+#define _obj_particle
+#include "./particle.c"
 #endif
 
 #ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
+#define _sprite
+#include "../sprite.c"
 #endif
 #ifndef _misc
-    #define _misc
-    #include "../misc.c"
+#define _misc
+#include "../misc.c"
 #endif
 
 typedef struct
@@ -42,7 +42,6 @@ typedef struct
 } BackgroundStars_Data;
 
 #define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
-
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
@@ -56,26 +55,19 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
 
-
-    // An example of searching for objects with neutral flag.
-    for (int i = 0; i != -1;)
-    {
-        GameObj_Base *obj;
-        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
-
-        // Check if obj is not null
-        if (!obj || i == -1)
-            break;
-
-        // Do an operation with the result...
-    }
-
     return 0;
 }
 
 int _BackgroundStars_Draw(void *self, float DeltaTime)
 {
+    BackgroundStars_Data *data = THIS->data_struct;
     // draw the random stars
+
+    THIS->position.x = 10.0f;
+    THIS->position.y = 10.0f;
+    THIS->size.x = 3.0f;
+    THIS->size.y = 3.0f;
+    //RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
     // RenderSpriteRelative(BACKGROUNDSTARS_DATA->sprite, THIS->position, THIS->size, 0, WHITE);
     return 0;
 }
@@ -93,25 +85,25 @@ GameObj_Base *CreateBackgroundStars()
 {
     GameObj_Base *obj_ptr = malloc(sizeof(GameObj_Base));
 
+    // ============================================================
+    // ==== setup the data scruct data
+    obj_ptr->data_struct = malloc(sizeof(BackgroundStars_Data));
+
+    // ============================================================
+
     obj_ptr->Init_Func = &_BackgroundStars_Init;
     obj_ptr->Update_Func = &_BackgroundStars_Update;
     obj_ptr->Draw_Func = &_BackgroundStars_Draw;
     obj_ptr->Destroy_Func = &_BackgroundStars_Destroy;
+    // ============================================================
 
     obj_ptr->awaitDestroy = 0;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
+    obj_ptr->flags = FLAG_BACKGROUND;
 
-    obj_ptr->currentLayer = LAYER_GUI;
+    obj_ptr->currentLayer = LAYER_BACKGROUND_STARSCAPE_0;
 
-    obj_ptr->radius = 0;
-    obj_ptr->mass = 100;
-
-    // initialize vectors.
-    obj_ptr->position = Vector2Zero();
-    obj_ptr->velocity = Vector2Zero();
-    obj_ptr->size = Vector2One();
     return obj_ptr;
 }
