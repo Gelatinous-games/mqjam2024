@@ -61,7 +61,7 @@ typedef struct
 
 
 
-#define BACKGROUND_SPRITE_COUNT 1
+#define BACKGROUND_SPRITE_COUNT 3
 Sprite **BACKGROUND_SPRITE_LIST;
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
@@ -72,8 +72,10 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUND_SPRITE_LIST = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT * sizeof(Sprite *));
 
     // load
-    // BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/background/bg0.png");
-    BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/kitr_temp.png");
+    BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/background/bg0.png");
+    BACKGROUND_SPRITE_LIST[1] = CreateSprite("resources/background/bg1.png");
+    BACKGROUND_SPRITE_LIST[2] = CreateSprite("resources/background/bg2.png");
+    // BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/kitr_temp.png");
     
 
     // printf("%s\n","making bg objects list");

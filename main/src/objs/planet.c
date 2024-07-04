@@ -31,20 +31,32 @@
 #endif
 
 typedef struct {
-    Sprite* sprite;
+    int spriteID;
     float distanceFromStart;
 } Planet_DataStruct;
 
 #define PLANET_DATA ((Planet_DataStruct *)(THIS->data_struct))
 
+#define PLANET_SPRITE_COUNT 2
+
+Sprite** _planetSprites;
+
 int _Planet_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
+    if(!_planetSprites){
+        _planetSprites = (Sprite **)malloc(PLANET_SPRITE_COUNT * sizeof(Sprite*));
+        _planetSprites[0] = CreateSprite("resources/planets/p0.png");
+        _planetSprites[1] = CreateSprite("resources/planets/p1.png");
+    }
+
+
 
     THIS->data_struct = malloc(sizeof(Planet_DataStruct));
 
     PLANET_DATA->distanceFromStart = -1;
-    PLANET_DATA->sprite = CreateSprite("resources/planets/p0.png");
+    // choose randome sprite
+    PLANET_DATA->spriteID = (abs((int)FLOAT_RAND)%PLANET_SPRITE_COUNT);
 
     THIS->position.x = PLANET_DATA->distanceFromStart;
     THIS->position.y = 0.5f;
@@ -79,7 +91,7 @@ int _Planet_Update(void* self, float DeltaTime) {
 int _Planet_Draw(void* self, float DeltaTime) {
     // ibid
 
-    RenderSpriteRelative(PLANET_DATA->sprite, THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(_planetSprites[PLANET_DATA->spriteID], THIS->position, THIS->size, 0, WHITE);
 
     return 0;
 }
@@ -89,7 +101,12 @@ int _Planet_Destroy(void* self, float DeltaTime) {
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    free(PLANET_DATA->sprite);
+    for(int i = 0; i < PLANET_SPRITE_COUNT; i++){
+        DestroySprite(_planetSprites[i]);
+    }
+    free(_planetSprites);
+
+
     free(PLANET_DATA);
 
     return 0;
