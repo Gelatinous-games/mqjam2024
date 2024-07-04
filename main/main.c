@@ -143,6 +143,7 @@ static void UpdateDrawFrame(void)
 {
     float DeltaTime = GetFrameTime();
     ProcessAllUpdates(DeltaTime);
+    soundUpdate();
 
     UpdateCamera3D();
     BeginDrawing();

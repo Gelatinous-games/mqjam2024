@@ -117,6 +117,20 @@ static void startSounds(){
     
 }
 
+static void soundUpdate(){
+    for (int i = 0; i < TRACK_COUNT; i++)
+    {
+        /* code */
+        if (TRACKS[i]->loopingTrack && !IsSoundPlaying(TRACKS[i]->track))
+        {
+            /* code */
+            SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
+            PlaySound(TRACKS[i]->track);      // Play WAV sound
+        }
+        
+    }
+}
+
 
 static void cleanupSounds(){
 
