@@ -49,15 +49,15 @@ typedef struct {
 
 
 
-// typedef struct {
-//     // for whether it's a background image we can tint or not
-//     int spriteType;
-//     // and the spot in the relevant list
-//     int spriteID;
+typedef struct {
+    // for whether it's a background image we can tint or not
+    int spriteType;
+    // and the spot in the relevant list
+    int spriteID;
 
-//     // for when it's not an artwork
-//     Color spriteTint;
-// } BackgroundSprite_GenerationData;
+    // for when it's not an artwork
+    Color spriteTint;
+} BackgroundSprite_GenerationData;
 
 
 
@@ -66,8 +66,7 @@ typedef struct {
 typedef struct
 {
     // the list of bg objects
-    int *backgroundObjectIDs;
-    int *backgroundObjectTypes;
+    BackgroundSprite_GenerationData *backgroundGeneratedObjects;
 
     Vector2 *backgroundObjectPositions;
     float *backgroundObjectRotations;
@@ -117,7 +116,7 @@ void prepareBackgroundGenerationData(void *self, float DeltaTime);
 void destroyBackgroundGenerationData(void *self, float DeltaTime);
 
 void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObjectIndex);
-Sprite *getCurrentSprite(void *self, float DeltaTime, int indexOfObject);
+Sprite *getCurrentSprite(void *self, float DeltaTime, BackgroundSprite_GenerationData indexOfObject);
 
 
 
@@ -153,7 +152,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
 
         // determine if we should index into our list
         // or if it was the star brush we rolled
-        Sprite *currSpritePointer = getCurrentSprite(self, DeltaTime, BACKGROUND_DATA->backgroundObjectIDs[i]);
+        Sprite *currSpritePointer = getCurrentSprite(self, DeltaTime, BACKGROUND_DATA->backgroundGeneratedObjects[i]);
         //.. ..
         RenderSpriteRelative(
             currSpritePointer,
@@ -299,7 +298,7 @@ void prepareBackgroundGenerationData(void *self, float DeltaTime){
 
     // printf("%s\n","making bg objects list");
     // object reference array
-    BACKGROUND_DATA->backgroundObjectIDs = (int *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(int));
+    BACKGROUND_DATA->backgroundGeneratedObjects = (BackgroundSprite_GenerationData *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(BackgroundSprite_GenerationData));
 
     // printf("%s\n","making bg objects positions");
     // positions array
@@ -326,7 +325,7 @@ void destroyBackgroundGenerationData(void *self, float DeltaTime){
     free(BACKGROUND_DATA->backgroundObjectPositions);
 
     // object reference array
-    free(BACKGROUND_DATA->backgroundObjectIDs);
+    free(BACKGROUND_DATA->backgroundGeneratedObjects);
 
 }
 
@@ -341,7 +340,14 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     // === assign selection
     // ------ ARTWORKS
     // TODO: implement selecting, but just mod for artwork count rn
-    BACKGROUND_DATA->backgroundObjectIDs[backgroundObjectIndex] = selectionRoll%BACKGROUND_SPRITE_COUNT_ARTWORKS;
+    BACKGROUND_DATA->backgroundGeneratedObjects[backgroundObjectIndex] = (BackgroundSprite_GenerationData){
+        // type
+        ARTWORK_SPRITE,
+        // ID
+        selectionRoll%BACKGROUND_SPRITE_COUNT_ARTWORKS,
+        // tint
+        WHITE
+    };
 
     // === positioning
     BACKGROUND_DATA->backgroundObjectPositions[backgroundObjectIndex] = (Vector2){
@@ -363,6 +369,24 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     };
 }
 
-Sprite *getCurrentSprite(void *self, float DeltaTime, int indexOfObject){
-    return backgroundSpriteList_artworks[indexOfObject];
+Sprite *getCurrentSprite(void *self, float DeltaTime, BackgroundSprite_GenerationData spriteGenerationData){
+    Sprite **spriteListToUse;
+    switch (spriteGenerationData.spriteType){
+        case ARTWORK_SPRITE:
+            spriteListToUse = backgroundSpriteList_artworks;
+            break;
+        case TINTABLE_SPRITE_SMALL:
+            spriteListToUse = backgroundSpriteList_small;
+            break;
+        case TINTABLE_SPRITE_MEDIUM:
+            spriteListToUse = backgroundSpriteList_medium;
+            break;
+        case TINTABLE_SPRITE_LARGE:
+            spriteListToUse = backgroundSpriteList_large;
+            break;
+        default:
+            printf("selection failure with type: %d\n", spriteGenerationData.spriteType);
+            return backgroundSpriteList_artworks[0];
+    }
+    return spriteListToUse[spriteGenerationData.spriteID];
 }
