@@ -1,15 +1,14 @@
-cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
+cmake_minimum_required(VERSION 3.11)
 project(gamer C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-
-# Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# Dependencies
+
 set(RAYLIB_VERSION 5.0)
-find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
-if (NOT raylib_FOUND) # If there's none, fetch and build raylib
+
+find_package(raylib ${RAYLIB_VERSION} QUIET)
+if (NOT raylib_FOUND)
   include(FetchContent)
   FetchContent_Declare(
     raylib
@@ -17,55 +16,56 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
   )
   FetchContent_GetProperties(raylib)
-  if (NOT raylib_POPULATED) # Have we downloaded raylib yet?
+  if (NOT raylib_POPULATED)
     set(FETCHCONTENT_QUIET NO)
     FetchContent_Populate(raylib)
-    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
+    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
   endif()
 endif()
 
-if(LINUX)
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(GLFW REQUIRED glfw3)
-else()
-  find_package(glfw3 REQUIRED)
+# Only look for GLFW and OpenGL if not building for Web
+if(NOT ${PLATFORM} STREQUAL "Web")
+  if(LINUX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GLFW REQUIRED glfw3)
+  else()
+    find_package(glfw3 REQUIRED)
+  endif()
+  find_package(OpenGL REQUIRED)
 endif()
-
-find_package(OpenGL REQUIRED)
-# Our Project
 
 add_executable(${PROJECT_NAME} main.c)
-#set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
-target_link_libraries(${PROJECT_NAME} glfw)
-target_link_libraries(${PROJECT_NAME} OpenGL::GL)
+
+# Copy assets to build directory
+file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
 
 # Web Configurations
+# Web Configurations
 if (${PLATFORM} STREQUAL "Web")
-    # Tell Emscripten to build an example.html file.
-    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
+  # Preload assets
+  set(ASSET_DIR "${CMAKE_BINARY_DIR}/resources")
+  file(GLOB_RECURSE ASSET_FILES "${ASSET_DIR}/*")
+  set(PRELOAD_FILES "")
+  foreach(ASSET ${ASSET_FILES})
+    file(RELATIVE_PATH ASSET_RELATIVE ${CMAKE_BINARY_DIR} ${ASSET})
+    set(PRELOAD_FILES "${PRELOAD_FILES} --preload-file ${ASSET_RELATIVE}")
+  endforeach()
+
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -s USE_GLFW=3 -s ASSERTIONS=1 -s WASM=1 -s ASYNCIFY -s GL_ENABLE_GET_PROC_ADDRESS=1 -s INITIAL_MEMORY=32MB -s ALLOW_MEMORY_GROWTH=1")
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${PRELOAD_FILES}")
+else()
+  # Only link GLFW and OpenGL for non-Web platforms
+  target_link_libraries(${PROJECT_NAME} glfw)
+  target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 endif()
+
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} "-lopengl32")
-    target_link_libraries(${PROJECT_NAME} "-lgdi32")
-    target_link_libraries(${PROJECT_NAME} "-lwinmm")
+  target_link_libraries(${PROJECT_NAME} "-lopengl32" "-lgdi32" "-lwinmm")
 endif()
-# if(LINUX)
 
-#     target_link_libraries(${PROJECT_NAME} "-lGL")
-#     target_link_libraries(${PROJECT_NAME} "-lglfw")
-#     target_link_libraries(${PROJECT_NAME} "-lm")
-#     target_link_libraries(${PROJECT_NAME} "-lpthread")
-#     target_link_libraries(${PROJECT_NAME} "-ldl")
-#     target_link_libraries(${PROJECT_NAME} "-lrt")
-#     set(GLFW_BUILD_X11)
-#     target_link_libraries(${PROJECT_NAME} "-lX11")
-
-# endif()
-# Checks if OSX and links appropriate frameworks (Only required on MacOS)
-if (APPLE)
-    target_link_libraries(${PROJECT_NAME} "-framework IOKit")
-    target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
-    target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
+if(APPLE)
+  target_link_libraries(${PROJECT_NAME} "-framework IOKit" "-framework Cocoa" "-framework OpenGL")
 endif()
