@@ -1,3 +1,4 @@
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,32 +7,37 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../settings.h"
 
 #ifndef _camera
-#define _camera
-#include "../camera.c"
+    #define _camera
+    #include "../camera.c"
 #endif
 
 #ifndef _obj_pool
-#define _obj_pool
-#include "../obj_pool.c"
+    #define _obj_pool
+    #include "../obj_pool.c"
 #endif
 
 #ifndef _obj_particle
-#define _obj_particle
-#include "./particle.c"
+    #define _obj_particle
+    #include "./particle.c"
 #endif
 
 #ifndef _sprite
-#define _sprite
-#include "../sprite.c"
+    #define _sprite
+    #include "../sprite.c"
+#endif
+#ifndef _misc
+    #define _misc
+    #include "../misc.c"
 #endif
 
 typedef struct
 {
-    float a;
-    float tmr;
-
+    long randomSeed;
+    int minStars;
+    int maxStars;
     Sprite *sprite;
 } BackgroundStars_Data;
 
@@ -40,14 +46,8 @@ typedef struct
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
-    // we have a reference to our own gameobject from which we can do things.
-    // here we should create a reference to our datastructure and store it in the data_struct pointer.
-
-
-    BACKGROUNDSTARS_DATA->a = 0;
-    BACKGROUNDSTARS_DATA->tmr = 0;
-    BACKGROUNDSTARS_DATA->sprite = CreateSprite("resources/kitr_temp.png");
-
+    // declar data
+    // BACKGROUNDSTARS_DATA->sprite = CreateSprite("resources/kitr_temp.png");
     THIS->data_struct = malloc(sizeof(BackgroundStars_Data));
 
     return 0;
@@ -56,18 +56,6 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
 
-    THIS->position.x = (float)(sin(BACKGROUNDSTARS_DATA->a * (PI / 2)) * 5);
-    BACKGROUNDSTARS_DATA->a += DeltaTime;
-
-    // An example of spawning a particle
-    BACKGROUNDSTARS_DATA->tmr += DeltaTime;
-    if (BACKGROUNDSTARS_DATA->tmr >= 0.4)
-    {
-        BACKGROUNDSTARS_DATA->tmr = 0;
-        SpawnParticle(THIS->position, (Vector2){0, 0}, (Vector2){0, 1},
-                      (Vector2){0.125, 0.125}, 2,
-                      (Color){255, 127, 0, 127}, 1);
-    }
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1;)
@@ -87,21 +75,15 @@ int _BackgroundStars_Update(void *self, float DeltaTime)
 
 int _BackgroundStars_Draw(void *self, float DeltaTime)
 {
-    // ibid
-
-    RenderSpriteRelative(BACKGROUNDSTARS_DATA->sprite, THIS->position, THIS->size, sin(BACKGROUNDSTARS_DATA->a) * 90, WHITE);
-    // RenderSquareRelative(THIS->position, THIS->size, 0, WHITE);
-
+    // draw the random stars
+    // RenderSpriteRelative(BACKGROUNDSTARS_DATA->sprite, THIS->position, THIS->size, 0, WHITE);
     return 0;
 }
 
 int _BackgroundStars_Destroy(void *self, float DeltaTime)
 {
-    // ibid.
-    // if you malloc anything, destroy it here. this includes your data package.
-
     // free our data struct here. free anything contained.
-    free(BACKGROUNDSTARS_DATA->sprite);
+    // free(BACKGROUNDSTARS_DATA->sprite);
     free(BACKGROUNDSTARS_DATA);
 
     return 0;
