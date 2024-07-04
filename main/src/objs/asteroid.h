@@ -21,12 +21,12 @@
 
 #ifndef _sprite
     #define _sprite
-    #include "src/sprite.c"
+    #include "../sprite.c"
 #endif
 
 #ifndef _obj_particle
     #define _obj_particle
-    #include "src/objs/particle.c"
+    #include "./particle.c"
 #endif
 
 #ifndef _misc
@@ -162,7 +162,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
     THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
     
     if(THIS->position.y > cameraBounds.y + THIS->size.y || THIS->position.y < -(cameraBounds.y + THIS->size.y)
-     || abs(cameraPosition.x - THIS->position.x) > 4 * cameraBounds.x ){
+     || fabsf(cameraPosition.x - THIS->position.x) > 4 * cameraBounds.x ){
         // destroy me! release me from this realm of hurt!
         // (and, also, let the asteroid_processor create a new one if it so chooses.)
         // TODO: figure out an asteroid handler!

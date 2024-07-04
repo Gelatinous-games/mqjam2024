@@ -58,6 +58,11 @@
 #include "src/obj_pool.c"
 #endif
 
+#ifndef _wormhole_obj
+    #define _wormhole_obj
+    #include "src/objs/wormhole.c"
+#endif
+
 #ifndef _background_stars
 #define _background_star
 #include "src/objs/background_stars.c"
@@ -143,4 +148,7 @@ static void generateObjects()
     // Place stars and other elements down?
     AddToPool(CreateAsteroid());
     AddToPool(CreateAsteroid());
+
+    //Wormhole Object
+    AddToPool(CreateWormhole());
 }

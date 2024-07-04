@@ -6,6 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../settings.h"
 
 
 #ifndef _camera
@@ -30,42 +31,35 @@
 #endif
 
 typedef struct {
-    float a;
-    float tmr;
     Sprite* sprite;
-} ExampleObject_Data;
+    float distanceFromStart;
 
 
-#define EXAMPLEOBJECT_DATA ((ExampleObject_Data *)(THIS->data_struct))
+} Wormhole_Data;
 
-int _ExampleObject_Init(void* self, float DeltaTime) {
+#define WORMHOLE_DATA ((Wormhole_Data *)(THIS->data_struct))
+
+int _Wormhole_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
-    THIS->data_struct = malloc(sizeof(ExampleObject_Data)); 
+    THIS->data_struct = malloc(sizeof(Wormhole_Data));
 
-    EXAMPLEOBJECT_DATA->a = 0;
-    EXAMPLEOBJECT_DATA->tmr = 0;
-    EXAMPLEOBJECT_DATA->sprite = CreateSprite("resources/kitr_temp.png");
+    WORMHOLE_DATA->distanceFromStart = 10;
+    WORMHOLE_DATA->sprite = CreateSprite("resources/kitr_temp.png");
 
+    THIS->position.x = WORMHOLE_DATA->distanceFromStart;
+    THIS->position.y = WINDOW_HEIGHT/2.0f;
+
+    THIS->size.x = 100.0f;
+    THIS->size.y = 100.0f;
 
     return 0;
 }
 
-int _ExampleObject_Update(void* self, float DeltaTime) {
+int _Wormhole_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
-
-    THIS->position.x = (float)(sin(EXAMPLEOBJECT_DATA->a * (PI / 2)) * 5);
-    EXAMPLEOBJECT_DATA->a += DeltaTime;
-
-    // An example of spawning a particle
-    EXAMPLEOBJECT_DATA->tmr += DeltaTime;
-    if (EXAMPLEOBJECT_DATA->tmr >= 0.4) {
-        EXAMPLEOBJECT_DATA->tmr = 0;
-        SpawnParticle(THIS->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
-                        (Vector2) {0.125, 0.125}, 2, 
-                        (Color) { 255, 127, 0, 127 }, 1);
-    }
+    Wormhole_Data* data = THIS->data_struct;
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {
@@ -81,41 +75,42 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
     return 0;
 }
 
-int _ExampleObject_Draw(void* self, float DeltaTime) {
+int _Wormhole_Draw(void* self, float DeltaTime) {
     // ibid
+    Wormhole_Data* data = THIS->data_struct;
 
-    RenderSpriteRelative(EXAMPLEOBJECT_DATA->sprite, THIS->position, THIS->size, sin(EXAMPLEOBJECT_DATA->a)*90, WHITE);
-    //RenderSquareRelative(THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
 
     return 0;
 }
 
-int _ExampleObject_Destroy(void* self, float DeltaTime) {
+int _Wormhole_Destroy(void* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    free(EXAMPLEOBJECT_DATA->sprite);
-    free(EXAMPLEOBJECT_DATA);
+    Wormhole_Data* data = THIS->data_struct;
+    free(data->sprite);
+    free(data);
 
     return 0;
 }
 
-GameObj_Base* CreateExampleObject() {
+GameObj_Base* CreateWormhole() {
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
-    obj_ptr->Init_Func = &_ExampleObject_Init;
-    obj_ptr->Update_Func = &_ExampleObject_Update;
-    obj_ptr->Draw_Func = &_ExampleObject_Draw;
-    obj_ptr->Destroy_Func = &_ExampleObject_Destroy;
+    obj_ptr->Init_Func = &_Wormhole_Init;
+    obj_ptr->Update_Func = &_Wormhole_Update;
+    obj_ptr->Draw_Func = &_Wormhole_Draw;
+    obj_ptr->Destroy_Func = &_Wormhole_Destroy;
 
     obj_ptr->awaitDestroy = 0;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
+    obj_ptr->flags = FLAG_WORMHOLE;
 
-    obj_ptr->currentLayer = LAYER_GUI;
+    obj_ptr->currentLayer = LAYER_WORMHOLE;
 
     obj_ptr->radius = 0;
     obj_ptr->mass = 100;
@@ -124,6 +119,5 @@ GameObj_Base* CreateExampleObject() {
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size = Vector2One();
-    
     return obj_ptr;
 }

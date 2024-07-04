@@ -10,23 +10,27 @@
 #include "../settings.h"
 
 #ifndef _camera
-#define _camera
-#include "../camera.c"
+    #define _camera
+    #include "../camera.c"
 #endif
 
 #ifndef _obj_pool
-#define _obj_pool
-#include "../obj_pool.c"
+    #define _obj_pool
+    #include "../obj_pool.c"
 #endif
 
 #ifndef _obj_particle
-#define _obj_particle
-#include "src/objs/particle.c"
+    #define _obj_particle
+    #include "./particle.c"
 #endif
 
+#ifndef _sprite
+    #define _sprite
+    #include "../sprite.c"
+#endif
 #ifndef _misc
-#define _misc
-#include "../misc.c"
+    #define _misc
+    #include "../misc.c"
 #endif
 
 typedef struct
@@ -34,13 +38,17 @@ typedef struct
     long randomSeed;
     int minStars;
     int maxStars;
+    Sprite *sprite;
 } BackgroundStars_Data;
 
-#define BACKGROUND_STARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
+#define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
+
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
     // declar data
+    // BACKGROUNDSTARS_DATA->sprite = CreateSprite("resources/kitr_temp.png");
+    THIS->data_struct = malloc(sizeof(BackgroundStars_Data));
 
     return 0;
 }
@@ -48,18 +56,35 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
 
+
+    // An example of searching for objects with neutral flag.
+    for (int i = 0; i != -1;)
+    {
+        GameObj_Base *obj;
+        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
+
+        // Check if obj is not null
+        if (!obj || i == -1)
+            break;
+
+        // Do an operation with the result...
+    }
+
     return 0;
 }
 
 int _BackgroundStars_Draw(void *self, float DeltaTime)
 {
     // draw the random stars
+    // RenderSpriteRelative(BACKGROUNDSTARS_DATA->sprite, THIS->position, THIS->size, 0, WHITE);
     return 0;
 }
 
 int _BackgroundStars_Destroy(void *self, float DeltaTime)
 {
-    free(BACKGROUND_STARS_DATA);
+    // free our data struct here. free anything contained.
+    // free(BACKGROUNDSTARS_DATA->sprite);
+    free(BACKGROUNDSTARS_DATA);
 
     return 0;
 }
