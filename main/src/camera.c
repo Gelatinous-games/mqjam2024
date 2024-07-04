@@ -125,18 +125,6 @@ void RenderSquareAbsolute(Vector2 pos, Vector2 size, float rotation, Color color
     DrawRectangleV(pos, size, color);
 }
 
-/// @brief Renders a square at the relative provided position, rotation & color.
-/// @param pos 
-/// @param size 
-/// @param rotation 
-/// @param color 
-void RenderSquareRelative(Vector2 pos, Vector2 size, float rotation, Color color) {
-    pos = GetScreenspacePositionRelative(pos, size);
-    size = GetScaledSize(size);
-
-    DrawRectangleV(pos, size, color);
-}
-
 /// @brief Draws a circle at an absolute position with a given radius (in units) and color.
 /// @param pos 
 /// @param radius 
