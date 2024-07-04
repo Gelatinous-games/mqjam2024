@@ -43,6 +43,11 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
     * *if you want, an approaching wormhole/planet loop would be nice*
 * you guys have done amazing!
 
+#### === Music usage
+
+* looks like `.mp3` exists
+    * [here is example code](https://www.raylib.com/examples/audio/loader.html?name=audio_music_stream)
+
 ### Features/workables
 
 #### === Scene manager ===
