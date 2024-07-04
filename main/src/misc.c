@@ -2,6 +2,9 @@
 #include "raymath.h"
 #include "base.h"
 
+#include "obj_register.h"
+#include "sound.h"
+
 #define COLLIDE_MAX_SPEED 3
 #define FREE_MAX_SPEED 10
 
@@ -10,11 +13,20 @@
 /// @param B 
 /// @return 
 int GetKeyDelta(int A, int B) {
-    if (IsKeyDown(A) && !IsKeyDown(B)) return 1;
+    if (IsKeyDown(A) && !IsKeyDown(B)){
+        setTrackVolume(THRUST_LOOP_ID, 1.0f);
+        return 1;
+    }
     else 
-    if (IsKeyDown(B) && !IsKeyDown(A)) return -1;
-    else
-    return 0;
+    if (IsKeyDown(B) && !IsKeyDown(A)){
+        setTrackVolume(THRUST_LOOP_ID, 1.0f);
+        return -1;
+    }
+    else{
+        // ..
+        setTrackVolume(THRUST_LOOP_ID, 0.0f);
+        return 0;
+    }
 }
 
 /// @brief Converts a vector to a degree angle.
@@ -38,10 +50,33 @@ float Vec2Dist(Vector2 a, Vector2 b) {
 /// @return 
 char GetCollided(GameObj_Base* A, GameObj_Base* B, Vector2* impartA, Vector2* impartB) {
     float dist = Vec2Dist(A->position, B->position);
-    printf("dist is %d to sum radius %d\n", dist, A->radius + B->radius);
-    if (dist >= fabsf(A->radius) + fabsf(B->radius)) return 0;
+    // printf("dist is %f to sum radius %f (%f + %f)\n", dist, A->radius + B->radius, A->radius, B->radius);
+    if (dist >= (fabsf(A->radius) + fabsf(B->radius))) return 0;
 
     // THE MESSY TASK OF CALCULATING IMPARTED VELOCITIES.
+
+    // one is player
+    if((A->flags)&FLAG_PLAYER_OBJECT|(B->flags)&FLAG_PLAYER_OBJECT){
+        // player impacting somehting - not star
+        if(!((A->flags)&FLAG_GRAVITY_WELL|(B->flags)&FLAG_GRAVITY_WELL)){
+            playSoundOnce(HIT_SOUND_ID);
+        }
+    }
+
+    if ((A->flags)&FLAG_ASTEROID)
+    {
+        // printf("%s\n","A is asteroid");
+    }
+    if ((B->flags)&FLAG_ASTEROID)
+    {
+        // printf("%s\n","B is asteroid");
+    }
+
+    if ((A->flags)&(B->flags)&FLAG_ASTEROID)
+    {
+        // printf("%s\n","asteroid to asteroid collision");
+    }
+    
 
     // figure out the angles from each to each other
     Vector2 angle_A_B = Vector2Subtract(B->position, A->position);

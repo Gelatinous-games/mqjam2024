@@ -33,8 +33,6 @@
 typedef struct {
     Sprite* sprite;
     float distanceFromStart;
-
-
 } Wormhole_Data;
 
 #define WORMHOLE_DATA ((Wormhole_Data *)(THIS->data_struct))
@@ -45,21 +43,27 @@ int _Wormhole_Init(void* self, float DeltaTime) {
 
     THIS->data_struct = malloc(sizeof(Wormhole_Data));
 
-    WORMHOLE_DATA->distanceFromStart = 10;
-    WORMHOLE_DATA->sprite = CreateSprite("resources/kitr_temp.png");
+    WORMHOLE_DATA->distanceFromStart = 100;
+    WORMHOLE_DATA->sprite = CreateSprite("resources/wormhole/w1.png");
 
     THIS->position.x = WORMHOLE_DATA->distanceFromStart;
-    THIS->position.y = WINDOW_HEIGHT/2.0f;
+    THIS->position.y = 0.5f;
 
-    THIS->size.x = 100.0f;
-    THIS->size.y = 100.0f;
+    THIS->size.x = 5.0f;
+    THIS->size.y = 5.0f;
 
     return 0;
 }
 
 int _Wormhole_Update(void* self, float DeltaTime) {
+    
     // we can cast our data struct to the right data like so:
     Wormhole_Data* data = THIS->data_struct;
+
+    // // dont let the player past the wormhole
+    // if (PLAYER_OBJECT_REF->position.x > THIS->position.x) {
+    //     PLAYER_OBJECT_REF->position.x = THIS->position.x;
+    // }
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {

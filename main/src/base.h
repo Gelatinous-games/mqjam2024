@@ -8,9 +8,15 @@
 #include "raymath.h"
 
 #define THIS ((GameObj_Base *)self)
+#ifndef _WIN32
+// unix randoming
+#define FLOAT_RAND ((float)(random()) / (float)RAND_MAX)
+#define CHAR_RAND ((char)(random() & 0xff))
+#else
+// windows randoming
 #define FLOAT_RAND ((float)(rand()) / (float)RAND_MAX)
 #define CHAR_RAND ((char)(rand() & 0xff))
-
+#endif
 typedef struct {
     // a structure to refer to for all unique data on this object. void type, so will require casting to the particular func type.
     void* data_struct; 

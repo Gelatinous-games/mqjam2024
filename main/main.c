@@ -23,8 +23,6 @@
 #define invoken(a, b) a->b(a->self)
 #define invoke(a, b, ...) a->b(a->self, __VA_ARGS__)
 
-#define FRAMERATE 60
-
 // standard library includes
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,9 +37,12 @@
 // project header includes
 #include "src/settings.h"
 #include "src/base.h"
+#include "src/sound.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
 #include "src/objs/player.h"
+
+#include "src/timer.c"
 
 #ifndef _obj_example
 #define _obj_example
@@ -58,6 +59,12 @@
 #include "src/obj_pool.c"
 #endif
 
+#ifndef _star_obj
+    #define _star_obj
+    #include "src/objs/star.c"
+#endif
+
+
 #ifndef _wormhole_obj
 #define _wormhole_obj
 #include "src/objs/wormhole.c"
@@ -72,9 +79,13 @@ static void UpdateDrawFrame(void); // Update and draw one frame
 
 // let C know this exists
 static void generateObjects();
+static void prepareSounds();
+static void cleanupSounds();
 
 int main()
 {
+    gettimeofday(&timerStart, NULL);
+
     SetExitKey(KEY_F4); // Lets not make it *too* easy to leave lol
 
     cameraScreenQuarter.x = WINDOW_WIDTH / 2;
@@ -86,8 +97,16 @@ int main()
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
     layerCount = 10;
 
+    // Initialization
+    //--------------------------------------------------------------------------------------
     GameObjPoolInit();
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
+    InitAudioDevice();      // Initialize audio device
+    //--------------------------------------------------------------------------------------
+
+    prepareSounds();
+    setAllTracksVolume(0.5f);
+    startSounds();
 
     generateObjects();
 
@@ -104,12 +123,17 @@ int main()
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
 
+    cleanupSounds();
+
     // De-Initialization
     //--------------------------------------------------------------------------------------
+    CloseAudioDevice();     // Close audio device
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     GameObjPoolDestroy();
+
+    free(ASTEROID_REF_LIST);
 
     return 0;
 }
@@ -124,6 +148,7 @@ static void UpdateDrawFrame(void)
     BeginDrawing();
     ClearBackground(BLACK);
     ProcessAllDraws(DeltaTime);
+    drawTimer();
     EndDrawing();
 
     ProcessFreshAdd();
@@ -140,15 +165,25 @@ static void generateObjects()
     AddToPool(CreateParticleObject());
 
     // Player object.
-    AddToPool(CreatePlayer());
+    PLAYER_OBJECT_REF = CreatePlayer();
+    AddToPool(PLAYER_OBJECT_REF);
 
     // Asteroid object.
     // TODO: succeed with an asteroid handler that can scale up & down asteroids.
     // Decide upon some criteria for how asteroid handler should work - should it control the scene?
     // Place stars and other elements down?
-    AddToPool(CreateAsteroid());
-    AddToPool(CreateAsteroid());
+    ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *)*NUMBER_OF_ASTEROIDS);
+    for (int i = 0; i < NUMBER_OF_ASTEROIDS; i++)
+    {
+        /* code */
+        ASTEROID_REF_LIST[i] = CreateAsteroid();
+        AddToPool(ASTEROID_REF_LIST[i]);
+    }
+    
+    WORMHOLE_OBJECT_REF = CreateWormhole();
+    //Wormhole Object
+    AddToPool(WORMHOLE_OBJECT_REF);
 
-    // Wormhole Object
-    AddToPool(CreateWormhole());
+    STAR_OBJECT_REF = CreateStarObject();
+    AddToPool(STAR_OBJECT_REF);
 }
