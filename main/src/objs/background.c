@@ -64,10 +64,14 @@ typedef struct
 #define BACKGROUND_SPRITE_COUNT 6
 Sprite **BACKGROUND_SPRITE_LIST;
 
+Sprite *STAR_BRUSH_SPRITE;
+
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
     // printf("%s\n","initialising sprite list");
     
+    STAR_BRUSH_SPRITE = CreateSprite("resources/background/starBrush.png");
+
     // malloc
     BACKGROUND_SPRITE_LIST = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT * sizeof(Sprite *));
 
@@ -93,10 +97,14 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     // scale array
     BACKGROUND_DATA->backgroundObjectScales = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
 
+    int timesWeCanRollStarBrush = 3;
+
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++){
         // roll
         // printf("rolling %d\n",i);
-        BACKGROUND_DATA->backgroundObjectIDs[i] = abs((INT_RAND)%BACKGROUND_SPRITE_COUNT);
+
+        // add 1 to the count, and make the (-timesWeCanRollStarBrush) if it happens
+        BACKGROUND_DATA->backgroundObjectIDs[i] = abs((INT_RAND)%(BACKGROUND_SPRITE_COUNT+timesWeCanRollStarBrush))-timesWeCanRollStarBrush;
         BACKGROUND_DATA->backgroundObjectPositions[i] = (Vector2){
             (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_X),
             (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_Y-MAX_BACKGROUND_SPAWN_DISTANCE_Y/2.0f)
@@ -104,14 +112,33 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
         // rotater
         BACKGROUND_DATA->backgroundObjectRotations[i] = FLOAT_RAND*360.0f;
 
-        // generate two random percentage values 
-        float xScaleRand = FLOAT_RAND;
-        float yScaleRand = FLOAT_RAND;
-        // then lerp between the minimum and maximum
-        BACKGROUND_DATA->backgroundObjectScales[i] = (Vector2){
-            ((1.0f-xScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_X+(xScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_X),
-            ((1.0f-yScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_Y+(yScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_Y)
-        };
+        // normal roll
+        if(BACKGROUND_DATA->backgroundObjectIDs[i]>=0){
+            // ...
+            // generate two random percentage values 
+            float xScaleRand = FLOAT_RAND;
+            float yScaleRand = FLOAT_RAND;
+            // then lerp between the minimum and maximum
+            BACKGROUND_DATA->backgroundObjectScales[i] = (Vector2){
+                ((1.0f-xScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_X+(xScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_X),
+                ((1.0f-yScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_Y+(yScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_Y)
+            };
+        }
+        else {
+            // got a star roll
+            float baseScale = MIN_BACKGROUND_SPAWN_SCALE_X;
+            // at least 2/10
+            float scaleRand = (FLOAT_RAND*0.8f)+0.2f;
+            
+            float xScaleRand = scaleRand*baseScale;
+            float yScaleRand = scaleRand*baseScale;
+            
+            // then lerp between the minimum and maximum
+            BACKGROUND_DATA->backgroundObjectScales[i] = (Vector2){
+                ((1.0f-xScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_X+(xScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_X),
+                ((1.0f-yScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_Y+(yScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_Y)
+            };
+        }
     }
 
     return 0;
@@ -136,14 +163,20 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
         int currSpriteID = BACKGROUND_DATA->backgroundObjectIDs[i];
         Vector2 currSpritePosition = BACKGROUND_DATA->backgroundObjectPositions[i];
         // printf("attempting with [%d] - id of %d, x: %f, y: %f\n",i,currSpriteID,currSpritePosition.x,currSpritePosition.y);
+
+        // determine if we should index into our list
+        // or if it was the star brush we rolled
+        Sprite *currSpritePointer = (currSpriteID >= 0)? BACKGROUND_SPRITE_LIST[currSpriteID] : STAR_BRUSH_SPRITE;
+        //.. ..
         RenderSpriteRelative(
-            BACKGROUND_SPRITE_LIST[currSpriteID],
+            currSpritePointer,
             (Vector2){
                 THIS->position.x + currSpritePosition.x,
                 THIS->position.x + currSpritePosition.y
             },
             BACKGROUND_DATA->backgroundObjectScales[i],
             BACKGROUND_DATA->backgroundObjectRotations[i],
+            // TODO: should mess with tint when it's star brush sprite
             WHITE
         );
     }
@@ -156,7 +189,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
 int _BackgroundStars_Destroy(void *self, float DeltaTime)
 {
     // free our data struct here. free anything contained.
-
+    DestroySprite(STAR_BRUSH_SPRITE);
     for(int i = 0; i < BACKGROUND_SPRITE_COUNT; i++){
         DestroySprite(BACKGROUND_SPRITE_LIST[i]);
     }
