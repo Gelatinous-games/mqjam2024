@@ -33,3 +33,65 @@ This sprite object can be passed to the variants of RenderSprite to draw it at a
 ```bash
 cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 ```
+
+
+## Planning things
+
+###  Sound / Music
+
+* idk, u guys get free reign, just let us know if it's meant to loop or just play once
+    * *if you want, an approaching wormhole/planet loop would be nice*
+* you guys have done amazing!
+
+### Features/workables
+
+#### === Scene manager ===
+
+* some way to handle the state of the game/which scene we're on
+* is it main menu? is it game over? is it playing?
+    * can enum though
+* should then only draw game when is playing state
+* raylib/raygui has ui stuff for buttons, we should use this for menus
+    * then we can make cool themes
+    * check out the examples on the raylib webpage
+    * raygui should be built into raylib but idk
+
+#### === Planet/Wormhole approaching ===
+
+* needs a thing for handling when we approach the planet or the wormhole
+    * if immediately go back to planet, maybe that's shop or something
+* refering to the planets / wormholes as "*interactable*"
+* grow when departing *interactable*
+* shrink when approaching *interactable*
+
+#### === Health ===
+
+* needs something to happen when we run out of health
+* how do we regain health? over time? we can ++ the health int then while it's `health < 100`
+* should the gas bar aurora made be the health or boost or thrown in the bin?
+    * sprite needs work, maybe seperate to layers
+
+
+#### === Sprite layering ===
+
+* needs something to handle multi-layer sprites so we can transform individual layers
+* can just be an array
+* probably also handles tinting layers
+
+#### === light shifting ===
+
+* whemstve the henk light shift go? do stars?
+
+#### === Sprite managing ===
+
+* ***SCOPE CREEP***
+* should all sprites be in a manager as already loaded then we ask by ID?
+* KV table or something? makes it less painful to add new ones
+
+#### === Effects ===
+
+* ***SCOPE CREEP***
+* scripts for handling specific particle scenarios
+* explosion / trail / impact / debris / forcefield
+* just an object for manipulating particles specific to the scenario
+* strategy pattern kinda vibe so we can just add the effect to anything and reuse
