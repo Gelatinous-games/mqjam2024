@@ -7,6 +7,8 @@
 
 #define TAU 6.28318530718f
 
+#define FRAMERATE 60
+
 const static int WINDOW_WIDTH = 1366;
 const static int WINDOW_HEIGHT = 768;
 
@@ -20,4 +22,3 @@ static GameObj_Base *WORMHOLE_OBJECT_REF;
 static GameObj_Base *STAR_OBJECT_REF;
 
 
-static Sound *MAINSOUNDLOOP;

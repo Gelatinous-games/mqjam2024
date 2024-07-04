@@ -23,8 +23,6 @@
 #define invoken(a, b) a->b(a->self)
 #define invoke(a, b, ...) a->b(a->self, __VA_ARGS__)
 
-#define FRAMERATE 60
-
 // standard library includes
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +37,7 @@
 // project header includes
 #include "src/settings.h"
 #include "src/base.h"
+#include "src/sound.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
 #include "src/objs/player.h"
@@ -106,8 +105,8 @@ int main()
     //--------------------------------------------------------------------------------------
 
     prepareSounds();
-    SetMasterVolume(0.5f);
-    PlaySound(*MAINSOUNDLOOP);      // Play WAV sound
+    setAllTracksVolume(0.5f);
+    startSounds();
 
     generateObjects();
 
@@ -187,18 +186,4 @@ static void generateObjects()
 
     STAR_OBJECT_REF = CreateStarObject();
     AddToPool(STAR_OBJECT_REF);
-}
-
-static void prepareSounds(){
-    // init
-    MAINSOUNDLOOP = (Sound *)malloc(sizeof(Sound));
-    // load
-    *MAINSOUNDLOOP = LoadSound("resources/SFX/MQGameJam_Music_loop.wav");         // Load WAV audio file
-}
-
-static void cleanupSounds(){
-    // unload 
-    UnloadSound(*MAINSOUNDLOOP);     // Unload sound data
-    // deinit
-    free(MAINSOUNDLOOP);
 }
