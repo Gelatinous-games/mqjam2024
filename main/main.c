@@ -59,6 +59,11 @@
     #include "src/obj_pool.c"
 #endif
 
+#ifndef _wormhole_obj
+    #define _wormhole_obj
+    #include "src/objs/wormhole.c"
+#endif
+
 
 
 static void UpdateDrawFrame(void);          // Update and draw one frame
@@ -140,4 +145,7 @@ static void generateObjects(){
     // Place stars and other elements down?
     AddToPool(CreateAsteroid());
     AddToPool(CreateAsteroid());
+
+    //Wormhole Object
+    AddToPool(CreateWormhole());
 }

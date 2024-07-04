@@ -31,8 +31,6 @@
 #endif
 
 typedef struct {
-    float a;
-    float tmr;
     Sprite* sprite;
     float distanceFromStart;
 
@@ -53,8 +51,8 @@ int _Wormhole_Init(void* self, float DeltaTime) {
     THIS->position.x = WORMHOLE_DATA->distanceFromStart;
     THIS->position.y = WINDOW_HEIGHT/2.0f;
 
-    THIS->size.x = 10.0f;
-    THIS->size.y = 10.0f;
+    THIS->size.x = 100.0f;
+    THIS->size.y = 100.0f;
 
     return 0;
 }
@@ -98,7 +96,7 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
     return 0;
 }
 
-GameObj_Base* CreateWormholeObject() {
+GameObj_Base* CreateWormhole() {
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_Wormhole_Init;
@@ -110,9 +108,9 @@ GameObj_Base* CreateWormholeObject() {
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
+    obj_ptr->flags = FLAG_WORMHOLE;
 
-    obj_ptr->currentLayer = LAYER_GUI;
+    obj_ptr->currentLayer = LAYER_WORMHOLE;
 
     obj_ptr->radius = 0;
     obj_ptr->mass = 100;
