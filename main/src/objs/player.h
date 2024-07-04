@@ -45,10 +45,19 @@ typedef struct {
     float rotateRate;
     float accelRate;
     float health;
-
 } Player_Data;
 
 #define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
+
+
+enum PLAYER_STATE {
+    PLAYER_STATE_NOTHRUST = 0,
+    PLAYER_STATE_STOPTHRUST = 1,
+    PLAYER_STATE_STARTTHRUST = 2,
+    PLAYER_STATE_THRUSTING = 3
+};
+
+int CURRENT_PLAYER_STATE = PLAYER_STATE_NOTHRUST;
 
 // prepare
 void handleStarProximity(GameObj_Base *self, GameObj_Base *extobj);
@@ -68,6 +77,66 @@ int _Player_Init(void* self, float DeltaTime) {
 }
 
 int _Player_Update(void* self, float DeltaTime) {
+    // ================
+    // when starting to thrust
+    float trackSettingVolume = 0.0f;
+    if (
+        IsKeyDown(KEY_W) ||
+        IsKeyDown(KEY_A) ||
+        IsKeyDown(KEY_S) ||
+        IsKeyDown(KEY_D)
+    ) {
+        // forward backwards max, just rotate is half volume
+        if(IsKeyDown(KEY_W)||IsKeyDown(KEY_S)){
+            // full volume
+            trackSettingVolume = 1.0;
+        }else {
+            // half
+            trackSettingVolume = 0.5;
+        }
+        // is it new OR were we ending
+        if( CURRENT_PLAYER_STATE < PLAYER_STATE_STARTTHRUST ){
+            CURRENT_PLAYER_STATE=PLAYER_STATE_STARTTHRUST;
+            setTrackVolume(THRUST_END_ID, 0.0f);
+            setTrackVolume(THRUST_START_ID, trackSettingVolume);
+            playSoundOnce(THRUST_START_ID);
+        }
+        // check start sound finished
+        else if(CURRENT_PLAYER_STATE==PLAYER_STATE_STARTTHRUST && !IsSoundPlaying(TRACKS[THRUST_START_ID]->track)){
+            // swap volume to loop
+            setTrackVolume(THRUST_START_ID, 0.0f);
+            setTrackVolume(THRUST_LOOP_ID, trackSettingVolume);
+            // change state
+            CURRENT_PLAYER_STATE=PLAYER_STATE_THRUSTING;
+        }
+    }
+    else
+    {
+        // STARTING OR LOOPING
+        if(CURRENT_PLAYER_STATE>PLAYER_STATE_STOPTHRUST){
+            // turn on only the end sound
+            setTrackVolume(THRUST_END_ID, 1.0f);
+            setTrackVolume(THRUST_START_ID, 0.0f);
+            setTrackVolume(THRUST_LOOP_ID, 0.0f);
+            // but also play it
+            playSoundOnce(THRUST_END_ID);
+            CURRENT_PLAYER_STATE=PLAYER_STATE_STOPTHRUST;
+        }
+        // STOPPING and finished playing
+        else {
+            // 0 volume all of them
+            setTrackVolume(THRUST_END_ID, 0.0f);
+            setTrackVolume(THRUST_START_ID, 0.0f);
+            setTrackVolume(THRUST_LOOP_ID, 0.0f);
+            // change state to no thrust
+            CURRENT_PLAYER_STATE=PLAYER_STATE_NOTHRUST;
+        }
+    }
+    
+
+
+
+    // ================
     // Default steering movement NOT STRAFING mode.
     int rotate_delta = GetKeyDelta(KEY_D, KEY_A);
     if (rotate_delta) {
