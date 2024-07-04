@@ -43,6 +43,8 @@
 #include "src/objs/asteroid.h"
 #include "src/objs/player.h"
 
+#include "src/timer.c"
+
 #ifndef _obj_example
 #define _obj_example
 #include "src/objs/Object_Example.c"
@@ -128,6 +130,7 @@ static void UpdateDrawFrame(void)
     BeginDrawing();
     ClearBackground(BLACK);
     ProcessAllDraws(DeltaTime);
+    drawTimer();
     EndDrawing();
 
     ProcessFreshAdd();
