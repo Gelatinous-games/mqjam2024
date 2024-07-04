@@ -35,7 +35,6 @@
 
 typedef struct {
     float maxRange;
-    float minRange;
 
     float maxPull;
 } _Star_Data;
@@ -57,7 +56,7 @@ void _StarObject_Randomize(void* self) {
         originVel = player->velocity;
     }
 
-    THIS->position.x = 8 * ((FLOAT_RAND * cameraBounds.x * 2) - cameraBounds.x); 
+    THIS->position.x = 8 * (FLOAT_RAND * cameraBounds.x); 
     THIS->position.x += originPos.x;
 
     THIS->position.y = ((FLOAT_RAND) * cameraBounds.y * 2) - cameraBounds.y;
@@ -82,7 +81,7 @@ int _StarObject_Update(void* self, float DeltaTime) {
 int _StarObject_Draw(void* self, float DeltaTime) {
 
     // todo: red/blueshift rendering.
-
+    RenderColliderRelative(THIS->position, THIS->radius);
     return 0;
 }
 

@@ -101,8 +101,8 @@ void _Asteroid_Randomize(void *self) {
     THIS->radius = (rng - 0.125) / 2;
 
     // X position, always near player x and generates within camera bounds
-    THIS->position = (Vector2) { (FLOAT_RAND * cameraBounds.x * 2) - cameraBounds.x + originPos.x, -cameraBounds.y - THIS->size.y};
-
+    THIS->position = (Vector2) { (FLOAT_RAND * cameraBounds.x * 2) + cameraPosition.x, -cameraBounds.y - THIS->size.y};
+    
     // Horizontal velocity: between 1 and -1
     THIS->velocity = (Vector2) { (FLOAT_RAND * 2) - 1, 1 };
     THIS->velocity = Vector2Normalize(THIS->velocity);
@@ -214,7 +214,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
 int _Asteroid_Draw(void* self, float DeltaTime) {
     // TODO: red/blue shift calculation.
     RenderSpriteRelative(_asteroidSprites[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
-    // RenderColliderRelative(THIS->position, THIS->radius); // debug function
+    RenderColliderRelative(THIS->position, THIS->radius); // debug function
     return 0;
 }
 
