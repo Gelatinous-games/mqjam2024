@@ -140,7 +140,8 @@ static void generateObjects()
     AddToPool(CreateParticleObject());
 
     // Player object.
-    AddToPool(CreatePlayer());
+    PLAYER_OBJECT_REF = CreatePlayer();
+    AddToPool(PLAYER_OBJECT_REF);
 
     // Asteroid object.
     // TODO: succeed with an asteroid handler that can scale up & down asteroids.

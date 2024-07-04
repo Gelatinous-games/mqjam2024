@@ -38,7 +38,7 @@ float Vec2Dist(Vector2 a, Vector2 b) {
 /// @return 
 char GetCollided(GameObj_Base* A, GameObj_Base* B, Vector2* impartA, Vector2* impartB) {
     float dist = Vec2Dist(A->position, B->position);
-    printf("dist is %d to sum radius %d\n", dist, A->radius + B->radius);
+    printf("dist is %f to sum radius %f\n", dist, A->radius + B->radius);
     if (dist >= fabsf(A->radius) + fabsf(B->radius)) return 0;
 
     // THE MESSY TASK OF CALCULATING IMPARTED VELOCITIES.
