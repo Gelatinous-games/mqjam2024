@@ -2,6 +2,8 @@
 #include "raymath.h"
 #include "base.h"
 
+#include "obj_register.h"
+
 #define COLLIDE_MAX_SPEED 3
 #define FREE_MAX_SPEED 10
 

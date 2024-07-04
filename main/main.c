@@ -43,6 +43,8 @@
 #include "src/objs/asteroid.h"
 #include "src/objs/player.h"
 
+#include "src/timer.c"
+
 #ifndef _obj_example
 #define _obj_example
 #include "src/objs/Object_Example.c"
@@ -83,6 +85,8 @@ static void cleanupSounds();
 
 int main()
 {
+    gettimeofday(&timerStart, NULL);
+
     SetExitKey(KEY_F4); // Lets not make it *too* easy to leave lol
 
     cameraScreenQuarter.x = WINDOW_WIDTH / 2;
@@ -145,6 +149,7 @@ static void UpdateDrawFrame(void)
     BeginDrawing();
     ClearBackground(BLACK);
     ProcessAllDraws(DeltaTime);
+    drawTimer();
     EndDrawing();
 
     ProcessFreshAdd();
