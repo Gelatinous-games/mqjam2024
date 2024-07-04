@@ -61,7 +61,7 @@ typedef struct
 
 
 
-#define BACKGROUND_SPRITE_COUNT 3
+#define BACKGROUND_SPRITE_COUNT 6
 Sprite **BACKGROUND_SPRITE_LIST;
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
@@ -75,6 +75,9 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/background/bg0.png");
     BACKGROUND_SPRITE_LIST[1] = CreateSprite("resources/background/bg1.png");
     BACKGROUND_SPRITE_LIST[2] = CreateSprite("resources/background/bg2.png");
+    BACKGROUND_SPRITE_LIST[3] = CreateSprite("resources/background/bg3.png");
+    BACKGROUND_SPRITE_LIST[4] = CreateSprite("resources/background/bg4.png");
+    BACKGROUND_SPRITE_LIST[5] = CreateSprite("resources/background/bg5.png");
     // BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/kitr_temp.png");
     
 

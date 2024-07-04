@@ -72,7 +72,7 @@ int _Player_Init(void* self, float DeltaTime) {
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
 
-    PLAYER_DATA->sprite = CreateSprite("resources/spaceship.png");
+    PLAYER_DATA->sprite = CreateSprite("resources/spaceship_outlined.png");
     return 0;
 }
 
