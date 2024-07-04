@@ -65,7 +65,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
 
     Vector2 dotPos = (Vector2){0.0f, 0.0f};
 
-    RenderCircleAbsolute(dotPos, 10, WHITE);
+    RenderCircleAbsolute(dotPos, 0.1f, WHITE);
     return 0;
 }
 
