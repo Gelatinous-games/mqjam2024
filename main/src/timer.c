@@ -2,7 +2,6 @@
 #include <time.h>
 
 #include "raylib.h"
-#include "raymath.h"
 
 #include "./settings.h"
 

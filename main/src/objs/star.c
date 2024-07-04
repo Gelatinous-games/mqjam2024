@@ -35,12 +35,17 @@
 
 #define STAR_RANDOM_RANGE 4
 
+#define STAR_SPRITE_COUNT 1
+
 typedef struct {
     float maxRange;
     float maxPull;
+    int spriteID;
 } _Star_Data;
 
 #define STAR_DATA ((_Star_Data *)(THIS->data_struct))
+
+Sprite** _starSprites;
 
 void _StarObject_Randomize(void* self) {
     Vector2 originPos;
@@ -56,6 +61,11 @@ void _StarObject_Randomize(void* self) {
         originPos = player->position;
         originVel = player->velocity;
     }
+
+
+    // sprite
+    STAR_DATA->spriteID = (int)(FLOAT_RAND * STAR_SPRITE_COUNT);
+    if (STAR_DATA->spriteID == STAR_SPRITE_COUNT) STAR_DATA->spriteID = STAR_SPRITE_COUNT-1;
 
     THIS->position.x = (STAR_RANDOM_RANGE * FLOAT_RAND * cameraBounds.x) + ( 2 * cameraBounds.x); 
     THIS->position.x += originPos.x;
@@ -87,6 +97,11 @@ Vector2 GetAccelerationToSink(GameObj_Base* star, GameObj_Base* obj) {
 }
 
 int _StarObject_Init(void* self, float DeltaTime) {
+    if (!_starSprites) {
+        _starSprites = malloc(sizeof(Sprite*) * STAR_SPRITE_COUNT);
+
+        _starSprites[0] = CreateSprite("resources/stars/S0.png");
+    }
     _StarObject_Randomize(self);
 
     return 0;
@@ -110,6 +125,14 @@ int _StarObject_Draw(void* self, float DeltaTime) {
     // render effective radius
     RenderCircleRelative(THIS->position, STAR_DATA->maxRange, (Color) {255, 127, 0, 100 });
     RenderCircleRelative(THIS->position, THIS->radius, (Color) { 255, 127, 0, 200 });
+
+    RenderSpriteRelative(
+        _starSprites[STAR_DATA->spriteID],
+        THIS->position,
+        THIS->size,
+        0,
+        WHITE
+    );
 
     return 0;
 }

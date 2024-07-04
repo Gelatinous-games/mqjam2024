@@ -193,7 +193,7 @@ static void prepareSounds(){
     // init
     MAINSOUNDLOOP = (Sound *)malloc(sizeof(Sound));
     // load
-    *MAINSOUNDLOOP = LoadSound("resources/MQGameJam_Music_loop.wav");         // Load WAV audio file
+    *MAINSOUNDLOOP = LoadSound("resources/SFX/MQGameJam_Music_loop.wav");         // Load WAV audio file
 }
 
 static void cleanupSounds(){
