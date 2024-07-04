@@ -3,6 +3,7 @@
 #include "base.h"
 
 #define COLLIDE_MAX_SPEED 3
+#define FREE_MAX_SPEED 10
 
 /// @brief Returns 1 if key A is down and not B, -1 if B and not A, and 0 if neither.
 /// @param A 

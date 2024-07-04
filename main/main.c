@@ -77,6 +77,7 @@ int main()
 
     cameraBounds.x = 8;
     cameraBounds.y = 4.5;
+    cameraVelocity = Vector2Zero();
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
     layerCount = 10;
 
