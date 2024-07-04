@@ -105,7 +105,7 @@ int _ExampleObject_Destroy(void* self, float DeltaTime) {
 }
 
 GameObj_Base* CreateExampleObject() {
-    GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
+    GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_ExampleObject_Init;
     obj_ptr->Update_Func = &_ExampleObject_Update;
