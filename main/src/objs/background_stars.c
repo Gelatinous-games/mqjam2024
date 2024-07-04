@@ -68,16 +68,23 @@ GameObj_Base *CreateBackgroundStars()
 {
     GameObj_Base *obj_ptr = malloc(sizeof(GameObj_Base));
 
+     // ============================================================
+    // ==== setup the data scruct data
+    obj_ptr->data_struct = malloc(sizeof(BackgroundStars_Data)); 
+
+ // ============================================================
+
     obj_ptr->Init_Func = &_BackgroundStars_Init;
     obj_ptr->Update_Func = &_BackgroundStars_Update;
     obj_ptr->Draw_Func = &_BackgroundStars_Draw;
     obj_ptr->Destroy_Func = &_BackgroundStars_Destroy;
-
+ // ============================================================
+   
     obj_ptr->awaitDestroy = 0;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
+    obj_ptr->flags = FLAG_BACKGROUND;
 
     obj_ptr->currentLayer = LAYER_GUI;
 
