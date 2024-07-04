@@ -42,8 +42,14 @@ int _Wormhole_Init(void* self, float DeltaTime) {
 
     Wormhole_Data* data = (Wormhole_Data *)malloc(sizeof(Wormhole_Data));
 
-    data->distanceFromStart = 100;
+    data->distanceFromStart = 10;
     data->sprite = CreateSprite("resources/kitr_temp.png");
+
+    THIS->position.x = data->distanceFromStart;
+    THIS->position.y = WINDOW_HEIGHT/2.0f;
+
+    THIS->size.x = 10f;
+    THIS->size.y = 10f;
 
     ((GameObj_Base *)self)->data_struct = (void *)data; 
 
@@ -53,18 +59,6 @@ int _Wormhole_Init(void* self, float DeltaTime) {
 int _Wormhole_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
     Wormhole_Data* data = THIS->data_struct;
-
-    THIS->position.x = (float)(sin(data->a * (PI / 2)) * 5);
-    data->a += DeltaTime;
-
-    // An example of spawning a particle
-    data->tmr += DeltaTime;
-    if (data->tmr >= 0.4) {
-        data->tmr = 0;
-        SpawnParticle(((GameObj_Base *)self)->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
-                        (Vector2) {0.125, 0.125}, 2, 
-                        (Color) { 255, 127, 0, 127 }, 1);
-    }
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {
@@ -85,7 +79,7 @@ int _Wormhole_Draw(void* self, float DeltaTime) {
     GameObj_Base* selfObj = ((GameObj_Base *)self);
     Wormhole_Data* data = ((GameObj_Base *)self)->data_struct;
 
-    RenderSpriteRelative(data->sprite, selfObj->position, selfObj->size, sin(data->a)*90, WHITE);
+    RenderSpriteRelative(data->sprite, selfObj->position, selfObj->size, 0, WHITE);
     //RenderSquareRelative(selfObj->position, selfObj->size, 0, WHITE);
 
     return 0;
@@ -104,7 +98,7 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
 }
 
 GameObj_Base* CreateWormholeObject() {
-    GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
+    GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_WormholeObject_Init;
     obj_ptr->Update_Func = &_WormholeObject_Update;
