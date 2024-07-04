@@ -91,7 +91,7 @@ int _Player_Update(void* self, float DeltaTime) {
             Vector2Zero(),
             (Vector2) {0.0625, 0.0625},
             0.5,
-            (Color) {255, 127, 0, 255 },
+            (Color) {255, 127, 0, 127 },
             (FLOAT_RAND * 1) + 0.5
         );
 
@@ -133,22 +133,30 @@ int _Player_Update(void* self, float DeltaTime) {
 
             // create a spark effect or something
 
-            int randNum = (FLOAT_RAND * 4) + 4;
-            for (int i = 0; i < randNum; i++) {
+            int randomCount = (FLOAT_RAND * 4) + 4;
+            for (int i = 0; i < randomCount; i++) {
                 // pick a palette of 4
-                Color col;
-                int k = (FLOAT_RAND * 4);
-                switch (k) {
-                    case 0: col = (Color) {245, 141, 38, 200};
+                Color colourVal;
+                int diceRoll = (FLOAT_RAND * 4);
+                switch (diceRoll) {
+                    case 0: colourVal = (Color) {245, 141, 38, 127};
                     break;
-                    case 1: col = (Color) {38, 217, 245, 200};
+                    case 1: colourVal = (Color) {38, 217, 245, 127};
                     break;
-                    case 2: col = (Color) {252, 233, 112, 200};
+                    case 2: colourVal = (Color) {252, 233, 112, 127};
                     break;
-                    case 3: col = (Color) {216, 214, 203, 200};
+                    case 3: colourVal = (Color) {216, 214, 203, 127};
                     break;
                 }
-                SpawnParticle(midPoint, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .25), (FLOAT_RAND * 1.75) + .25, col, 1);
+                SpawnParticle(
+                    midPoint,
+                    Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}),
+                    Vector2Zero(),
+                    Vector2Scale(Vector2One(), FLOAT_RAND * .25),
+                    (FLOAT_RAND * 1.75) + .25,
+                    colourVal,
+                    1
+                );
             }
         }
     }   
