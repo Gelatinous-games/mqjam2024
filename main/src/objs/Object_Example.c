@@ -32,7 +32,6 @@
 typedef struct {
     float a;
     float tmr;
-
     Sprite* sprite;
 } ExampleObject_Data;
 
@@ -63,7 +62,7 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
     EXAMPLEOBJECT_DATA->tmr += DeltaTime;
     if (EXAMPLEOBJECT_DATA->tmr >= 0.4) {
         EXAMPLEOBJECT_DATA->tmr = 0;
-        SpawnParticle(((GameObj_Base *)self)->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
+        SpawnParticle(THIS->position, (Vector2) {0, 0}, (Vector2) { 0, 1 }, 
                         (Vector2) {0.125, 0.125}, 2, 
                         (Color) { 255, 127, 0, 127 }, 1);
     }
