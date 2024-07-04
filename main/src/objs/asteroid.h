@@ -175,8 +175,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
     for (int sIDX = 0; sIDX != -1; ) {
         sIDX = GetObjectWithFlagsExact(FLAG_ASTEROID, sIDX, &extobj);
 
-        if (sIDX == -1) break;
-        if (extobj->_poolID == THIS->_poolID) continue;
+        if (sIDX == -1 || extobj->_poolID == THIS->_poolID) continue;
 
         Vector2 impartSelf, impartAsteroid;
 
