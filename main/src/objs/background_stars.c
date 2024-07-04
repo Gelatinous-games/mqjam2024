@@ -38,37 +38,34 @@ typedef struct
     long randomSeed;
     int minStars;
     int maxStars;
-    Sprite *sprite;
+    Vector2 position;
 } BackgroundStars_Data;
 
 #define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
-    // declar data
-    // BACKGROUNDSTARS_DATA->sprite = CreateSprite("resources/kitr_temp.png");
-    THIS->data_struct = malloc(sizeof(BackgroundStars_Data));
+    BACKGROUNDSTARS_DATA->maxStars = 10;
+    BACKGROUNDSTARS_DATA->minStars = 1;
+    BACKGROUNDSTARS_DATA->position = (Vector2){0, 0};
 
     return 0;
 }
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
-
+    BACKGROUNDSTARS_DATA->position = (Vector2){BACKGROUNDSTARS_DATA->position.x * DeltaTime * 0.1, BACKGROUNDSTARS_DATA->position.y};
     return 0;
 }
 
 int _BackgroundStars_Draw(void *self, float DeltaTime)
 {
-    BackgroundStars_Data *data = THIS->data_struct;
+    // BackgroundStars_Data *data = THIS->data_struct;
     // draw the random stars
 
-    THIS->position.x = 10.0f;
-    THIS->position.y = 10.0f;
-    THIS->size.x = 3.0f;
-    THIS->size.y = 3.0f;
-    //RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
-    // RenderSpriteRelative(BACKGROUNDSTARS_DATA->sprite, THIS->position, THIS->size, 0, WHITE);
+    Vector2 dotPos = (Vector2){0.0f, 0.0f};
+
+    RenderCircleAbsolute(dotPos, 10, WHITE);
     return 0;
 }
 
