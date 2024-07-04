@@ -33,17 +33,62 @@
 #include "../misc.c"
 #endif
 
+enum BACKGROUND_SPRITE_TYPE {
+    // ...
+    ARTWORK_SPRITE = 0,
+    TINTABLE_SPRITE_SMALL = 1,
+    TINTABLE_SPRITE_MEDIUM = 2,
+    TINTABLE_SPRITE_LARGE = 3
+};
+
+
+typedef struct {
+    // the particular sprite
+    Sprite *sprite;
+} BackgroundSprite_SpriteData;
+
+
+
+// typedef struct {
+//     // for whether it's a background image we can tint or not
+//     int spriteType;
+//     // and the spot in the relevant list
+//     int spriteID;
+
+//     // for when it's not an artwork
+//     Color spriteTint;
+// } BackgroundSprite_GenerationData;
+
+
+
+
 
 typedef struct
 {
-    // uhhh
-    long randomSeed;
     // the list of bg objects
     int *backgroundObjectIDs;
+    int *backgroundObjectTypes;
+
     Vector2 *backgroundObjectPositions;
     float *backgroundObjectRotations;
     Vector2 *backgroundObjectScales;
 } Background_DataStruct;
+
+
+#define BACKGROUND_SPRITE_COUNT_ARTWORKS 6
+#define BACKGROUND_SPRITE_COUNT_SMALL 5
+#define BACKGROUND_SPRITE_COUNT_MEDIUM 7
+#define BACKGROUND_SPRITE_COUNT_LARGE 10
+
+#define BACKGROUND_SPRITE_COUNT_ALL (BACKGROUND_SPRITE_COUNT_ARTWORKS+BACKGROUND_SPRITE_COUNT_SMALL+BACKGROUND_SPRITE_COUNT_MEDIUM+BACKGROUND_SPRITE_COUNT_LARGE)
+
+Sprite **backgroundSpriteList_artworks;
+Sprite **backgroundSpriteList_small;
+Sprite **backgroundSpriteList_medium;
+Sprite **backgroundSpriteList_large;
+
+
+
 
 #define BACKGROUND_DATA ((Background_DataStruct *)(THIS->data_struct))
 
@@ -61,85 +106,29 @@ typedef struct
 
 
 
-#define BACKGROUND_SPRITE_COUNT 6
-Sprite **BACKGROUND_SPRITE_LIST;
 
-Sprite *STAR_BRUSH_SPRITE;
+
+/**
+ *  DECLARING ALL THE EXTRA FUNCTIONS FOR USABILITY
+ */
+void prepareBackgroundSprites(void *self, float DeltaTime);
+void destroyBackgroundSprites(void *self, float DeltaTime);
+void prepareBackgroundGenerationData(void *self, float DeltaTime);
+void destroyBackgroundGenerationData(void *self, float DeltaTime);
+
+void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObjectIndex);
+Sprite *getCurrentSprite(void *self, float DeltaTime, int indexOfObject);
+
+
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
     // printf("%s\n","initialising sprite list");
     
-    STAR_BRUSH_SPRITE = CreateSprite("resources/background/starBrush.png");
+    // loads our sprites ready for use
+    prepareBackgroundSprites(self,DeltaTime);
 
-    // malloc
-    BACKGROUND_SPRITE_LIST = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT * sizeof(Sprite *));
-
-    // load
-    BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/background/bg0.png");
-    BACKGROUND_SPRITE_LIST[1] = CreateSprite("resources/background/bg1.png");
-    BACKGROUND_SPRITE_LIST[2] = CreateSprite("resources/background/bg2.png");
-    BACKGROUND_SPRITE_LIST[3] = CreateSprite("resources/background/bg3.png");
-    BACKGROUND_SPRITE_LIST[4] = CreateSprite("resources/background/bg4.png");
-    BACKGROUND_SPRITE_LIST[5] = CreateSprite("resources/background/bg5.png");
-    // BACKGROUND_SPRITE_LIST[0] = CreateSprite("resources/kitr_temp.png");
-    
-
-    // printf("%s\n","making bg objects list");
-    // object reference array
-    BACKGROUND_DATA->backgroundObjectIDs = (int *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(int));
-
-    // printf("%s\n","making bg objects positions");
-    // positions array
-    BACKGROUND_DATA->backgroundObjectPositions = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
-    // roations
-    BACKGROUND_DATA->backgroundObjectRotations = (float *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(float));
-    // scale array
-    BACKGROUND_DATA->backgroundObjectScales = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
-
-    int timesWeCanRollStarBrush = 3;
-
-    for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++){
-        // roll
-        // printf("rolling %d\n",i);
-
-        // add 1 to the count, and make the (-timesWeCanRollStarBrush) if it happens
-        BACKGROUND_DATA->backgroundObjectIDs[i] = abs((INT_RAND)%(BACKGROUND_SPRITE_COUNT+timesWeCanRollStarBrush))-timesWeCanRollStarBrush;
-        BACKGROUND_DATA->backgroundObjectPositions[i] = (Vector2){
-            (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_X),
-            (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_Y-MAX_BACKGROUND_SPAWN_DISTANCE_Y/2.0f)
-        };
-        // rotater
-        BACKGROUND_DATA->backgroundObjectRotations[i] = FLOAT_RAND*360.0f;
-
-        // normal roll
-        if(BACKGROUND_DATA->backgroundObjectIDs[i]>=0){
-            // ...
-            // generate two random percentage values 
-            float xScaleRand = FLOAT_RAND;
-            float yScaleRand = FLOAT_RAND;
-            // then lerp between the minimum and maximum
-            BACKGROUND_DATA->backgroundObjectScales[i] = (Vector2){
-                ((1.0f-xScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_X+(xScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_X),
-                ((1.0f-yScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_Y+(yScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_Y)
-            };
-        }
-        else {
-            // got a star roll
-            float baseScale = MIN_BACKGROUND_SPAWN_SCALE_X;
-            // at least 2/10
-            float scaleRand = (FLOAT_RAND*0.8f)+0.2f;
-            
-            float xScaleRand = scaleRand*baseScale;
-            float yScaleRand = scaleRand*baseScale;
-            
-            // then lerp between the minimum and maximum
-            BACKGROUND_DATA->backgroundObjectScales[i] = (Vector2){
-                ((1.0f-xScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_X+(xScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_X),
-                ((1.0f-yScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_Y+(yScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_Y)
-            };
-        }
-    }
+    prepareBackgroundGenerationData(self, DeltaTime);
 
     return 0;
 }
@@ -160,13 +149,11 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
     {
         // printf("drawing %d\n",i);
-        int currSpriteID = BACKGROUND_DATA->backgroundObjectIDs[i];
         Vector2 currSpritePosition = BACKGROUND_DATA->backgroundObjectPositions[i];
-        // printf("attempting with [%d] - id of %d, x: %f, y: %f\n",i,currSpriteID,currSpritePosition.x,currSpritePosition.y);
 
         // determine if we should index into our list
         // or if it was the star brush we rolled
-        Sprite *currSpritePointer = (currSpriteID >= 0)? BACKGROUND_SPRITE_LIST[currSpriteID] : STAR_BRUSH_SPRITE;
+        Sprite *currSpritePointer = getCurrentSprite(self, DeltaTime, BACKGROUND_DATA->backgroundObjectIDs[i]);
         //.. ..
         RenderSpriteRelative(
             currSpritePointer,
@@ -188,20 +175,10 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
 
 int _BackgroundStars_Destroy(void *self, float DeltaTime)
 {
-    // free our data struct here. free anything contained.
-    DestroySprite(STAR_BRUSH_SPRITE);
-    for(int i = 0; i < BACKGROUND_SPRITE_COUNT; i++){
-        DestroySprite(BACKGROUND_SPRITE_LIST[i]);
-    }
-    free(BACKGROUND_SPRITE_LIST);
 
-    // scale/position data
-    free(BACKGROUND_DATA->backgroundObjectScales);
-    free(BACKGROUND_DATA->backgroundObjectRotations);
-    free(BACKGROUND_DATA->backgroundObjectPositions);
-
-    // object reference array
-    free(BACKGROUND_DATA->backgroundObjectIDs);
+    destroyBackgroundSprites(self, DeltaTime);
+    
+    destroyBackgroundGenerationData(self, DeltaTime);
 
     // the data sstruct
     free(THIS->data_struct);
@@ -236,4 +213,156 @@ GameObj_Base *CreateBackgroundStars()
     obj_ptr->currentLayer = LAYER_BACKGROUND_STARSCAPE_0;
 
     return obj_ptr;
+}
+
+
+
+void prepareBackgroundSprites(void *self, float DeltaTime){
+
+    int index = 0;
+
+    // malloc the data
+    index = 0;
+    backgroundSpriteList_artworks = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT_ARTWORKS * sizeof(Sprite *));
+    backgroundSpriteList_artworks[index++] = CreateSprite("resources/background/bg0.png");
+    backgroundSpriteList_artworks[index++] = CreateSprite("resources/background/bg1.png");
+    backgroundSpriteList_artworks[index++] = CreateSprite("resources/background/bg2.png");
+    backgroundSpriteList_artworks[index++] = CreateSprite("resources/background/bg3.png");
+    backgroundSpriteList_artworks[index++] = CreateSprite("resources/background/bg4.png");
+    backgroundSpriteList_artworks[index++] = CreateSprite("resources/background/bg5.png");
+
+    index = 0;
+    backgroundSpriteList_small = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT_SMALL * sizeof(Sprite *));
+    backgroundSpriteList_small[index++] = CreateSprite("resources/brushes/brush_small_glitter_01.png");
+    backgroundSpriteList_small[index++] = CreateSprite("resources/brushes/brush_small_glitter_02.png");
+    backgroundSpriteList_small[index++] = CreateSprite("resources/brushes/brush_small_star_01.png");
+    backgroundSpriteList_small[index++] = CreateSprite("resources/brushes/brush_small_star_02.png");
+    backgroundSpriteList_small[index++] = CreateSprite("resources/brushes/brush_small_star_03.png");
+
+    index = 0;
+    backgroundSpriteList_medium = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT_MEDIUM * sizeof(Sprite *));
+    backgroundSpriteList_medium[index++] = CreateSprite("resources/brushes/brush_medium_dust_01.png");
+    backgroundSpriteList_medium[index++] = CreateSprite("resources/brushes/brush_medium_dust_02.png");
+    backgroundSpriteList_medium[index++] = CreateSprite("resources/brushes/brush_medium_dust_03.png");
+    backgroundSpriteList_medium[index++] = CreateSprite("resources/brushes/brush_medium_flare_01.png");
+    backgroundSpriteList_medium[index++] = CreateSprite("resources/brushes/brush_medium_glitter_01.png");
+    backgroundSpriteList_medium[index++] = CreateSprite("resources/brushes/brush_medium_glitter_02.png");
+    backgroundSpriteList_medium[index++] = CreateSprite("resources/brushes/brush_medium_glow_01.png");
+
+    index = 0;
+    backgroundSpriteList_large = (Sprite **)malloc(BACKGROUND_SPRITE_COUNT_LARGE * sizeof(Sprite *));
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_constellation_01.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_constellation_02.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_constellation_03.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_constellation_04.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_constellation_05.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_constellation_06.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_dust_01.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_dust_02.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_dust_03.png");
+    backgroundSpriteList_large[index++] = CreateSprite("resources/brushes/brush_large_flare_01.png");
+    
+}
+
+
+void destroyBackgroundSprites(void *self, float DeltaTime){
+
+    // ARTWORKS
+    for (int i = 0; i < BACKGROUND_SPRITE_COUNT_ARTWORKS; i++) {
+        DestroySprite(backgroundSpriteList_artworks[i]);
+    }
+    free(backgroundSpriteList_artworks);
+
+    // SMALL
+    for (int i = 0; i < BACKGROUND_SPRITE_COUNT_SMALL; i++) {
+        DestroySprite(backgroundSpriteList_small[i]);
+    }
+    free(backgroundSpriteList_small);
+
+    // MEDIUM
+    for (int i = 0; i < BACKGROUND_SPRITE_COUNT_MEDIUM; i++) {
+        DestroySprite(backgroundSpriteList_medium[i]);
+    }
+    free(backgroundSpriteList_medium);
+
+    // LARGE
+    for (int i = 0; i < BACKGROUND_SPRITE_COUNT_LARGE; i++) {
+        DestroySprite(backgroundSpriteList_large[i]);
+    }
+    free(backgroundSpriteList_large);
+
+}
+
+
+void prepareBackgroundGenerationData(void *self, float DeltaTime){
+    // ...
+
+    // printf("%s\n","making bg objects list");
+    // object reference array
+    BACKGROUND_DATA->backgroundObjectIDs = (int *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(int));
+
+    // printf("%s\n","making bg objects positions");
+    // positions array
+    BACKGROUND_DATA->backgroundObjectPositions = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
+    // roations
+    BACKGROUND_DATA->backgroundObjectRotations = (float *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(float));
+    // scale array
+    BACKGROUND_DATA->backgroundObjectScales = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
+
+
+    // roll each object
+    for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++){
+
+        rollForBackgroundObjectData(self, DeltaTime, i);
+    }
+}
+
+
+void destroyBackgroundGenerationData(void *self, float DeltaTime){
+
+    // scale/position data
+    free(BACKGROUND_DATA->backgroundObjectScales);
+    free(BACKGROUND_DATA->backgroundObjectRotations);
+    free(BACKGROUND_DATA->backgroundObjectPositions);
+
+    // object reference array
+    free(BACKGROUND_DATA->backgroundObjectIDs);
+
+}
+
+
+
+
+void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObjectIndex){
+    // === selection roll
+    int selectionRoll = abs((INT_RAND)%(BACKGROUND_SPRITE_COUNT_ALL));
+
+
+    // === assign selection
+    // ------ ARTWORKS
+    // TODO: implement selecting, but just mod for artwork count rn
+    BACKGROUND_DATA->backgroundObjectIDs[backgroundObjectIndex] = selectionRoll%BACKGROUND_SPRITE_COUNT_ARTWORKS;
+
+    // === positioning
+    BACKGROUND_DATA->backgroundObjectPositions[backgroundObjectIndex] = (Vector2){
+        (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_X),
+        (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_Y-MAX_BACKGROUND_SPAWN_DISTANCE_Y/2.0f)
+    };
+
+    // === rotation
+    BACKGROUND_DATA->backgroundObjectRotations[backgroundObjectIndex] = FLOAT_RAND*360.0f;
+
+    // === scaling
+    // generate two random percentage values 
+    float xScaleRand = FLOAT_RAND;
+    float yScaleRand = FLOAT_RAND;
+    // then lerp between the minimum and maximum
+    BACKGROUND_DATA->backgroundObjectScales[backgroundObjectIndex] = (Vector2){
+        ((1.0f-xScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_X+(xScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_X),
+        ((1.0f-yScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_Y+(yScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_Y)
+    };
+}
+
+Sprite *getCurrentSprite(void *self, float DeltaTime, int indexOfObject){
+    return backgroundSpriteList_artworks[indexOfObject];
 }
