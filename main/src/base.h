@@ -10,11 +10,13 @@
 #define THIS ((GameObj_Base *)self)
 #ifndef _WIN32
 // unix randoming
+#define INT_RAND (int)(random())
 #define FLOAT_RAND ((float)(random()) / (float)RAND_MAX)
 #define CHAR_RAND ((char)(random() & 0xff))
 #define GAME_TIME GetSystemTime( &systemTime )
 #else
 // windows randoming
+#define INT_RAND (int)(rand())
 #define FLOAT_RAND ((float)(rand()) / (float)RAND_MAX)
 #define CHAR_RAND ((char)(rand() & 0xff))
 #define GAME_TIME GetTime

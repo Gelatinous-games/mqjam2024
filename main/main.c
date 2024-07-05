@@ -74,9 +74,13 @@
 #include "src/objs/planet.c"
 #endif
 
-#ifndef _background_stars
-#define _background_star
-#include "src/objs/background_stars.c"
+#ifndef _background
+#define _background
+#include "src/objs/background.c"
+#endif
+#ifndef _healthbar
+#define _healthbar
+#include "src/healthbar.c"
 #endif
 
 static void UpdateDrawFrame(void); // Update and draw one frame
@@ -163,8 +167,6 @@ static void UpdateDrawFrame(void)
 /// @brief Generates all objects for initial gamestate.
 static void generateObjects()
 {
-    // Background object
-    AddToPool(CreateBackgroundStars());
 
     // Particle handler.
     AddToPool(CreateParticleObject());
@@ -185,13 +187,22 @@ static void generateObjects()
         AddToPool(ASTEROID_REF_LIST[i]);
     }
     
+    //Background Object
+    BACKGROUND_OBJECT_REF = CreateBackgroundStars();
+    AddToPool(BACKGROUND_OBJECT_REF);
+
+
+    AddToPool(CreateHealthBar());
+
     //Wormhole Object
     WORMHOLE_OBJECT_REF = CreateWormhole();
     AddToPool(WORMHOLE_OBJECT_REF);
+    
     //Planet Object
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
 
+    //Star Object
     STAR_OBJECT_REF = CreateStarObject();
     AddToPool(STAR_OBJECT_REF);
 }

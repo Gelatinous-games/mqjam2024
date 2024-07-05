@@ -36,6 +36,8 @@ static Sound_Track **TRACKS;
 
 static float MASTER_VOLUME = 0.5f;
 
+static int PLAYED_DEATH_SOUND_BEFORE = 0;
+
 static void setAllTracksVolume(float volume){
     MASTER_VOLUME = volume;
     for (int i = 0; i < TRACK_COUNT; i++)
@@ -172,4 +174,15 @@ static float getTrackVolume(int soundID){
     
     return TRACKS[soundID]->scaleOfBaseVolume;
     
+}
+
+
+static void PlayDeathSound(){
+    // max volume scale
+    setTrackVolume(DEATH_SOUND_ID, 1.0f);
+    // tell it to play if it isnt, and never played
+    if( !(IsSoundPlaying(TRACKS[DEATH_SOUND_ID]->track)) && !PLAYED_DEATH_SOUND_BEFORE ){
+        playSoundOnce(DEATH_SOUND_ID);
+        PLAYED_DEATH_SOUND_BEFORE = 1;
+    }
 }

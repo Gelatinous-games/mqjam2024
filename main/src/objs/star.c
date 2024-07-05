@@ -125,9 +125,25 @@ int _StarObject_Draw(void* self, float DeltaTime) {
 
     // todo: red/blueshift rendering.
     
-    // render effective radius
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange, (Color) {255, 127, 0, 100 });
-    RenderCircleRelative(THIS->position, THIS->radius, (Color) { 255, 127, 0, 200 });
+    // doesnt work
+    // RenderCircleGradientAbsolute( THIS->position, STAR_DATA->maxRange, (Color) {255, 0, 0, 255 }, (Color) {0, 0, 255, 255 } );
+
+    // // render effective radius
+    // RenderCircleRelative(THIS->position, STAR_DATA->maxRange, (Color) { 255, 127, 0, 100 });
+    // // RenderCircleRelative(THIS->position, THIS->radius, (Color) { 255, 127, 0, 127 });
+    int additiveAlpha = 15;
+    int shadeValue = 100;
+    Color additiveColor = (Color) { shadeValue, shadeValue, shadeValue, additiveAlpha };
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*1.0f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.9f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.8f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.7f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.6f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.5f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.4f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.3f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.2f, additiveColor);
+    
 
     RenderSpriteRelative(
         _starSprites[STAR_DATA->spriteID],

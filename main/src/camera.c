@@ -139,6 +139,22 @@ void RenderCircleAbsolute(Vector2 pos, float radius, Color color) {
 
     DrawCircle(pos.x + radius, pos.y + radius, radius, color);
 }
+/// @brief Draws a circle at an absolute position with a given radius (in units) and color.
+/// @param pos 
+/// @param radius 
+/// @param color 
+void RenderCircleGradientAbsolute(Vector2 pos, float radius, Color color1, Color color2) {
+    Vector2 size = (Vector2) { radius * 2, radius * 2 };
+    pos = GetScreenspacePositionAbsolute(pos, size);
+    size = GetScaledSize(size);
+
+    radius = size.x / 2;
+
+    // void DrawCircleGradient(int centerX, int centerY, float radius, Color color1, Color color2)
+    //     Draw a gradient-filled circle
+    //     NOTE: Gradient goes from center (color1) to border (color2)
+    DrawCircleGradient( pos.x + radius, pos.y + radius, radius, color1, color2 );
+}
 
 /// @brief Draws a circle relative to the camera with the given radius (in units) and color.
 /// @param pos 
