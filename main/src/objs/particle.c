@@ -23,9 +23,11 @@ typedef struct {
     Vector2 acceleration;
     Vector2 size;
 
-    int state;
+    int internalID;
+
     float timeout;
     float maxTime;
+    char doFadeout;
     char oAlpha;
     Color color;
 
@@ -34,13 +36,25 @@ typedef struct {
     /// @brief If true, has a function to apply to the particle.
     char func;
     int (*func_ptr)(void* self, float DeltaTime);
+    /// @brief A reference to the data packet used by the function, if it is present.
+    void* func_data;
 } _Particle;
 
 _Particle* _particles;
 int _particleCount;
+int _ParticleObject_Particles_Global_Counter;
+
+int _ParticleObject_Particles_DestroyParticle(_Particle* particle) {
+    if (particle->func && particle->func_data) {
+        free(particle->func_data);
+        particle->func = 0;
+    }
+}
 
 int _ParticleObject_Init(void* self, float DeltaTime) {
     _particleCount = 0;
+    _ParticleObject_Particles_Global_Counter = 0;
+
     _particles = malloc(sizeof(_Particle) * PARTICLE_COUNT);
 
     return 0;
@@ -63,6 +77,7 @@ int _ParticleObject_Update(void* self, float DeltaTime) {
 
         if (particle.timeout <= 0) {
             // Kill particle, replace it with the contents of the last in the entry. Bubble down.
+            _ParticleObject_Particles_DestroyParticle(&_particles[i]);
             _particles[i] = _particles[_particleCount-1];
             _particleCount -= 1;
             i -= 1;
@@ -105,7 +120,9 @@ int _ParticleObject_Destroy(void* self, float DeltaTime) {
     return 0;
 }
 
-/// @brief Spawns a particle with the given parameters.
+/// @brief Spawns a particle with the given parameters. 
+/// Does the same function as SpawnParticleEX but with less parameters. This one is here simply because I'm too lazy to replace all instances of this.
+/// Still perfectly functional but you should use SpawnParticleEX if you want better function.
 /// @param pos The initial position of the particle.
 /// @param vel The initial velocity of the particle.
 /// @param acc The acceleration vector of the particle.
@@ -113,27 +130,62 @@ int _ParticleObject_Destroy(void* self, float DeltaTime) {
 /// @param lifetime How long the particle should persist for (in seconds). The particle will fade out.
 /// @param color The color of the particle.
 /// @param doOutline Set to 1 if the particle should have a bright center and a dimmer outer.
-/// @return An integer representing the success. -1 means the particle failed to add (max particles reached).
+/// @return The ID of the created particle. If the return is -1, then no particle was created.
 int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline) {
+    return SpawnParticleEX(pos, vel, acc, size, lifetime, color, doOutline, 1, NULL, NULL);
+}
+
+/// @brief Spawns a particle with the given parameters. Parameters include functions, fadeout specifics, and so on.
+/// @param pos The initial position of the particle.
+/// @param vel The initial velocity of the particle.
+/// @param acc The acceleration vector of the particle.
+/// @param size How big the particle is.
+/// @param lifetime How long the particle should persist for (in seconds). The particle will fade out.
+/// @param color The color of the particle.
+/// @param doOutline Set to 1 if the particle should have a bright center and a dimmer outer.
+/// @param doFadeout Set to 1 if the particle should fade out as it approaches death.
+/// @param func_ptr The address of the function that should run per update on this particle. Set to NULL if none.
+/// @param func_data A reference to the data package that should be used by this particles function. Set to NULL if none. 
+/// @return The ID of the created particle. If the return is -1, then no particle was created.
+int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline, char doFadeout, int (*func_ptr)(void* self, float DeltaTime), void* func_data) {
     if (_particleCount >= PARTICLE_COUNT) return -1;
+
     _Particle tmp;
+    tmp.internalID = _ParticleObject_Particles_Global_Counter;
+    _ParticleObject_Particles_Global_Counter = _ParticleObject_Particles_Global_Counter + 1;
     tmp.color = color;
     tmp.timeout = lifetime;
     tmp.position = pos;
     tmp.velocity = vel;
     tmp.acceleration = acc;
     tmp.size = size;
-    // tmp.state = state;
-    tmp.state = 0;
     tmp.doOutline = doOutline;
     tmp.func = 0;
+    tmp.doFadeout = 
 
     tmp.maxTime = lifetime;
     tmp.oAlpha = color.a;
 
+    if (func_ptr) 
+        tmp.func = 1;
+
+    tmp.func_ptr = func_ptr;
+    tmp.func_data = func_data;
+
     _particles[_particleCount] = tmp;
 
-    return _particleCount++;
+    return tmp.internalID;
+}
+
+/// @brief Gets a particle object with the given ID.
+/// @param ParticleID 
+/// @return Null if none found.
+_Particle* GetParticle(int ParticleID) {
+    for (int i = 0; i < _particleCount; i++) {
+        if (_particles[i].internalID == ParticleID)
+            return &_particles[i];
+    }
+    return NULL;
 }
 
 GameObj_Base* CreateParticleObject() {
