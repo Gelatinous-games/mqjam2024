@@ -114,7 +114,7 @@ int _HealthBar_Update(void* self, float DeltaTime) {
     if(GetPlayerHullPercentage() <= 0.0f){ 
         // dont draw
         HEALTHBAR_DATA->currentHealthBarIndex = -1;
-
+        setTrackVolume(HIT_SOUND_ID,0.0f);
         // also handle death
         PlayDeathSound();
     }
@@ -191,7 +191,7 @@ int _HealthBar_Draw(void* self, float DeltaTime) {
         shieldLevelSprite->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
         shieldLevelSprite->origin = Vector2Scale(THIS->size, 0.5);
 
-        DrawTexturePro(shieldLevelSprite->tex, shieldLevelSprite->src, shieldLevelSprite->dst, shieldLevelSprite->origin, 0, WHITE);
+        DrawTexturePro(shieldLevelSprite->tex, shieldLevelSprite->src, shieldLevelSprite->dst, shieldLevelSprite->origin, 0, (Color){255,255,255,127});
     }
 
     // ===========================================

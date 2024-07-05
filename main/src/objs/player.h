@@ -245,6 +245,9 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
         Vector2 impartSelf, impartAsteroid;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
+            // ... collision sound
+            playSoundOnce(HIT_SOUND_ID);
+
             Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
             THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
@@ -287,7 +290,8 @@ void handleGravityInteractions(void *self, float DeltaTime){
         Vector2 impartSelf, impartStar;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
-            // PLAYER_DATA->health -= MAXIMUM_HULL;
+            // ... collided
+            playSoundOnce(HIT_SOUND_ID);
 
             int damageRate = ( CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED )? STAR_IMPACT_DAMMAGE_SHIELDED : STAR_IMPACT_DAMMAGE_HULL;
             
