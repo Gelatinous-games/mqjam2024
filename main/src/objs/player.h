@@ -61,7 +61,7 @@ typedef struct {
 
 
 
-#define SHIELD_PARTICLE_COLOUR_0 (Color){  34, 195, 222, 127 };
+#define SHIELD_PARTICLE_COLOUR_0 (Color){  34, 195, 222, 127 }
 #define SHIELD_PARTICLE_COLOUR_1 (Color){  27, 118, 213, 127 }
 #define SHIELD_PARTICLE_COLOUR_2 (Color){  34, 107, 220, 127 }
 #define SHIELD_PARTICLE_COLOUR_3 (Color){  25,  66, 219, 127 }
@@ -93,7 +93,9 @@ Vector2 GetRandomUnitVector();
 int ParticleOrbitPlayer(void *self, float DeltaTime);
 Vector2 GetShieldParticleAccelerationToPlayer(_Particle *particleObj);
 
-
+Color GetShieldParticleColor();
+Color GetHullParticleColor();
+Color GetImpactParticleColor();
 
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
@@ -264,18 +266,7 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             int randomCount = (FLOAT_RAND * 4) + 4;
             for (int i = 0; i < randomCount; i++) {
                 // pick a palette of 4
-                Color colourVal;
-                int diceRoll = (FLOAT_RAND * 4);
-                switch (diceRoll) {
-                    case 0: colourVal = (Color) {245, 141, 38, 127};
-                    break;
-                    case 1: colourVal = (Color) {38, 217, 245, 127};
-                    break;
-                    case 2: colourVal = (Color) {252, 233, 112, 127};
-                    break;
-                    case 3: colourVal = (Color) {216, 214, 203, 127};
-                    break;
-                }
+                Color colourVal = GetImpactParticleColor();
                 SpawnParticle(
                     midPoint,
                     Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}),
@@ -500,18 +491,7 @@ void emitShieldParticle(void *self, float DeltaTime){
 
 
     // pick a palette of 4
-    Color rolledShieldParticleColour;
-    int diceRoll = (INT_RAND%4);
-    switch (diceRoll) {
-        case 0: rolledShieldParticleColour = SHIELD_PARTICLE_COLOUR_0;
-        break;
-        case 1: rolledShieldParticleColour = SHIELD_PARTICLE_COLOUR_1;
-        break;
-        case 2: rolledShieldParticleColour = SHIELD_PARTICLE_COLOUR_2;
-        break;
-        case 3: rolledShieldParticleColour = SHIELD_PARTICLE_COLOUR_3;
-        break;
-    }
+    Color rolledShieldParticleColour = GetShieldParticleColor();
     Vector2 direction = GetRandomUnitVector();
     // spawn a particle
     int shieldParticleID = SpawnParticle(
@@ -604,4 +584,34 @@ Vector2 GetShieldParticleAccelerationToPlayer(_Particle *particleObj){
     ang = Vector2Scale(ang, delta * playerData->shieldMaxPull);
 
     return ang;
+}
+
+Color GetShieldParticleColor(){
+    int diceRoll = (INT_RAND%4);
+    switch (diceRoll) {
+        default:
+        case 0: return SHIELD_PARTICLE_COLOUR_0;
+        case 1: return SHIELD_PARTICLE_COLOUR_1;
+        case 2: return SHIELD_PARTICLE_COLOUR_2;
+        case 3: return SHIELD_PARTICLE_COLOUR_3;
+    }
+}
+Color GetHullParticleColor(){
+    int diceRoll = (INT_RAND%4);
+    switch (diceRoll) {
+        default:
+        case 0: return(Color) {245, 141, 38, 127};
+        case 1: return(Color) {38, 217, 245, 127};
+        case 2: return(Color) {252, 233, 112, 127};
+        case 3: return(Color) {216, 214, 203, 127};
+    }
+}
+
+Color GetImpactParticleColor(){
+    if(GetPlayerShieldPercentage() > 0.0f){
+        return GetShieldParticleColor();
+    }
+    else {
+        return GetHullParticleColor();
+    }
 }
