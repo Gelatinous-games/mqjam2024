@@ -132,9 +132,8 @@ int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lif
     tmp.oAlpha = color.a;
 
     _particles[_particleCount] = tmp;
-    _particleCount++;
 
-    return 0;
+    return _particleCount++;
 }
 
 GameObj_Base* CreateParticleObject() {
@@ -160,4 +159,10 @@ GameObj_Base* CreateParticleObject() {
     obj_ptr->mass = 0;
 
     return obj_ptr;
+}
+
+// give a particle reference based on ID
+//  can segfault btw lol, only use safe IDs
+_Particle *getParticle(int particleID){
+    return &(_particles[particleID]);
 }
