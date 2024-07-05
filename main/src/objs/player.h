@@ -41,14 +41,19 @@ typedef struct {
     float rotateJerk;
     float rotateRate;
     float accelRate;
-    float health;
-    float healthRegenerationRate;
-    float shieldRegenerationRate;
-    float timeSinceLastShieldParticle;
+    
+    float hullHealth;
+    float hullRegenerationRate;
 
+    float shieldHealth;
+    float shieldRegenerationRate;
+    
+    float timeSinceLastShieldParticle;
     float shieldMinRange;
     float shieldMaxRange;
     float shieldMaxPull;
+
+    float deltaTimeSinceLastImpact;
 } Player_Data;
 
 
@@ -86,9 +91,12 @@ Color GetShieldParticleColor();
 Color GetHullParticleColor();
 Color GetImpactParticleColor();
 
+void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate);
+
 int _Player_Init(void* self, float DeltaTime) {
-    PLAYER_DATA->health = MAXIMUM_HULL; // start max
-    PLAYER_DATA->healthRegenerationRate = HULL_REGEN_BASE_RATE;
+    PLAYER_DATA->hullHealth = MAXIMUM_HULL; // start max
+    PLAYER_DATA->hullRegenerationRate = HULL_REGEN_BASE_RATE;
+    PLAYER_DATA->shieldHealth = 0.0f; // start none
     PLAYER_DATA->shieldRegenerationRate = SHIELD_REGEN_BASE_RATE;
 
     PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
@@ -96,6 +104,7 @@ int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
+    PLAYER_DATA->deltaTimeSinceLastImpact=0.0f;
 
     PLAYER_DATA->timeSinceLastShieldParticle = 0.0f;
     PLAYER_DATA->shieldMaxPull = 20.0f;
@@ -109,6 +118,11 @@ int _Player_Init(void* self, float DeltaTime) {
 }
 
 int _Player_Update(void* self, float DeltaTime) {
+    // INCREASE TIMER SINCE LAST IMPACT
+    PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
+
+    // printf("shield DT: %f\n", PLAYER_DATA->deltaTimeSinceLastImpact);
+
     // ================
     updateThrustingSoundState(self, DeltaTime);
 
@@ -253,8 +267,7 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
 
             // get the damage rate and apply
-            int damageRate = (CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED)?ASTEROID_IMPACT_DAMMAGE_SHIELDED:ASTEROID_IMPACT_DAMMAGE_HULL;
-            PLAYER_DATA->health -= damageRate;
+            PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
 
             // create a spark effect or something
 
@@ -293,9 +306,7 @@ void handleGravityInteractions(void *self, float DeltaTime){
             // ... collided
             playSoundOnce(HIT_SOUND_ID);
 
-            int damageRate = ( CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED )? STAR_IMPACT_DAMMAGE_SHIELDED : STAR_IMPACT_DAMMAGE_HULL;
-            
-            PLAYER_DATA->health -= damageRate;
+            PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED);
 
 
             // END STATE
@@ -414,37 +425,44 @@ void handleCameraRelativity(void *self, float DeltaTime){
 }
 
 void updateHealth(void *self, float DeltaTime){
-    if(GetPlayerHullPercentage()<0.0f){
+    // when hull is gone
+    if(GetPlayerHullPercentage()<=0.0f){
         CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
+        // empty out the shield health
+        PLAYER_DATA->shieldHealth = 0.0f;
     }
+    // otherwise handle regens
     else {
-        // not max health
-        if(PLAYER_DATA->health < MAXIMUM_HULL){
+        // HANDLE THE STATE
+        if(GetPlayerShieldPercentage() < MINIMUM_SHIELD_PERCENT){
             CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
-            // just increase it by the regen rate every second
-            (PLAYER_DATA->health) += (PLAYER_DATA->healthRegenerationRate)*DeltaTime;
         }
-        // over heal into shields
-        else if(PLAYER_DATA->health >= MAXIMUM_HULL){
+        else if(GetPlayerShieldPercentage() >= MINIMUM_SHIELD_PERCENT){
             CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISSHIELDED;
+        }
+
+        // HANDLE THE REGEN
+
+        // not max health
+        if(GetPlayerHullPercentage() < 1.0f){
+            // just increase it by the regen rate every second
+            (PLAYER_DATA->hullHealth) += (PLAYER_DATA->hullRegenerationRate)*DeltaTime;
+        }
+        // not max shields
+        //  also been long enough since last impact
+        if(GetPlayerShieldPercentage() < 1.0f && (PLAYER_DATA->deltaTimeSinceLastImpact >= SHIELD_REGEN_TIMEOUT_DELTATIME)){
             // if we're needing to regen shields
-            if(PLAYER_DATA->health < MAXIMUM_HULL+MAXIMUM_SHIELDS){
-                (PLAYER_DATA->health) += (PLAYER_DATA->shieldRegenerationRate)*DeltaTime;
-            }
-            else{
-                (PLAYER_DATA->health) = MAXIMUM_HULL+MAXIMUM_SHIELDS;
-            }
+            (PLAYER_DATA->shieldHealth) += (PLAYER_DATA->shieldRegenerationRate)*DeltaTime;
         }
     }
+
 }
 
-float GetPlayerCurrentHealth(){
-    return (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health);
-}
+
 
 float GetPlayerHullPercentage(){
     // current
-    float currHealth = (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health);
+    float currHealth = (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->hullHealth);
     // max or shielded
     if(currHealth>=MAXIMUM_HULL) return 1.0f;
     // dead or negative
@@ -455,7 +473,7 @@ float GetPlayerHullPercentage(){
 }
 float GetPlayerShieldPercentage(){
     // health without hull health
-    float currShield = (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health) - MAXIMUM_HULL;
+    float currShield = (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->shieldHealth);
     // max
     if(currShield>=MAXIMUM_SHIELDS) return 1.0f;
     // no shield or negative
@@ -621,5 +639,19 @@ Color GetImpactParticleColor(){
     }
     else {
         return GetHullParticleColor();
+    }
+}
+
+void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate){
+    // reset the time since counter
+    PLAYER_DATA->deltaTimeSinceLastImpact = 0.0f;
+
+    // TODO: shield "trample" to hull (magic the gathering)
+    if(CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISHULL) PLAYER_DATA->hullHealth -= hullRate;
+    else if(CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED) PLAYER_DATA->shieldHealth -= shieldRate;
+    else {
+        // .. 
+        // dead ghost debris taking damage from something?
+        // TODO: shake the health bar
     }
 }

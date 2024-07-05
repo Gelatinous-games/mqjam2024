@@ -114,7 +114,6 @@ int _HealthBar_Update(void* self, float DeltaTime) {
     if(GetPlayerHullPercentage() <= 0.0f){ 
         // dont draw
         HEALTHBAR_DATA->currentHealthBarIndex = -1;
-        setTrackVolume(HIT_SOUND_ID,0.0f);
         // also handle death
         PlayDeathSound();
     }
