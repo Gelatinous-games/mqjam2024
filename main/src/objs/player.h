@@ -35,16 +35,6 @@
     #include "star.c"
 #endif
 
-#define MAXIMUM_HULL 100
-#define MAXIMUM_SHIELDS 250
-#define SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA 40
-
-#define MAXIMUM_TOTAL_HEALTH (MAXIMUM_HULL+MAXIMUM_SHIELDS)
-
-#define CAMERA_COAST_SPEED 3
-
-
-
 typedef struct {
     Sprite* sprite;
     Vector2 headingVector;
@@ -62,11 +52,6 @@ typedef struct {
 } Player_Data;
 
 
-
-#define SHIELD_PARTICLE_COLOUR_0 (Color){  34, 195, 222, 127 }
-#define SHIELD_PARTICLE_COLOUR_1 (Color){  27, 118, 213, 127 }
-#define SHIELD_PARTICLE_COLOUR_2 (Color){  34, 107, 220, 127 }
-#define SHIELD_PARTICLE_COLOUR_3 (Color){  25,  66, 219, 127 }
 
 
 
@@ -102,19 +87,20 @@ Color GetHullParticleColor();
 Color GetImpactParticleColor();
 
 int _Player_Init(void* self, float DeltaTime) {
-    PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
     PLAYER_DATA->health = MAXIMUM_HULL; // start max
-    PLAYER_DATA->healthRegenerationRate = 10.0f;
-    PLAYER_DATA->shieldRegenerationRate = 30.0f;
-    PLAYER_DATA->timeSinceLastShieldParticle = 0.0f;
+    PLAYER_DATA->healthRegenerationRate = HULL_REGEN_BASE_RATE;
+    PLAYER_DATA->shieldRegenerationRate = SHIELD_REGEN_BASE_RATE;
+
+    PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
     PLAYER_DATA->rotateRate = 0; // velocity for rotation. affected by rotatejerk.
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
+
+    PLAYER_DATA->timeSinceLastShieldParticle = 0.0f;
     PLAYER_DATA->shieldMaxPull = 20.0f;
     PLAYER_DATA->shieldMaxRange = 10.0f;
     PLAYER_DATA->shieldMinRange = 0.5f;
-
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
 
@@ -263,7 +249,9 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
 
-            PLAYER_DATA->health -= 20;
+            // get the damage rate and apply
+            int damageRate = (CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED)?ASTEROID_IMPACT_DAMMAGE_SHIELDED:ASTEROID_IMPACT_DAMMAGE_HULL;
+            PLAYER_DATA->health -= damageRate;
 
             // create a spark effect or something
 
@@ -299,10 +287,12 @@ void handleGravityInteractions(void *self, float DeltaTime){
         Vector2 impartSelf, impartStar;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
-                    PLAYER_DATA->health -= MAXIMUM_HULL;
-            // float damageRate = (CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED)? STAR_IMPACT_DAMMAGE_SHIELDED : STAR_IMPACT_DAMMAGE_HULL; 
+            // PLAYER_DATA->health -= MAXIMUM_HULL;
 
-            // PLAYER_DATA->health -= (DeltaTime * damageRate);
+            int damageRate = ( CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED )? STAR_IMPACT_DAMMAGE_SHIELDED : STAR_IMPACT_DAMMAGE_HULL;
+            
+            PLAYER_DATA->health -= damageRate;
+
 
             // END STATE
 
