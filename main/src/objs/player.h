@@ -45,27 +45,28 @@ typedef struct {
     float rotateRate;
     float accelRate;
     float health;
+    float healthRegenerationRate;
 } Player_Data;
 
 #define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
 
-
-enum PLAYER_STATE {
-    PLAYER_STATE_NOTHRUST = 0,
-    PLAYER_STATE_STOPTHRUST = 1,
-    PLAYER_STATE_STARTTHRUST = 2,
-    PLAYER_STATE_THRUSTING = 3
-};
-
 int CURRENT_PLAYER_STATE = PLAYER_STATE_NOTHRUST;
 
-// prepare
-void handleStarProximity(GameObj_Base *self, GameObj_Base *extobj);
+// declare functions we're adding so they can be used
+void updateThrustingSoundState(void *self, float DeltaTime);
+void handleAsteroidCollistions(void *self, float DeltaTime);
+void handleGravityInteractions(void *self, float DeltaTime);
+void handleStarProximityAlert(GameObj_Base *self, GameObj_Base *extobj);
+void handlePlayerMovement(void *self, float DeltaTime);
+void constrainPlayerToCamera(void *self, float DeltaTime);
+void handleCameraRelativity(void *self, float DeltaTime);
+void updateHealth(void *self, float DeltaTime);
 
 
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
-    PLAYER_DATA->health = MAXIMUM_HEALTH; //idk!
+    PLAYER_DATA->health = MAXIMUM_HEALTH; // start max
+    PLAYER_DATA->healthRegenerationRate = 10.0f;
     PLAYER_DATA->rotateRate = 0; // velocity for rotation. affected by rotatejerk.
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
@@ -78,6 +79,71 @@ int _Player_Init(void* self, float DeltaTime) {
 
 int _Player_Update(void* self, float DeltaTime) {
     // ================
+    updateThrustingSoundState(self, DeltaTime);
+
+    handlePlayerMovement(self, DeltaTime);
+
+    constrainPlayerToCamera(self, DeltaTime);
+    
+    handleAsteroidCollistions(self, DeltaTime);
+
+    handleGravityInteractions(self, DeltaTime);
+
+    handleCameraRelativity(self, DeltaTime);
+
+    updateHealth(self, DeltaTime);
+    return 0;
+}
+
+int _Player_Draw(void* self, float DeltaTime) {
+    RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+    // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
+    return 0;
+}
+
+int _Player_Destroy(void* self, float DeltaTime) {
+    DestroySprite(PLAYER_DATA->sprite);
+    free(PLAYER_DATA);
+
+    return 0;
+}
+
+GameObj_Base* CreatePlayer() {
+    GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
+
+    // ============================================================
+    // ==== setup the data scruct data
+    obj_ptr->data_struct = malloc(sizeof(Player_Data)); 
+
+    // ============================================================
+    obj_ptr->Init_Func = _Player_Init;
+    obj_ptr->Update_Func = _Player_Update;
+    obj_ptr->Draw_Func = _Player_Draw;
+    obj_ptr->Destroy_Func = _Player_Destroy;
+    // ============================================================
+
+    obj_ptr->awaitDestroy = 0;
+
+    // properly set up flags here (bitwise)
+    // consult the flag file (flags.md) for information on what each flag is.
+    obj_ptr->flags = FLAG_PLAYER_OBJECT;
+
+    obj_ptr->currentLayer = LAYER_PLAYER;
+
+    obj_ptr->radius = 0.45;
+    obj_ptr->mass = 1000;
+
+    // initialize vectors.
+    obj_ptr->position = Vector2Zero();
+    obj_ptr->velocity = Vector2Zero();
+    obj_ptr->size.x = 1;
+    obj_ptr->size.y = 1;
+
+    return obj_ptr;
+}
+
+void updateThrustingSoundState(void *self, float DeltaTime){
+
     // when starting to thrust
     float trackSettingVolume = 0.0f;
     if (
@@ -132,9 +198,101 @@ int _Player_Update(void* self, float DeltaTime) {
             CURRENT_PLAYER_STATE=PLAYER_STATE_NOTHRUST;
         }
     }
-    
+}
+
+void handleAsteroidCollistions(void *self, float DeltaTime){
+
+    // check asteroid collisions
+    GameObj_Base* extobj;
+    for (int sIDX = 0; sIDX != -1; ) {
+        sIDX = GetObjectWithFlagsExact(FLAG_ASTEROID, sIDX, &extobj);
+
+        if (sIDX == -1) break;
+
+        Vector2 impartSelf, impartAsteroid;
+        // Check if collision occurs
+        if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
+            Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
+            THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
+            extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
+
+            PLAYER_DATA->health -= 20;
+
+            // create a spark effect or something
+
+            int randomCount = (FLOAT_RAND * 4) + 4;
+            for (int i = 0; i < randomCount; i++) {
+                // pick a palette of 4
+                Color colourVal;
+                int diceRoll = (FLOAT_RAND * 4);
+                switch (diceRoll) {
+                    case 0: colourVal = (Color) {245, 141, 38, 127};
+                    break;
+                    case 1: colourVal = (Color) {38, 217, 245, 127};
+                    break;
+                    case 2: colourVal = (Color) {252, 233, 112, 127};
+                    break;
+                    case 3: colourVal = (Color) {216, 214, 203, 127};
+                    break;
+                }
+                SpawnParticle(
+                    midPoint,
+                    Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}),
+                    Vector2Zero(),
+                    Vector2Scale(Vector2One(), FLOAT_RAND * .25),
+                    (FLOAT_RAND * 1.75) + .25,
+                    colourVal,
+                    1
+                );
+            }
+        }
+    }   
+}
 
 
+void handleGravityInteractions(void *self, float DeltaTime){
+
+    // check for gravity interactions
+    GameObj_Base* extobj;
+    // TODO
+    for (int sIDX = 0; sIDX != -1; ) {
+        sIDX = GetObjectWithFlagsExact(FLAG_GRAVITY_WELL, sIDX, &extobj);
+
+        if (sIDX == -1) break;
+
+        Vector2 impartSelf, impartStar;
+        // Check if collision occurs
+        if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
+            PLAYER_DATA->health -= MAXIMUM_HEALTH;
+
+            // END STATE
+
+            //create a billion particles as the ship disintegrates
+        }
+        else {
+            handleStarProximityAlert(THIS,extobj);
+            
+            // apply gravity vector
+            Vector2 accel = GetAccelerationToSink(extobj, THIS);
+            THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(accel, DeltaTime));
+        }
+    }
+}
+
+void handleStarProximityAlert(GameObj_Base *self, GameObj_Base *extobj){
+    // grab our information
+    float distanceFromStar = Vector2Distance(THIS->position, extobj->position);
+    float starRange = ((_Star_Data *)(extobj->data_struct))->maxRange;
+    // when we're 
+    float proximity = 1.0f-((distanceFromStar) / starRange);
+    // printf("unclamp proximity: %f\n", proximity);
+    if (proximity > 1.0f) proximity = 1.0f;
+    if (proximity < 0.0f) proximity = 0.0f;
+    // printf("clamped proximity: %f\n", proximity);
+    setTrackVolume(STAR_PROXIMITY_LOOP_ID, proximity);
+}
+
+void handlePlayerMovement(void *self, float DeltaTime){
 
     // ================
     // Default steering movement NOT STRAFING mode.
@@ -186,7 +344,9 @@ int _Player_Update(void* self, float DeltaTime) {
         );
 
     }
+}
 
+void constrainPlayerToCamera(void *self, float DeltaTime){
     // bind position within camerabounds y
     if (THIS->position.y > cameraBounds.y) {
         THIS->position.y = cameraBounds.y;
@@ -196,77 +356,9 @@ int _Player_Update(void* self, float DeltaTime) {
         THIS->position.y = -cameraBounds.y;
         THIS->velocity.y = 0;
     }
-    
-    // check asteroid collisions
-    GameObj_Base* extobj;
-    for (int sIDX = 0; sIDX != -1; ) {
-        sIDX = GetObjectWithFlagsExact(FLAG_ASTEROID, sIDX, &extobj);
+}
 
-        if (sIDX == -1) break;
-
-        Vector2 impartSelf, impartAsteroid;
-        // Check if collision occurs
-        if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
-            Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
-            THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
-            extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
-
-            PLAYER_DATA->health -= 20;
-
-            // create a spark effect or something
-
-            int randomCount = (FLOAT_RAND * 4) + 4;
-            for (int i = 0; i < randomCount; i++) {
-                // pick a palette of 4
-                Color colourVal;
-                int diceRoll = (FLOAT_RAND * 4);
-                switch (diceRoll) {
-                    case 0: colourVal = (Color) {245, 141, 38, 127};
-                    break;
-                    case 1: colourVal = (Color) {38, 217, 245, 127};
-                    break;
-                    case 2: colourVal = (Color) {252, 233, 112, 127};
-                    break;
-                    case 3: colourVal = (Color) {216, 214, 203, 127};
-                    break;
-                }
-                SpawnParticle(
-                    midPoint,
-                    Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}),
-                    Vector2Zero(),
-                    Vector2Scale(Vector2One(), FLOAT_RAND * .25),
-                    (FLOAT_RAND * 1.75) + .25,
-                    colourVal,
-                    1
-                );
-            }
-        }
-    }   
-
-    // check for gravity interactions
-    // TODO
-    for (int sIDX = 0; sIDX != -1; ) {
-        sIDX = GetObjectWithFlagsExact(FLAG_GRAVITY_WELL, sIDX, &extobj);
-
-        if (sIDX == -1) break;
-
-        Vector2 impartSelf, impartStar;
-        // Check if collision occurs
-        if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
-            PLAYER_DATA->health -= MAXIMUM_HEALTH;
-
-            // END STATE
-
-            //create a billion particles as the ship disintegrates
-        }
-        else {
-            handleStarProximity(THIS,extobj);
-            
-            // apply gravity vector
-            Vector2 accel = GetAccelerationToSink(extobj, THIS);
-            THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(accel, DeltaTime));
-        }
-    }
+void handleCameraRelativity(void *self, float DeltaTime){
 
     // if player is dragging behind camera bounds, slow down camera until cant slowdown anymore, then speed up player
     // if the player is too fast for camera, speed up camera then slow down player if needed.
@@ -286,64 +378,18 @@ int _Player_Update(void* self, float DeltaTime) {
         THIS->velocity.x = FREE_MAX_SPEED;
 
     cameraPosition.x += cameraVelocity.x * DeltaTime;
-    return 0;
 }
 
-int _Player_Draw(void* self, float DeltaTime) {
-    RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
-    // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
-    return 0;
-}
+void updateHealth(void *self, float DeltaTime){
+    // not max health
+    if(PLAYER_DATA->health < MAXIMUM_HEALTH){
+        // just increase it by the regen rate every second
+        (PLAYER_DATA->health) += (PLAYER_DATA->healthRegenerationRate)*DeltaTime;
+    }
+    // spooky over heal
+    else if(PLAYER_DATA->health > MAXIMUM_HEALTH){
+        // TODO: shield?
+        (PLAYER_DATA->health) = MAXIMUM_HEALTH;
 
-int _Player_Destroy(void* self, float DeltaTime) {
-    DestroySprite(PLAYER_DATA->sprite);
-    free(PLAYER_DATA);
-
-    return 0;
-}
-
-GameObj_Base* CreatePlayer() {
-    GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
-
-    // ============================================================
-    // ==== setup the data scruct data
-    obj_ptr->data_struct = malloc(sizeof(Player_Data)); 
-
-    // ============================================================
-    obj_ptr->Init_Func = _Player_Init;
-    obj_ptr->Update_Func = _Player_Update;
-    obj_ptr->Draw_Func = _Player_Draw;
-    obj_ptr->Destroy_Func = _Player_Destroy;
-    // ============================================================
-
-    obj_ptr->awaitDestroy = 0;
-
-    // properly set up flags here (bitwise)
-    // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_PLAYER_OBJECT;
-
-    obj_ptr->currentLayer = LAYER_PLAYER;
-
-    obj_ptr->radius = 0.45;
-    obj_ptr->mass = 1000;
-
-    // initialize vectors.
-    obj_ptr->position = Vector2Zero();
-    obj_ptr->velocity = Vector2Zero();
-    obj_ptr->size.x = 1;
-    obj_ptr->size.y = 1;
-
-    return obj_ptr;
-}
-
-void handleStarProximity(GameObj_Base *self, GameObj_Base *extobj){
-    float distanceFromStar = Vector2Distance(THIS->position, extobj->position);
-    float starRange = ((_Star_Data *)(extobj->data_struct))->maxRange;
-    // when we're 
-    float proximity = 1.0f-((distanceFromStar) / starRange);
-    // printf("unclamp proximity: %f\n", proximity);
-    if (proximity > 1.0f) proximity = 1.0f;
-    if (proximity < 0.0f) proximity = 0.0f;
-    // printf("clamped proximity: %f\n", proximity);
-    setTrackVolume(STAR_PROXIMITY_LOOP_ID, proximity);
+    }
 }
