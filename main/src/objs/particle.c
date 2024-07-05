@@ -189,17 +189,6 @@ _Particle* GetParticle(int ParticleID) {
     return NULL;
 }
 
-/// @brief Gets a particle object with the given ID.
-/// @param ParticleID 
-/// @return Null if none found.
-_Particle* GetParticle(int ParticleID) {
-    for (int i = 0; i < _particleCount; i++) {
-        if (_particles[i].internalID == ParticleID)
-            return &_particles[i];
-    }
-    return NULL;
-}
-
 GameObj_Base* CreateParticleObject() {
     GameObj_Base* obj_ptr = malloc(sizeof(GameObj_Base));
 
