@@ -60,10 +60,9 @@
 #endif
 
 #ifndef _star_obj
-    #define _star_obj
-    #include "src/objs/star.c"
+#define _star_obj
+#include "src/objs/star.c"
 #endif
-
 
 #ifndef _wormhole_obj
 #define _wormhole_obj
@@ -109,7 +108,7 @@ int main()
     //--------------------------------------------------------------------------------------
     GameObjPoolInit();
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
-    InitAudioDevice();      // Initialize audio device
+    InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
 
     prepareSounds();
@@ -135,8 +134,8 @@ int main()
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    CloseAudioDevice();     // Close audio device
-    CloseWindow(); // Close window and OpenGL context
+    CloseAudioDevice(); // Close audio device
+    CloseWindow();      // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     GameObjPoolDestroy();
@@ -179,30 +178,31 @@ static void generateObjects()
     // TODO: succeed with an asteroid handler that can scale up & down asteroids.
     // Decide upon some criteria for how asteroid handler should work - should it control the scene?
     // Place stars and other elements down?
-    ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *)*NUMBER_OF_ASTEROIDS);
+    ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_ASTEROIDS);
     for (int i = 0; i < NUMBER_OF_ASTEROIDS; i++)
     {
         /* code */
         ASTEROID_REF_LIST[i] = CreateAsteroid();
         AddToPool(ASTEROID_REF_LIST[i]);
     }
-    
-    //Background Object
+
+    // Background Object
     BACKGROUND_OBJECT_REF = CreateBackgroundStars();
     AddToPool(BACKGROUND_OBJECT_REF);
-
+    BACKGROUNDSTARS_EFFECT_REF = CreateBackgroundStars();
+    AddToPool(BACKGROUNDSTARS_EFFECT_REF);
 
     AddToPool(CreateHealthBar());
 
-    //Wormhole Object
+    // Wormhole Object
     WORMHOLE_OBJECT_REF = CreateWormhole();
     AddToPool(WORMHOLE_OBJECT_REF);
-    
-    //Planet Object
+
+    // Planet Object
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
 
-    //Star Object
+    // Star Object
     STAR_OBJECT_REF = CreateStarObject();
     AddToPool(STAR_OBJECT_REF);
 }

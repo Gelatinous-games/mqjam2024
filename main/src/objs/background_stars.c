@@ -147,7 +147,7 @@ GameObj_Base *CreateBackgroundStars()
     // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = FLAG_BACKGROUND;
 
-    obj_ptr->currentLayer = LAYER_BACKGROUND_STARSCAPE_0;
+    obj_ptr->currentLayer = LAYER_BACKGROUND_STARSCAPE_1;
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
