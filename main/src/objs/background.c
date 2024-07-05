@@ -98,7 +98,7 @@ BackgroundSprite_SpriteData *spriteTypeToSpriteDataList(void *self, float DeltaT
 
 
 
-int _BackgroundStars_Init(void *self, float DeltaTime)
+int _BackgroundSprites_Init(void *self, float DeltaTime)
 {
     // printf("%s\n","initialising sprite list");
     
@@ -110,7 +110,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     return 0;
 }
 
-int _BackgroundStars_Update(void *self, float DeltaTime)
+int _BackgroundSprites_Update(void *self, float DeltaTime)
 {
     // parallax
     THIS->position.x = -0.1f*(cameraPosition.x);
@@ -120,7 +120,7 @@ int _BackgroundStars_Update(void *self, float DeltaTime)
     return 0;
 }
 
-int _BackgroundStars_Draw(void *self, float DeltaTime)
+int _BackgroundSprites_Draw(void *self, float DeltaTime)
 {
 
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
@@ -146,7 +146,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     return 0;
 }
 
-int _BackgroundStars_Destroy(void *self, float DeltaTime)
+int _BackgroundSprites_Destroy(void *self, float DeltaTime)
 {
 
     destroyBackgroundSprites(self, DeltaTime);
@@ -159,7 +159,7 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
     return 0;
 }
 
-GameObj_Base *CreateBackgroundStars()
+GameObj_Base *CreateBackgroundSprites()
 {
     GameObj_Base *obj_ptr = malloc(sizeof(GameObj_Base));
 
@@ -169,10 +169,10 @@ GameObj_Base *CreateBackgroundStars()
 
     // ============================================================
 
-    obj_ptr->Init_Func = &_BackgroundStars_Init;
-    obj_ptr->Update_Func = &_BackgroundStars_Update;
-    obj_ptr->Draw_Func = &_BackgroundStars_Draw;
-    obj_ptr->Destroy_Func = &_BackgroundStars_Destroy;
+    obj_ptr->Init_Func = &_BackgroundSprites_Init;
+    obj_ptr->Update_Func = &_BackgroundSprites_Update;
+    obj_ptr->Draw_Func = &_BackgroundSprites_Draw;
+    obj_ptr->Destroy_Func = &_BackgroundSprites_Destroy;
     // ============================================================
 
     obj_ptr->position = (Vector2){ 0.0f, 0.0f };
