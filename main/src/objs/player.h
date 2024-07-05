@@ -43,6 +43,8 @@
 
 #define CAMERA_COAST_SPEED 3
 
+
+
 typedef struct {
     Sprite* sprite;
     Vector2 headingVector;
@@ -70,9 +72,9 @@ typedef struct {
 
 #define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
 
-int CURRENT_PLAYER_STATE = PLAYER_STATE_NOTHRUST;
+int CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
 
-
+int CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
 
 
 
@@ -89,6 +91,8 @@ void updateHealth(void *self, float DeltaTime);
 void handleShieldEffect(void *self, float DeltaTime);
 void emitShieldParticle(void *self, float DeltaTime);
 Vector2 GetRandomUnitVector();
+float GetPlayerShieldPercentage();
+float GetPlayerHullPercentage();
 
 int ParticleOrbitPlayer(void *self, float DeltaTime);
 Vector2 GetShieldParticleAccelerationToPlayer(_Particle *particleObj);
@@ -204,32 +208,32 @@ void updateThrustingSoundState(void *self, float DeltaTime){
             trackSettingVolume = 0.5;
         }
         // is it new OR were we ending
-        if( CURRENT_PLAYER_STATE < PLAYER_STATE_STARTTHRUST ){
-            CURRENT_PLAYER_STATE=PLAYER_STATE_STARTTHRUST;
+        if( CURRENT_PLAYER_THRUST_STATE < PLAYER_STATE_STARTTHRUST ){
+            CURRENT_PLAYER_THRUST_STATE=PLAYER_STATE_STARTTHRUST;
             setTrackVolume(THRUST_END_ID, 0.0f);
             setTrackVolume(THRUST_START_ID, trackSettingVolume);
             playSoundOnce(THRUST_START_ID);
         }
         // check start sound finished
-        else if(CURRENT_PLAYER_STATE==PLAYER_STATE_STARTTHRUST && !IsSoundPlaying(TRACKS[THRUST_START_ID]->track)){
+        else if(CURRENT_PLAYER_THRUST_STATE==PLAYER_STATE_STARTTHRUST && !IsSoundPlaying(TRACKS[THRUST_START_ID]->track)){
             // swap volume to loop
             setTrackVolume(THRUST_START_ID, 0.0f);
             setTrackVolume(THRUST_LOOP_ID, trackSettingVolume);
             // change state
-            CURRENT_PLAYER_STATE=PLAYER_STATE_THRUSTING;
+            CURRENT_PLAYER_THRUST_STATE=PLAYER_STATE_THRUSTING;
         }
     }
     else
     {
         // STARTING OR LOOPING
-        if(CURRENT_PLAYER_STATE>PLAYER_STATE_STOPTHRUST){
+        if(CURRENT_PLAYER_THRUST_STATE>PLAYER_STATE_STOPTHRUST){
             // turn on only the end sound
             setTrackVolume(THRUST_END_ID, 1.0f);
             setTrackVolume(THRUST_START_ID, 0.0f);
             setTrackVolume(THRUST_LOOP_ID, 0.0f);
             // but also play it
             playSoundOnce(THRUST_END_ID);
-            CURRENT_PLAYER_STATE=PLAYER_STATE_STOPTHRUST;
+            CURRENT_PLAYER_THRUST_STATE=PLAYER_STATE_STOPTHRUST;
         }
         // STOPPING and finished playing
         else {
@@ -238,7 +242,7 @@ void updateThrustingSoundState(void *self, float DeltaTime){
             setTrackVolume(THRUST_START_ID, 0.0f);
             setTrackVolume(THRUST_LOOP_ID, 0.0f);
             // change state to no thrust
-            CURRENT_PLAYER_STATE=PLAYER_STATE_NOTHRUST;
+            CURRENT_PLAYER_THRUST_STATE=PLAYER_STATE_NOTHRUST;
         }
     }
 }
@@ -413,19 +417,26 @@ void handleCameraRelativity(void *self, float DeltaTime){
 }
 
 void updateHealth(void *self, float DeltaTime){
-    // not max health
-    if(PLAYER_DATA->health < MAXIMUM_HULL){
-        // just increase it by the regen rate every second
-        (PLAYER_DATA->health) += (PLAYER_DATA->healthRegenerationRate)*DeltaTime;
+    if(GetPlayerHullPercentage()<0.0f){
+        CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
     }
-    // over heal into shields
-    else if(PLAYER_DATA->health >= MAXIMUM_HULL){
-        // if we're needing to regen shields
-        if(PLAYER_DATA->health < MAXIMUM_HULL+MAXIMUM_SHIELDS){
-            (PLAYER_DATA->health) += (PLAYER_DATA->shieldRegenerationRate)*DeltaTime;
+    else {
+        // not max health
+        if(PLAYER_DATA->health < MAXIMUM_HULL){
+            CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
+            // just increase it by the regen rate every second
+            (PLAYER_DATA->health) += (PLAYER_DATA->healthRegenerationRate)*DeltaTime;
         }
-        else{
-            (PLAYER_DATA->health) = MAXIMUM_HULL+MAXIMUM_SHIELDS;
+        // over heal into shields
+        else if(PLAYER_DATA->health >= MAXIMUM_HULL){
+            CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISSHIELDED;
+            // if we're needing to regen shields
+            if(PLAYER_DATA->health < MAXIMUM_HULL+MAXIMUM_SHIELDS){
+                (PLAYER_DATA->health) += (PLAYER_DATA->shieldRegenerationRate)*DeltaTime;
+            }
+            else{
+                (PLAYER_DATA->health) = MAXIMUM_HULL+MAXIMUM_SHIELDS;
+            }
         }
     }
 }
@@ -608,7 +619,7 @@ Color GetHullParticleColor(){
 }
 
 Color GetImpactParticleColor(){
-    if(GetPlayerShieldPercentage() > 0.0f){
+    if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISSHIELDED){
         return GetShieldParticleColor();
     }
     else {
