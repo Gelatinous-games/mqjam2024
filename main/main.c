@@ -73,7 +73,6 @@
 #include "src/objs/planet.c"
 #endif
 
-
 #ifndef _background_stars
 #define _background_star
 #include "src/objs/background_stars.c"
@@ -191,10 +190,16 @@ static void generateObjects()
     }
 
     // Background Object
+    BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
+    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
+    {
+        /* code */
+        BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
+        AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
+    }
+    
     BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
     AddToPool(BACKGROUND_OBJECT_REF);
-    BACKGROUNDSTARS_EFFECT_REF = CreateBackgroundStars();
-    AddToPool(BACKGROUNDSTARS_EFFECT_REF);
 
     AddToPool(CreateHealthBar());
 
