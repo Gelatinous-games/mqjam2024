@@ -69,7 +69,7 @@ typedef struct
 } Background_DataStruct;
 
 
-#define BACKGROUND_SPRITE_COUNT_ARTWORKS 9
+#define BACKGROUND_SPRITE_COUNT_ARTWORKS 10
 #define BACKGROUND_SPRITE_COUNT_SMALL 5
 #define BACKGROUND_SPRITE_COUNT_MEDIUM 7
 #define BACKGROUND_SPRITE_COUNT_LARGE 10
@@ -98,7 +98,7 @@ BackgroundSprite_SpriteData *spriteTypeToSpriteDataList(void *self, float DeltaT
 
 
 
-int _BackgroundStars_Init(void *self, float DeltaTime)
+int _BackgroundSprites_Init(void *self, float DeltaTime)
 {
     // printf("%s\n","initialising sprite list");
     
@@ -110,7 +110,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     return 0;
 }
 
-int _BackgroundStars_Update(void *self, float DeltaTime)
+int _BackgroundSprites_Update(void *self, float DeltaTime)
 {
     // parallax
     THIS->position.x = -0.1f*(cameraPosition.x);
@@ -120,7 +120,7 @@ int _BackgroundStars_Update(void *self, float DeltaTime)
     return 0;
 }
 
-int _BackgroundStars_Draw(void *self, float DeltaTime)
+int _BackgroundSprites_Draw(void *self, float DeltaTime)
 {
 
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
@@ -146,7 +146,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     return 0;
 }
 
-int _BackgroundStars_Destroy(void *self, float DeltaTime)
+int _BackgroundSprites_Destroy(void *self, float DeltaTime)
 {
 
     destroyBackgroundSprites(self, DeltaTime);
@@ -159,7 +159,7 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
     return 0;
 }
 
-GameObj_Base *CreateBackgroundStars()
+GameObj_Base *CreateBackgroundSprites()
 {
     GameObj_Base *obj_ptr = malloc(sizeof(GameObj_Base));
 
@@ -169,10 +169,10 @@ GameObj_Base *CreateBackgroundStars()
 
     // ============================================================
 
-    obj_ptr->Init_Func = &_BackgroundStars_Init;
-    obj_ptr->Update_Func = &_BackgroundStars_Update;
-    obj_ptr->Draw_Func = &_BackgroundStars_Draw;
-    obj_ptr->Destroy_Func = &_BackgroundStars_Destroy;
+    obj_ptr->Init_Func = &_BackgroundSprites_Init;
+    obj_ptr->Update_Func = &_BackgroundSprites_Update;
+    obj_ptr->Draw_Func = &_BackgroundSprites_Draw;
+    obj_ptr->Destroy_Func = &_BackgroundSprites_Destroy;
     // ============================================================
 
     obj_ptr->position = (Vector2){ 0.0f, 0.0f };
@@ -202,10 +202,11 @@ void prepareBackgroundSprites(void *self, float DeltaTime){
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_03.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_04.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_05.png"), LAYER_BACKGROUND_STARSCAPE_0 };
-    backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_06.png"), LAYER_BACKGROUND_STARSCAPE_0 };
+    backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_06.png"), LAYER_BACKGROUND_STARSCAPE_2 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_07.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_08.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_09.png"), LAYER_BACKGROUND_STARSCAPE_0 };
+    backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_10.png"), LAYER_BACKGROUND_STARSCAPE_2 };
 
     index = 0;
     backgroundSpriteList_small = (BackgroundSprite_SpriteData*)malloc(BACKGROUND_SPRITE_COUNT_SMALL * sizeof(BackgroundSprite_SpriteData));

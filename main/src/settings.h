@@ -28,11 +28,14 @@ const static int WINDOW_HEIGHT = 768;
 const static int NUMBER_OF_ASTEROIDS = 4;
 static GameObj_Base **ASTEROID_REF_LIST;
 
+
 struct timeval timerStart;
 
 static GameObj_Base *PLAYER_OBJECT_REF;
 
 static GameObj_Base *BACKGROUND_OBJECT_REF;
+const static int NUMBER_OF_BACKGROUNDSTARS_LAYERS = 3;
+static GameObj_Base **BACKGROUNDSTARS_EFFECT_REF_LIST;
 
 static GameObj_Base *WORMHOLE_OBJECT_REF;
 static GameObj_Base *PLANET_OBJECT_REF;
