@@ -73,6 +73,11 @@
 #include "src/objs/planet.c"
 #endif
 
+
+#ifndef _background_stars
+#define _background_star
+#include "src/objs/background_stars.c"
+#endif
 #ifndef _background
 #define _background
 #include "src/objs/background.c"
@@ -187,7 +192,7 @@ static void generateObjects()
     }
 
     // Background Object
-    BACKGROUND_OBJECT_REF = CreateBackground();
+    BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
     AddToPool(BACKGROUND_OBJECT_REF);
     BACKGROUNDSTARS_EFFECT_REF = CreateBackgroundStars();
     AddToPool(BACKGROUNDSTARS_EFFECT_REF);

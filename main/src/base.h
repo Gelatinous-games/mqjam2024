@@ -13,7 +13,8 @@
 #define INT_RAND (int)(random())
 #define FLOAT_RAND ((float)(random()) / (float)RAND_MAX)
 #define CHAR_RAND ((char)(random() & 0xff))
-#define GAME_TIME GetSystemTime( &systemTime )
+#define GAME_TIME 0
+// #define GAME_TIME GetSystemTime( &systemTime )
 #else
 // windows randoming
 #define INT_RAND (int)(rand())
