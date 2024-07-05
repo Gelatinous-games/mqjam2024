@@ -57,6 +57,11 @@ typedef struct {
 
     // for when it's not an artwork
     Color spriteTint;
+
+    // transformation in background space
+    Vector2 bgSpace_position;
+    float   bgSpace_rotation;
+    Vector2 bgSpace_scale;
 } BackgroundSprite_GenerationData;
 
 
@@ -68,9 +73,6 @@ typedef struct
     // the list of bg objects
     BackgroundSprite_GenerationData *backgroundGeneratedObjects;
 
-    Vector2 *backgroundObjectPositions;
-    float *backgroundObjectRotations;
-    Vector2 *backgroundObjectScales;
 } Background_DataStruct;
 
 
@@ -87,24 +89,7 @@ Sprite **backgroundSpriteList_medium;
 Sprite **backgroundSpriteList_large;
 
 
-
-
 #define BACKGROUND_DATA ((Background_DataStruct *)(THIS->data_struct))
-
-
-#define BACKGROUND_OBJECT_COUNT 100
-
-#define MAX_BACKGROUND_SPAWN_DISTANCE_X 400.0f
-#define MAX_BACKGROUND_SPAWN_DISTANCE_Y 10.0f
-
-
-#define MIN_BACKGROUND_SPAWN_SCALE_X 0.5f
-#define MAX_BACKGROUND_SPAWN_SCALE_X 3.0f
-#define MIN_BACKGROUND_SPAWN_SCALE_Y 0.5f
-#define MAX_BACKGROUND_SPAWN_SCALE_Y 3.0f
-
-
-
 
 
 /**
@@ -116,7 +101,7 @@ void prepareBackgroundGenerationData(void *self, float DeltaTime);
 void destroyBackgroundGenerationData(void *self, float DeltaTime);
 
 void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObjectIndex);
-Sprite *getCurrentSprite(void *self, float DeltaTime, BackgroundSprite_GenerationData indexOfObject);
+Sprite **spriteTypeToSpriteList(void *self, float DeltaTime, int spriteType);
 
 
 
@@ -148,22 +133,18 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
     {
         // printf("drawing %d\n",i);
-        Vector2 currSpritePosition = BACKGROUND_DATA->backgroundObjectPositions[i];
+        Vector2 currSpritePosition = BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position;
 
         // determine if we should index into our list
         // or if it was the star brush we rolled
-        Sprite *currSpritePointer = getCurrentSprite(self, DeltaTime, BACKGROUND_DATA->backgroundGeneratedObjects[i]);
-        //.. ..
+        Sprite **spriteList = spriteTypeToSpriteList(self, DeltaTime, BACKGROUND_DATA->backgroundGeneratedObjects[i].spriteType);
+        // draw it
         RenderSpriteRelative(
-            currSpritePointer,
-            (Vector2){
-                THIS->position.x + currSpritePosition.x,
-                THIS->position.x + currSpritePosition.y
-            },
-            BACKGROUND_DATA->backgroundObjectScales[i],
-            BACKGROUND_DATA->backgroundObjectRotations[i],
-            // TODO: should mess with tint when it's star brush sprite
-            WHITE
+            spriteList[BACKGROUND_DATA->backgroundGeneratedObjects[i].spriteID],
+            Vector2Add(THIS->position, BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position),
+            BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_scale,
+            BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_rotation,
+            BACKGROUND_DATA->backgroundGeneratedObjects[i].spriteTint
         );
     }
 
@@ -300,29 +281,14 @@ void prepareBackgroundGenerationData(void *self, float DeltaTime){
     // object reference array
     BACKGROUND_DATA->backgroundGeneratedObjects = (BackgroundSprite_GenerationData *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(BackgroundSprite_GenerationData));
 
-    // printf("%s\n","making bg objects positions");
-    // positions array
-    BACKGROUND_DATA->backgroundObjectPositions = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
-    // roations
-    BACKGROUND_DATA->backgroundObjectRotations = (float *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(float));
-    // scale array
-    BACKGROUND_DATA->backgroundObjectScales = (Vector2 *)malloc(BACKGROUND_OBJECT_COUNT*sizeof(Vector2));
-
-
     // roll each object
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++){
-
         rollForBackgroundObjectData(self, DeltaTime, i);
     }
 }
 
 
 void destroyBackgroundGenerationData(void *self, float DeltaTime){
-
-    // scale/position data
-    free(BACKGROUND_DATA->backgroundObjectScales);
-    free(BACKGROUND_DATA->backgroundObjectRotations);
-    free(BACKGROUND_DATA->backgroundObjectPositions);
 
     // object reference array
     free(BACKGROUND_DATA->backgroundGeneratedObjects);
@@ -333,60 +299,139 @@ void destroyBackgroundGenerationData(void *self, float DeltaTime){
 
 
 void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObjectIndex){
+    // === prepare values
+    int generatedType = 0;
+    int generatedIndex = 0;
+    Color generatedTint = WHITE;
+    Vector2 generatedPosition = Vector2Zero();
+    float generatedRotation = 0.0f;
+    Vector2 generatedScale = Vector2One();
+
+
     // === selection roll
     int selectionRoll = abs((INT_RAND)%(BACKGROUND_SPRITE_COUNT_ALL));
 
+    // === determine type/index
 
-    // === assign selection
-    // ------ ARTWORKS
-    // TODO: implement selecting, but just mod for artwork count rn
-    BACKGROUND_DATA->backgroundGeneratedObjects[backgroundObjectIndex] = (BackgroundSprite_GenerationData){
-        // type
-        BG_SPRITETYPE_ARTWORK,
-              // ID
-        selectionRoll%BACKGROUND_SPRITE_COUNT_ARTWORKS,
-        // tint
-        WHITE
-    };
+    int firstSmall = BACKGROUND_SPRITE_COUNT_ARTWORKS;
+    int firstMedium = BACKGROUND_SPRITE_COUNT_ARTWORKS+BACKGROUND_SPRITE_COUNT_SMALL;
+    int firstLarge = BACKGROUND_SPRITE_COUNT_ARTWORKS+BACKGROUND_SPRITE_COUNT_SMALL+BACKGROUND_SPRITE_COUNT_MEDIUM;
+    
+    
+    // ARTWORK WAS ROLLED
+    if(selectionRoll < firstSmall){
+        generatedType = BG_SPRITETYPE_ARTWORK;
+        generatedIndex = selectionRoll;
+        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "ARTWORK",generatedIndex);
+    }
+    // SMALL WAS ROLLED
+    else if(selectionRoll < firstMedium){
+        generatedType = BG_SPRITETYPE_TINTABLE_SMALL;
+        generatedIndex = selectionRoll - firstSmall;
+        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "SMALL", generatedIndex);
+    }
+    // MEDIUM WAS ROLLED
+    else if(selectionRoll < firstLarge){
+        generatedType = BG_SPRITETYPE_TINTABLE_MEDIUM;
+        generatedIndex = selectionRoll - firstMedium;
+        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "MEDIUM", generatedIndex);
+    }
+    // LARGE WAS ROLLED
+    else {
+        generatedType = BG_SPRITETYPE_TINTABLE_LARGE;
+        generatedIndex = selectionRoll - firstLarge;
+        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "LARGE", generatedIndex);
+    }
 
+    // === tinting
+    int colourCount = 5;
+    switch(generatedType){
+        default:
+        case BG_SPRITETYPE_ARTWORK:
+            generatedTint = WHITE;
+            break;
+        case BG_SPRITETYPE_TINTABLE_SMALL:
+        case BG_SPRITETYPE_TINTABLE_MEDIUM:
+        case BG_SPRITETYPE_TINTABLE_LARGE:
+            switch(INT_RAND%colourCount){
+                default:
+                case 0:
+                    generatedTint = WHITE;
+                    break;
+                case 1:
+                    // lavender
+                    generatedTint = (Color){ 0xdc, 0xd3, 0xff, 255 };
+                    break;
+                case 2:
+                    // light cyan
+                    generatedTint = (Color){ 0xc4, 0xfa, 0xf8, 255 };
+                    break;
+                case 3:
+                    // light orange
+                    generatedTint = (Color){ 0xff, 0xdb, 0xcc, 255 };
+                    break;
+                case 4:
+                    // light yellow
+                    generatedTint = (Color){ 0xf9, 0xff, 0xb5, 255 };
+                    break;
+            }
+            break;
+    }
+    
+    
     // === positioning
-    BACKGROUND_DATA->backgroundObjectPositions[backgroundObjectIndex] = (Vector2){
-        (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_X),
-        (FLOAT_RAND*MAX_BACKGROUND_SPAWN_DISTANCE_Y-MAX_BACKGROUND_SPAWN_DISTANCE_Y/2.0f)
+
+    generatedPosition = (Vector2){
+        (FLOAT_RAND*BACKGROUND_SPAWN_MAX_DISTANCE_X),
+        (FLOAT_RAND*BACKGROUND_SPAWN_MAX_DISTANCE_Y-BACKGROUND_SPAWN_MAX_DISTANCE_Y/2.0f)
     };
 
     // === rotation
-    BACKGROUND_DATA->backgroundObjectRotations[backgroundObjectIndex] = FLOAT_RAND*360.0f;
+
+    generatedRotation = FLOAT_RAND*360.0f;
 
     // === scaling
+
     // generate two random percentage values 
-    float xScaleRand = FLOAT_RAND;
-    float yScaleRand = FLOAT_RAND;
+    float scaleRand = FLOAT_RAND;
+
     // then lerp between the minimum and maximum
-    BACKGROUND_DATA->backgroundObjectScales[backgroundObjectIndex] = (Vector2){
-        ((1.0f-xScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_X+(xScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_X),
-        ((1.0f-yScaleRand)*MIN_BACKGROUND_SPAWN_SCALE_Y+(yScaleRand)*MAX_BACKGROUND_SPAWN_SCALE_Y)
+    generatedScale = (Vector2){
+        ((1.0f-scaleRand)*BACKGROUND_SPAWN_MIN_SCALE_X+(scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_X),
+        ((1.0f-scaleRand)*BACKGROUND_SPAWN_MIN_SCALE_Y+(scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_Y)
+    };
+    
+
+
+    // === assign the data we generated
+
+    BACKGROUND_DATA->backgroundGeneratedObjects[backgroundObjectIndex] = (BackgroundSprite_GenerationData){
+        // type
+        generatedType,
+        // ID
+        generatedIndex,
+        // tint
+        generatedTint,
+        // position
+        generatedPosition,
+        // rotation
+        generatedRotation,
+        // scale
+        generatedScale
     };
 }
 
-Sprite *getCurrentSprite(void *self, float DeltaTime, BackgroundSprite_GenerationData spriteGenerationData){
-    Sprite **spriteListToUse;
-    switch (spriteGenerationData.spriteType){
-        case BG_SPRITETYPE_ARTWORK:
-                  spriteListToUse = backgroundSpriteList_artworks;
-            break;
-        case BG_SPRITETYPE_TINTABLE_SMALL:
-            spriteListToUse = backgroundSpriteList_small;
-            break;
-        case BG_SPRITETYPE_TINTABLE_MEDIUM:
-            spriteListToUse = backgroundSpriteList_medium;
-            break;
-        case BG_SPRITETYPE_TINTABLE_LARGE:
-            spriteListToUse = backgroundSpriteList_large;
-            break;
+
+Sprite **spriteTypeToSpriteList(void *self, float DeltaTime, int spriteType){
+    switch (spriteType){
         default:
-            printf("selection failure with type: %d\n", spriteGenerationData.spriteType);
-            return backgroundSpriteList_artworks[0];
+        case BG_SPRITETYPE_ARTWORK:
+            return backgroundSpriteList_artworks;
+        case BG_SPRITETYPE_TINTABLE_SMALL:
+            return backgroundSpriteList_small;
+        case BG_SPRITETYPE_TINTABLE_MEDIUM:
+            return backgroundSpriteList_medium;
+        case BG_SPRITETYPE_TINTABLE_LARGE:
+            return backgroundSpriteList_large;
     }
-    return spriteListToUse[spriteGenerationData.spriteID];
 }
