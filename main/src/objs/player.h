@@ -543,21 +543,43 @@ int ParticleOrbitPlayer(void *self, float DeltaTime){
     // less goofy
     _Particle *particleObj = ((_Particle *)self);
 
+    Vector2 vectorTowardsPlayer = Vector2Subtract(PLAYER_OBJECT_REF->position, particleObj->position);
     // get the accel
     Vector2 particleAcceleration = GetShieldParticleAccelerationToPlayer(particleObj);
     // and dist
-    float distanceToParticle = Vector2Distance(particleObj->position, PLAYER_OBJECT_REF->position);
+    float distanceToParticle = Vector2Length(vectorTowardsPlayer);
 
     // repel if we're less than minimum range
     float minShieldRange = ((Player_Data *)(PLAYER_OBJECT_REF->data_struct))->shieldMinRange;
     if( distanceToParticle <  minShieldRange){
-        float percentageOfInnerDistance = distanceToParticle/minShieldRange;
+        // when we're closer than minimum, we want to leave the area
+        float percentageOfInnerDistance = 1.0f-(distanceToParticle/minShieldRange);
         // inverse the acceleration to repel
-        particleAcceleration = Vector2Negate(Vector2Scale(particleAcceleration, 1.0f-percentageOfInnerDistance));
+        Vector2 newAccel = Vector2Negate(Vector2Scale(particleAcceleration, percentageOfInnerDistance));
+        // randomly rotate the acceleration vector
+        float rotationCone = 90.0f;
+        float randomRotation = FLOAT_RAND*(rotationCone-(rotationCone/2.0f));
+        Vector2 rotatedAccel = Vector2Rotate(newAccel,randomRotation);
+        // check which is pointing more perpendicular to the direction of the player
+        //  we want the one that's closest to 0 to be perpendicular
+        float repelPerpendicularityToVectorToPlayer = fabsf(Vector2DotProduct(vectorTowardsPlayer, newAccel));
+        float rotatedPerpendicularityToVectorToPlayer = fabsf(Vector2DotProduct(vectorTowardsPlayer, rotatedAccel));
+
+        if(repelPerpendicularityToVectorToPlayer<=rotatedPerpendicularityToVectorToPlayer){
+            // but also make it less effective the less it's perpendicular
+            particleAcceleration = Vector2Scale(newAccel, 1.0f-repelPerpendicularityToVectorToPlayer);
+        }
+        else {
+            // but also make it less effective the less it's perpendicular
+            particleAcceleration = Vector2Scale(rotatedAccel, 1.0f-rotatedPerpendicularityToVectorToPlayer);
+        }
+        
     }
     
     // apply to particle
     particleObj->acceleration = particleAcceleration;
+    
+    // but also get perpendicular
     // but also quick apply it to get the over correction
     particleObj->velocity = Vector2Add(particleObj->velocity, Vector2Scale(particleAcceleration, DeltaTime));
     
