@@ -164,7 +164,11 @@ int _HealthBar_Draw(void* self, float DeltaTime) {
     HEALTHBAR_FRAME_SPRITE->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
     HEALTHBAR_FRAME_SPRITE->origin = Vector2Scale(THIS->size, 0.5);
 
-    DrawTexturePro(HEALTHBAR_FRAME_SPRITE->tex, HEALTHBAR_FRAME_SPRITE->src, HEALTHBAR_FRAME_SPRITE->dst, HEALTHBAR_FRAME_SPRITE->origin, 0, WHITE);
+    // frame tinter
+    Color frameTint = WHITE;
+    if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) frameTint = DEATH_HEALTHBAR_FRAME_TINT;
+
+    DrawTexturePro(HEALTHBAR_FRAME_SPRITE->tex, HEALTHBAR_FRAME_SPRITE->src, HEALTHBAR_FRAME_SPRITE->dst, HEALTHBAR_FRAME_SPRITE->origin, 0, frameTint);
 
 
     // ===========================================
@@ -199,7 +203,12 @@ int _HealthBar_Draw(void* self, float DeltaTime) {
     HEALTHBAR_OVERLAY_SPRITE->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
     HEALTHBAR_OVERLAY_SPRITE->origin = Vector2Scale(THIS->size, 0.5);
 
-    DrawTexturePro(HEALTHBAR_OVERLAY_SPRITE->tex, HEALTHBAR_OVERLAY_SPRITE->src, HEALTHBAR_OVERLAY_SPRITE->dst, HEALTHBAR_OVERLAY_SPRITE->origin, 0, WHITE);
+    // overlay tintind
+    Color overlayTint = WHITE;
+    if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) overlayTint = DEATH_HEALTHBAR_OVERLAY_TINT;
+
+    // draw it
+    DrawTexturePro(HEALTHBAR_OVERLAY_SPRITE->tex, HEALTHBAR_OVERLAY_SPRITE->src, HEALTHBAR_OVERLAY_SPRITE->dst, HEALTHBAR_OVERLAY_SPRITE->origin, 0, overlayTint);
 
     // ===========================================
 
