@@ -52,32 +52,34 @@ typedef struct
 
 GameObj_Base *player;
 Vector2 camPos;
-float starsData[100];
+BGStar_Data BGstars[100];
+int offsetX = 0;
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
     SetRandomSeed(GetTime);
     // BACKGROUNDSTARS_DATA->randomSeed =
     BACKGROUNDSTARS_DATA->maxStars = 50;
-    BACKGROUNDSTARS_DATA->minStars = 10;
+    BACKGROUNDSTARS_DATA->minStars = 30;
     BACKGROUNDSTARS_DATA->numStars = GetRandomValue(BACKGROUNDSTARS_DATA->minStars, BACKGROUNDSTARS_DATA->maxStars);
-    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100, (cameraBounds.x+1) * 100);
+    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100, (cameraBounds.x + 1) * 100);
     THIS->position = cameraPosition;
     BACKGROUNDSTARS_DATA->tailLength = 30;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
 
     camPos = cameraPosition;
     THIS->velocity = (Vector2){-1, 0};
-    float starsPos[BACKGROUNDSTARS_DATA->numStars];
-
-    //*starsData = &starsPos;
 
     return 0;
 }
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
-    THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
+    for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; i++)
+    {
+        BGstars[i].position = Vector2Add(BGstars[i].position, Vector2Scale(THIS->velocity, DeltaTime));
+    }
+    // THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
 
     return 0;
 }
@@ -90,6 +92,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     int tailLength = player->velocity.x;
     tailLength = tailLength == 0 ? 1 : tailLength;
     tailLength = tailLength < 0 ? -1 * tailLength : tailLength;
+
     // draw the random stars
     for (int i = 0; i < 100; i++)
     {
@@ -98,12 +101,14 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
             float xVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[j] - i * 0.01f * tailLength;
             float yVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j];
             // printf("%f \n", xVal);
-            Vector2 pos = Vector2Subtract(THIS->position, (Vector2){xVal, yVal});
-            // if (pos.x+THIS->position.x < -8)
-            // {
-            //     pos.x += THIS->position.x + 16;
-            // }
-            //*starsData[j] = pos.x;
+            // offsetX = BGstars[j].position.x;
+            // xVal += offsetX;
+            Vector2 pos = Vector2Subtract(BGstars[j].position, (Vector2){xVal, yVal});
+            if (pos.x < -16)
+            {
+                BGstars[j].position = (Vector2){16,0};
+            }
+
             RenderCircleAbsolute(pos, 0.1f - (0.001f * i), WHITE);
         }
     }
