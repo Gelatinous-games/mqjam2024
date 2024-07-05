@@ -187,7 +187,7 @@ static void generateObjects()
     }
 
     // Background Object
-    BACKGROUND_OBJECT_REF = CreateBackgroundStars();
+    BACKGROUND_OBJECT_REF = CreateBackground();
     AddToPool(BACKGROUND_OBJECT_REF);
     BACKGROUNDSTARS_EFFECT_REF = CreateBackgroundStars();
     AddToPool(BACKGROUNDSTARS_EFFECT_REF);

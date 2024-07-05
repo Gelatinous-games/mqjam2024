@@ -159,7 +159,7 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
     return 0;
 }
 
-GameObj_Base *CreateBackgroundStars()
+GameObj_Base *CreateBackground()
 {
     GameObj_Base *obj_ptr = malloc(sizeof(GameObj_Base));
 
