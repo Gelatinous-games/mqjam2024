@@ -57,7 +57,7 @@ int offsetX = 0;
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
-    SetRandomSeed(GetTime);
+    SetRandomSeed(GAME_TIME);
     // BACKGROUNDSTARS_DATA->randomSeed =
     BACKGROUNDSTARS_DATA->maxStars = 50;
     BACKGROUNDSTARS_DATA->minStars = 30;
@@ -106,7 +106,7 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
             Vector2 pos = Vector2Subtract(BGstars[j].position, (Vector2){xVal, yVal});
             if (pos.x < -16)
             {
-                BGstars[j].position = (Vector2){16,0};
+                BGstars[j].position = (Vector2){16, 0};
             }
 
             RenderCircleAbsolute(pos, 0.1f - (0.001f * i), WHITE);
