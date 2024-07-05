@@ -518,7 +518,7 @@ void emitShieldParticle(void *self, float DeltaTime){
         1
     );
     // find the particle
-    _Particle *emittedParticleObject = getParticle(shieldParticleID);
+    _Particle *emittedParticleObject = GetParticle(shieldParticleID);
 
     // TODO: change to shield layer???
 

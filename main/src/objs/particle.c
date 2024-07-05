@@ -48,7 +48,9 @@ int _ParticleObject_Particles_DestroyParticle(_Particle* particle) {
     if (particle->func && particle->func_data) {
         free(particle->func_data);
         particle->func = 0;
+        return 0;
     }
+    return -1;
 }
 
 int _ParticleObject_Init(void* self, float DeltaTime) {
@@ -120,21 +122,6 @@ int _ParticleObject_Destroy(void* self, float DeltaTime) {
     return 0;
 }
 
-/// @brief Spawns a particle with the given parameters. 
-/// Does the same function as SpawnParticleEX but with less parameters. This one is here simply because I'm too lazy to replace all instances of this.
-/// Still perfectly functional but you should use SpawnParticleEX if you want better function.
-/// @param pos The initial position of the particle.
-/// @param vel The initial velocity of the particle.
-/// @param acc The acceleration vector of the particle.
-/// @param size How big the particle is.
-/// @param lifetime How long the particle should persist for (in seconds). The particle will fade out.
-/// @param color The color of the particle.
-/// @param doOutline Set to 1 if the particle should have a bright center and a dimmer outer.
-/// @return The ID of the created particle. If the return is -1, then no particle was created.
-int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline) {
-    return SpawnParticleEX(pos, vel, acc, size, lifetime, color, doOutline, 1, NULL, NULL);
-}
-
 /// @brief Spawns a particle with the given parameters. Parameters include functions, fadeout specifics, and so on.
 /// @param pos The initial position of the particle.
 /// @param vel The initial velocity of the particle.
@@ -147,7 +134,7 @@ int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lif
 /// @param func_ptr The address of the function that should run per update on this particle. Set to NULL if none.
 /// @param func_data A reference to the data package that should be used by this particles function. Set to NULL if none. 
 /// @return The ID of the created particle. If the return is -1, then no particle was created.
-int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline, char doFadeout, int (*func_ptr)(void* self, float DeltaTime), void* func_data) {
+int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline, char doFadeout, void* func_ptr, void* func_data) {
     if (_particleCount >= PARTICLE_COUNT) return -1;
 
     _Particle tmp;
@@ -176,6 +163,21 @@ int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float l
     _particleCount++;
 
     return tmp.internalID;
+}
+
+/// @brief Spawns a particle with the given parameters. 
+/// Does the same function as SpawnParticleEX but with less parameters. This one is here simply because I'm too lazy to replace all instances of this.
+/// Still perfectly functional but you should use SpawnParticleEX if you want better function.
+/// @param pos The initial position of the particle.
+/// @param vel The initial velocity of the particle.
+/// @param acc The acceleration vector of the particle.
+/// @param size How big the particle is.
+/// @param lifetime How long the particle should persist for (in seconds). The particle will fade out.
+/// @param color The color of the particle.
+/// @param doOutline Set to 1 if the particle should have a bright center and a dimmer outer.
+/// @return The ID of the created particle. If the return is -1, then no particle was created.
+int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline) {
+    return SpawnParticleEX(pos, vel, acc, size, lifetime, color, doOutline, 1, NULL, NULL);
 }
 
 /// @brief Gets a particle object with the given ID.
