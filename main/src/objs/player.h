@@ -35,7 +35,11 @@
     #include "star.c"
 #endif
 
-#define MAXIMUM_HEALTH 100
+#define MAXIMUM_HULL 100
+#define MAXIMUM_SHIELDS 250
+
+#define MAXIMUM_TOTAL_HEALTH (MAXIMUM_HULL+MAXIMUM_SHIELDS)
+
 #define CAMERA_COAST_SPEED 3
 
 typedef struct {
@@ -46,6 +50,7 @@ typedef struct {
     float accelRate;
     float health;
     float healthRegenerationRate;
+    float shieldRegenerationRate;
 } Player_Data;
 
 #define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
@@ -65,8 +70,9 @@ void updateHealth(void *self, float DeltaTime);
 
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
-    PLAYER_DATA->health = MAXIMUM_HEALTH; // start max
+    PLAYER_DATA->health = MAXIMUM_HULL; // start max
     PLAYER_DATA->healthRegenerationRate = 10.0f;
+    PLAYER_DATA->shieldRegenerationRate = 30.0f;
     PLAYER_DATA->rotateRate = 0; // velocity for rotation. affected by rotatejerk.
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
@@ -263,7 +269,7 @@ void handleGravityInteractions(void *self, float DeltaTime){
         Vector2 impartSelf, impartStar;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
-            PLAYER_DATA->health -= MAXIMUM_HEALTH;
+            PLAYER_DATA->health -= MAXIMUM_HULL;
 
             // END STATE
 
@@ -382,14 +388,45 @@ void handleCameraRelativity(void *self, float DeltaTime){
 
 void updateHealth(void *self, float DeltaTime){
     // not max health
-    if(PLAYER_DATA->health < MAXIMUM_HEALTH){
+    if(PLAYER_DATA->health < MAXIMUM_HULL){
         // just increase it by the regen rate every second
         (PLAYER_DATA->health) += (PLAYER_DATA->healthRegenerationRate)*DeltaTime;
     }
-    // spooky over heal
-    else if(PLAYER_DATA->health > MAXIMUM_HEALTH){
-        // TODO: shield?
-        (PLAYER_DATA->health) = MAXIMUM_HEALTH;
-
+    // over heal into shields
+    else if(PLAYER_DATA->health >= MAXIMUM_HULL){
+        // if we're needing to regen shields
+        if(PLAYER_DATA->health < MAXIMUM_HULL+MAXIMUM_SHIELDS){
+            (PLAYER_DATA->health) += (PLAYER_DATA->shieldRegenerationRate)*DeltaTime;
+        }
+        else{
+            (PLAYER_DATA->health) = MAXIMUM_HULL+MAXIMUM_SHIELDS;
+        }
     }
+}
+
+float GetPlayerCurrentHealth(){
+    return (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health);
+}
+
+float GetPlayerHullPercentage(){
+    // current
+    float currHealth = (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health);
+    // max or shielded
+    if(currHealth>=MAXIMUM_HULL) return 1.0f;
+    // dead or negative
+    if(currHealth<0.0f) return 0.0f;
+    // otherwise
+    return currHealth / MAXIMUM_HULL;
+
+}
+float GetPlayerShieldPercentage(){
+    // health without hull health
+    float currShield = (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health) - MAXIMUM_HULL;
+    // max
+    if(currShield>=MAXIMUM_SHIELDS) return 1.0f;
+    // no shield or negative
+    if(currShield<0.0f) return 0.0f;
+    // otherwise
+    return currShield / MAXIMUM_SHIELDS;
+
 }

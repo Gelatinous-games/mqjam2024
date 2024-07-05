@@ -75,6 +75,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
+    THIS->velocity = (Vector2){ -1.0f * (PLAYER_OBJECT_REF->velocity.x), -0.5f * (PLAYER_OBJECT_REF->velocity.y) };
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; i++)
     {
         BGstars[i].position = Vector2Add(BGstars[i].position, Vector2Scale(THIS->velocity, DeltaTime));
