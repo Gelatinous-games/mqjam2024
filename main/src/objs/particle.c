@@ -175,7 +175,7 @@ int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float l
     _particles[_particleCount] = tmp;
     _particleCount++;
 
-    return 0;
+    return tmp.internalID;
 }
 
 /// @brief Gets a particle object with the given ID.
