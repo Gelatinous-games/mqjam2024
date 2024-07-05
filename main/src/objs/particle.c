@@ -44,11 +44,15 @@ _Particle* _particles;
 int _particleCount;
 int _ParticleObject_Particles_Global_Counter;
 
+
+int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline, char doFadeout, int (*func_ptr)(void* self, float DeltaTime), void* func_data);
+
 int _ParticleObject_Particles_DestroyParticle(_Particle* particle) {
     if (particle->func && particle->func_data) {
         free(particle->func_data);
         particle->func = 0;
     }
+    return 0;
 }
 
 int _ParticleObject_Init(void* self, float DeltaTime) {
