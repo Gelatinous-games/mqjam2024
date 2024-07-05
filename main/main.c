@@ -106,7 +106,6 @@ int main()
     cameraBounds.y = 4.5;
     cameraVelocity = Vector2Zero();
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
-    layerCount = 10;
 
     // Initialization
     //--------------------------------------------------------------------------------------

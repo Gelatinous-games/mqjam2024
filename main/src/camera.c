@@ -19,7 +19,6 @@ Vector2 cameraBounds; // object must be within this range.
 float cameraExclude; // how far out from the camera range to cull objects. default to 10. (unimplemented)
 Vector2 cameraScreenQuarter; // maps an object via the bounds to this
 Vector2 cameraUnitSize; // maps shape sizes to this: what (1, 1) in size should be equivalent to. generally the camscreenquarter by the cambounds.
-int layerCount; // how many layers to try parse to render
 
 // Change this to make them seem further away from the screen.
 Vector2 scaleFactor; 
@@ -57,6 +56,22 @@ Vector2 GetScreenspacePositionRelative(Vector2 pos, Vector2 size) {
 Vector2 GetScaledSize(Vector2 size) {
     size = (Vector2) { size.x / scaleFactor.x, size.y / scaleFactor.y };
     return Vector2Multiply(size, cameraUnitSize);
+}
+
+/// @brief Gets the pixel radius of a circle as per the scale factor. Note that the scale factor on the x axis is used, not y.
+/// @param radius 
+/// @return 
+float GetScaledRadius(float radius) {
+    radius = radius / scaleFactor.x;
+    return radius * cameraUnitSize.x;
+}
+
+/// @brief Sets the scale factor of the camera. Defaults to 1. Anything above 1 will make the camera appear further away, anything below 1 makes it closer.
+/// If you need to set different scaling per axis, you can utilize Vector2 scaleFactor in camera.c to do the same thing.
+/// This is reset to 1 before each object draw call so you do not need to worry about affecting other object draws.
+/// @param sf 
+void SetScaleFactor(float sf) {
+    scaleFactor = (Vector2) { sf, sf };
 }
 
 /// @brief Call once a frame before drawing to use a similar 3D orthographic camera.

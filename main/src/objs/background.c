@@ -69,7 +69,7 @@ typedef struct
 } Background_DataStruct;
 
 
-#define BACKGROUND_SPRITE_COUNT_ARTWORKS 9
+#define BACKGROUND_SPRITE_COUNT_ARTWORKS 10
 #define BACKGROUND_SPRITE_COUNT_SMALL 5
 #define BACKGROUND_SPRITE_COUNT_MEDIUM 7
 #define BACKGROUND_SPRITE_COUNT_LARGE 10
@@ -202,10 +202,11 @@ void prepareBackgroundSprites(void *self, float DeltaTime){
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_03.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_04.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_05.png"), LAYER_BACKGROUND_STARSCAPE_0 };
-    backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_06.png"), LAYER_BACKGROUND_STARSCAPE_0 };
+    backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_06.png"), LAYER_BACKGROUND_STARSCAPE_2 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_07.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_08.png"), LAYER_BACKGROUND_STARSCAPE_0 };
     backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_09.png"), LAYER_BACKGROUND_STARSCAPE_0 };
+    backgroundSpriteList_artworks[index++] = (BackgroundSprite_SpriteData){ CreateSprite("resources/background/bg_art_10.png"), LAYER_BACKGROUND_STARSCAPE_2 };
 
     index = 0;
     backgroundSpriteList_small = (BackgroundSprite_SpriteData*)malloc(BACKGROUND_SPRITE_COUNT_SMALL * sizeof(BackgroundSprite_SpriteData));
