@@ -115,7 +115,9 @@ void ProcessAllUpdates(float DeltaTime) {
 /// @brief Processes the draw function on all objects that are not waiting to be initialized.
 /// @param DeltaTime 
 void ProcessAllDraws(float DeltaTime) {
-    for (int l = 0; l < layerCount; l++) {
+
+    for (int l = 0; l < LAYER_BOOKEND; l++) {
+
         for (int i = 0; i < _gameObjPoolSize; i++) {
 
             scaleFactor = Vector2One();
@@ -137,8 +139,8 @@ void ProcessAllDestroys() {
         if (obj->awaitDestroy) {
             _gameObjPool[i] = _gameObjPool[_gameObjPoolSize-1];
             _gameObjPool[_gameObjPoolSize-1] = 0;
-            _gameObjPool -=1;
-            i -=1;
+            _gameObjPoolSize -= 1; // decrement the number of objects in the pool by 1 as the one at the end is nulled.
+            i -=1; // and since we've just bubbled the last down, decrease i so we can redo that step.
 
             obj->Destroy_Func(obj, 0);
             free(obj);

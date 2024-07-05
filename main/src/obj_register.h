@@ -27,7 +27,15 @@ enum LAYER_ID {
     LAYER_STARS = 6,
     LAYER_PARTICLES = 7,
     LAYER_PLAYER = 8,
-    LAYER_GUI = 9
+    LAYER_GUI = 9,
+
+    // DO NOT, I REPEAT, DO NOT REMOVE OR OVERWRITE LAYER_BOOKEND!
+    // THIS SHOULD ALWAYS BE AT THE END OF THE ENUM!!! DO NOT REMOVE OR OVERWRITE ME!!! 
+    // If any of the above layers are written out-of-order, this will not work properly. If you have 
+    // defined layers out-of-order, set LAYER_BOOKEND to the number of layers.
+    // If they're all defined in order, LAYER_BOOKEND will be set to the number of layers automatically,
+    // so you can relax.
+    LAYER_BOOKEND       
 };
 
 
