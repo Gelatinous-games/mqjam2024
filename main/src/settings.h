@@ -96,6 +96,8 @@ static GameObj_Base *PLANET_OBJECT_REF;
 static GameObj_Base *STAR_OBJECT_REF;
 
 
+unsigned long long currMillis();
+
 
 #define THIS ((GameObj_Base *)self)
 #ifndef _WIN32
@@ -112,3 +114,18 @@ static GameObj_Base *STAR_OBJECT_REF;
 #define CHAR_RAND ((char)(rand() & 0xff))
 #define GAME_TIME GetTime
 #endif
+
+
+
+unsigned long long currMillis(){
+    struct timeval timeVal;
+    unsigned long long millisecondsSinceEpoch;
+
+    gettimeofday(&timeVal, NULL);
+
+    millisecondsSinceEpoch =
+        (unsigned long long)(timeVal.tv_sec) * 1000 +
+        (unsigned long long)(timeVal.tv_usec) / 1000;
+    
+    return millisecondsSinceEpoch;
+}
