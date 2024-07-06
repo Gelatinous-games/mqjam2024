@@ -370,11 +370,6 @@ float GetPlayerHullPercentage(){
 
 }
 
-Vector2 GetRandomUnitVector(){
-    float angle = FLOAT_RAND*360.0;
-    return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
-}
-
 Color GetHullParticleColor(){
     int diceRoll = (INT_RAND%4);
     switch (diceRoll) {

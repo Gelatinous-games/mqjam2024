@@ -97,6 +97,9 @@ static GameObj_Base *STAR_OBJECT_REF;
 
 
 unsigned long long currMillis();
+Vector2 GetRandomUnitVector();
+
+
 
 
 #define THIS ((GameObj_Base *)self)
@@ -105,7 +108,7 @@ unsigned long long currMillis();
 #define INT_RAND (int)(random())
 #define FLOAT_RAND ((float)(random()) / (float)RAND_MAX)
 #define CHAR_RAND ((char)(random() & 0xff))
-#define GAME_TIME 0
+#define GAME_TIME currMillis()
 // #define GAME_TIME GetSystemTime( &systemTime )
 #else
 // windows randoming
@@ -128,4 +131,9 @@ unsigned long long currMillis(){
         (unsigned long long)(timeVal.tv_usec) / 1000;
     
     return millisecondsSinceEpoch;
+}
+
+Vector2 GetRandomUnitVector(){
+    float angle = FLOAT_RAND*360.0;
+    return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
 }
