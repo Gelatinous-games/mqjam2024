@@ -50,6 +50,7 @@ typedef struct
 } BGStar_Data;
 
 #define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
+BGStar_Data **BGSTART_POOL;
 
 GameObj_Base *player;
 Vector2 camPos;
@@ -59,6 +60,7 @@ float scaleF = 1; // camera zoom
 
 int _BackgroundStars_Init(void *self, float DeltaTime)
 {
+
     SetRandomSeed(GAME_TIME);
     // BACKGROUNDSTARS_DATA->randomSeed =
     BACKGROUNDSTARS_DATA->maxStars = 50;
@@ -69,7 +71,10 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->tailLength = 30;
     BACKGROUNDSTARS_DATA->ObScale = scaleF;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
-
+    BGSTART_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *)* BACKGROUNDSTARS_DATA->numStars);
+    for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i) {
+        BGSTART_POOL[i] = malloc(sizeof(BGStar_Data));
+    }
     camPos = cameraPosition;
     THIS->velocity = (Vector2){-1, 0};
 
@@ -78,11 +83,14 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
+
     THIS->velocity = (Vector2){-1.0f * (PLAYER_OBJECT_REF->velocity.x), -0.5f * (PLAYER_OBJECT_REF->velocity.y)};
-    
+
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; i++)
     {
-        BGstars[i].position = Vector2Add(BGstars[i].position, Vector2Scale(THIS->velocity, DeltaTime*BACKGROUNDSTARS_DATA->ObScale));
+        //BGSTART_POOL[0]->position= (Vector2){0,0};
+        BGSTART_POOL[i]->position = Vector2Add(BGSTART_POOL[i]->position, Vector2Scale(THIS->velocity, DeltaTime * BACKGROUNDSTARS_DATA->ObScale));
+       // BGstars[i].position = Vector2Add(BGstars[i].position, Vector2Scale(THIS->velocity, DeltaTime * BACKGROUNDSTARS_DATA->ObScale));
     }
     // THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
 
@@ -99,19 +107,25 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
     tailLength = tailLength < 0 ? -1 * tailLength : tailLength;
 
     // draw the random stars
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 100; ++i)//tail generator
     {
-        for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; j++)
+        for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; j++)//populate the screen with stars at random posistion
         {
-            float xVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[j] - i * 0.01f * tailLength;
+            float xVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[j] - i * 0.01f * tailLength;//add the tail
             float yVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j];
             // printf("%f \n", xVal);
-            Vector2 pos = Vector2Subtract(BGstars[j].position, (Vector2){xVal, yVal});
+            //add the player velocity to the stars. make the stars move
+            Vector2 pos = Vector2Subtract(BGSTART_POOL[j]->position, (Vector2){xVal, yVal});
+            
+            //camera left screen bounds
             if (pos.x < -16 * BACKGROUNDSTARS_DATA->ObScale)
             {
-                BGstars[j].position = (Vector2){16, 0};
+                BGSTART_POOL[j]->position = (Vector2){16, 0};
             }
+
+            //scale the pos with the screenFactor
             pos = Vector2Scale(pos, BACKGROUNDSTARS_DATA->ObScale);
+            //draw the star. [position, make the pointy tail, colour of the star]
             RenderCircleAbsolute(pos, 0.1f - (0.001f * i), WHITE);
         }
     }
@@ -123,6 +137,10 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
     // free our data struct here. free anything contained.
     // free(BACKGROUNDSTARS_DATA->sprite);
     UnloadRandomSequence(BACKGROUNDSTARS_DATA->listRandomSequence);
+     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i) {
+        free(BGSTART_POOL[i]);
+    }
+    free(BGSTART_POOL);
     free(BACKGROUNDSTARS_DATA);
 
     return 0;
@@ -152,10 +170,7 @@ GameObj_Base *CreateBackgroundStars(enum LAYER_ID layer, float objectScale)
     // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = FLAG_BACKGROUND;
 
-   
-
     obj_ptr->currentLayer = layer;
-
 
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
