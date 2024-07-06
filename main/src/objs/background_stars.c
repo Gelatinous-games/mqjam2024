@@ -66,7 +66,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->maxStars = 50;
     BACKGROUNDSTARS_DATA->minStars = 30;
     BACKGROUNDSTARS_DATA->numStars = GetRandomValue(BACKGROUNDSTARS_DATA->minStars, BACKGROUNDSTARS_DATA->maxStars);
-    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100, (cameraBounds.x + 1) * 100);
+    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100,  BACKGROUNDSTARS_DATA->ObScale * (cameraBounds.x + 1) * 100);
     THIS->position = cameraPosition;
     BACKGROUNDSTARS_DATA->starSize = 0.1f;
     BACKGROUNDSTARS_DATA->tailLength = 30;
