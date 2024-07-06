@@ -15,6 +15,7 @@
 // ------------------------------------------------------------
 
 GameObj_Base* CreateShieldObject() {
+    printf("%s\n","SHIELD CREATE");
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     printf("%s\n",">> creating shield object");
@@ -25,6 +26,20 @@ GameObj_Base* CreateShieldObject() {
     obj_ptr->Destroy_Func = &_ShieldObject_Destroy;
 
     obj_ptr->awaitDestroy = 0;
+
+    obj_ptr->data_struct = malloc(sizeof(ShieldObject_Data)); 
+
+
+
+    // make the list of particles
+    int maximumPossibleParticles = (int)(roundf(SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA * SHIELD_PARTICLE_LIFE_MAX));
+
+
+    // for later on
+    ((ShieldObject_Data *)(obj_ptr->data_struct))->maximumShieldParticles = maximumPossibleParticles;
+
+    // init the list
+    ((ShieldObject_Data *)(obj_ptr->data_struct))->particleDataList = (ShieldParticle_Data **)malloc(maximumPossibleParticles * (sizeof(ShieldParticle_Data *)));
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
@@ -63,8 +78,8 @@ int _ShieldObject_Destroy(void* self, float DeltaTime) {
 int _ShieldObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
-
-    THIS->data_struct = malloc(sizeof(ShieldObject_Data)); 
+    printf("%s\n","SHIELD INIT");
+    
 
     SHIELD_DATA->shieldHealth = 0.0f; // start none
     SHIELD_DATA->shieldRegenerationRate = SHIELD_REGEN_BASE_RATE;
@@ -74,13 +89,7 @@ int _ShieldObject_Init(void* self, float DeltaTime) {
 
     SHIELD_DATA->shieldRadius = 0.5f;
 
-    // make the list of particles
-    int maximumPossibleParticles = (int)(roundf(SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA * SHIELD_PARTICLE_LIFE_MAX));
-    // for later on
-    SHIELD_DATA->maximumShieldParticles = maximumPossibleParticles;
 
-    // init the list
-    SHIELD_DATA->particleDataList = (ShieldParticle_Data **)malloc(maximumPossibleParticles * (sizeof(ShieldParticle_Data *)));
 
     return 0;
 }
@@ -127,6 +136,7 @@ void _ShieldObject_handlePlayerDeath(void *self, float DeltaTime){
 }
 
 void _ShieldObject_updateShieldHealth(void *self, float DeltaTime){
+    printf("%s\n","shield update");
 
     // HANDLE THE REGEN
 
@@ -154,16 +164,13 @@ void _ShieldObject_handleShieldEffect(void *self, float DeltaTime){
     }
 }
 void _ShieldObject_emitShieldParticle(void *self, float DeltaTime){
+
     // reset particle emission timer
     SHIELD_DATA->timeSinceLastShieldParticle = 0.0f;
-
     // build the data and give it to the particle for use
-    ShieldParticle_Data tempParticleData = (ShieldParticle_Data){
-        // spawn at a random point on the circle
-        Vector2Scale(GetRandomUnitVector(), SHIELD_DATA_GLOBAL_ACCESS->shieldRadius),
-        // rotates degrees per second
-        Lerp(SHIELD_PARTICLE_ORBIT_RATE_MIN, SHIELD_PARTICLE_ORBIT_RATE_MAX, FLOAT_RAND)
-    };
+    Vector2 randomVec = Vector2Scale(GetRandomUnitVector(), SHIELD_DATA_GLOBAL_ACCESS->shieldRadius);
+    float speedVal = Lerp(SHIELD_PARTICLE_ORBIT_RATE_MIN, SHIELD_PARTICLE_ORBIT_RATE_MAX, FLOAT_RAND);
+
     
     // spawn a particle
     SpawnParticleEX(
@@ -193,7 +200,7 @@ void _ShieldObject_emitShieldParticle(void *self, float DeltaTime){
         // v-- func_ptr --v
         _ShieldParticle_Update,
         // v-- func_data --v
-        _ShieldParticle_constructData( tempParticleData ) 
+        _ShieldParticle_constructData( randomVec, speedVal ) 
         // --- -------- ---
     );
 }
@@ -285,7 +292,11 @@ int _ShieldParticle_Update(void *self, float DeltaTime){
 
 
 
-ShieldParticle_Data *_ShieldParticle_constructData( ShieldParticle_Data tempData ){
+ShieldParticle_Data *_ShieldParticle_constructData( Vector2 randomVec, float rotationSpeed ){
+    ShieldParticle_Data tempData = (ShieldParticle_Data){
+        randomVec,
+        rotationSpeed
+    };
     // generate the data
     (SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ]) = (ShieldParticle_Data *)malloc(sizeof(ShieldParticle_Data));
     // local ref to it

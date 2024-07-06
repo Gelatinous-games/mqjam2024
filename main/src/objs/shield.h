@@ -52,6 +52,7 @@ typedef struct {
     float shieldRadius;
 
     int maximumShieldParticles;
+
     ShieldParticle_Data **particleDataList;
     int nextParticleDataIndex;
 
@@ -89,4 +90,4 @@ float _ShieldObject_TakeDamage(float rawDamage);
 
 int _ShieldParticle_Update(void *self, float DeltaTime);
 
-ShieldParticle_Data *_ShieldParticle_constructData( ShieldParticle_Data tempData );
+ShieldParticle_Data *_ShieldParticle_constructData( Vector2 randomVec, float rotationSpeed );
