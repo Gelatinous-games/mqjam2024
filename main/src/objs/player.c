@@ -403,7 +403,11 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
     // }
 }
 
-
+// returns 0 when dead
+//  non zero otherwise, which is treated as true
+int IsPlayerAlive(){
+    return CURRENT_PLAYER_LIFE_STATE;
+}
 
 
 

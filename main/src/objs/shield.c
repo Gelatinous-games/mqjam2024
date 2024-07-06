@@ -132,7 +132,7 @@ void _ShieldObject_updateShieldHealth(void *self, float DeltaTime){
 
     // not max shields
     //  also been long enough since last impact
-    if(_ShieldObject_GetPlayerShieldPercentage() < 1.0f && (SHIELD_DATA->deltaTimeSinceLastImpact >= SHIELD_REGEN_TIMEOUT_DELTATIME)){
+    if(_ShieldObject_GetPlayerShieldPercentage() < 1.0f && (SHIELD_DATA->deltaTimeSinceLastImpact >= SHIELD_REGEN_TIMEOUT_DELTATIME) && IsPlayerAlive()){
         // if we're needing to regen shields
         (SHIELD_DATA->shieldHealth) += (SHIELD_DATA->shieldRegenerationRate)*DeltaTime;
     }

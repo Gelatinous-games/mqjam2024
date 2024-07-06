@@ -10,6 +10,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "player.h"
 
 
 #ifndef _camera
