@@ -32,6 +32,7 @@ int _Player_Init(void* self, float DeltaTime) {
 int _Player_Update(void* self, float DeltaTime) {
     // INCREASE TIMER SINCE LAST IMPACT
     PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
+    PLAYER_DATA->deltaTimeSinceLastDeathParticle += DeltaTime;
 
     // ================
 
