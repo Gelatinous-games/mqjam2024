@@ -319,25 +319,25 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     if(selectionRoll < firstSmall){
         generatedType = BG_SPRITETYPE_ARTWORK;
         generatedIndex = selectionRoll;
-        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "ARTWORK",generatedIndex);
+        // printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "ARTWORK",generatedIndex);
     }
     // SMALL WAS ROLLED
     else if(selectionRoll < firstMedium){
         generatedType = BG_SPRITETYPE_TINTABLE_SMALL;
         generatedIndex = selectionRoll - firstSmall;
-        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "SMALL", generatedIndex);
+        // printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "SMALL", generatedIndex);
     }
     // MEDIUM WAS ROLLED
     else if(selectionRoll < firstLarge){
         generatedType = BG_SPRITETYPE_TINTABLE_MEDIUM;
         generatedIndex = selectionRoll - firstMedium;
-        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "MEDIUM", generatedIndex);
+        // printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "MEDIUM", generatedIndex);
     }
     // LARGE WAS ROLLED
     else {
         generatedType = BG_SPRITETYPE_TINTABLE_LARGE;
         generatedIndex = selectionRoll - firstLarge;
-        printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "LARGE", generatedIndex);
+        // printf("rolled [%d]: which is %s[%d]\n", selectionRoll, "LARGE", generatedIndex);
     }
 
     // === tinting

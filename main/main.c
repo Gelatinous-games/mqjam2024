@@ -36,11 +36,28 @@
 
 // project header includes
 #include "src/settings.h"
-#include "src/base.h"
 #include "src/sound.h"
+
+
+#include "src/base.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
-#include "src/objs/player.h"
+
+
+#ifndef _mainmenu
+#define _mainmenu
+#include "mainmenu.c"
+#endif
+
+#ifndef _player
+#define _player
+#include "src/objs/player.c"
+#endif
+
+#ifndef _shield
+#define _shield
+#include "src/objs/shield.c"
+#endif
 
 #include "src/timer.c"
 
@@ -86,12 +103,21 @@
 #include "src/healthbar.c"
 #endif
 
+
+
+
+
+
 static void UpdateDrawFrame(void); // Update and draw one frame
 
 // let C know this exists
 static void generateObjects();
 static void prepareSounds();
 static void cleanupSounds();
+
+static int GameShouldRender(){
+    return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
+}
 
 int main()
 {
@@ -118,6 +144,8 @@ int main()
     setAllTracksVolume(0.5f);
     startSounds();
 
+    _MainMenu_Init();
+
     generateObjects();
 
     ProcessFreshAdd();
@@ -132,6 +160,9 @@ int main()
     // printf("%s\n",">> main() :: emscripten");
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
+
+
+    _MainMenu_Cleanup();
 
     cleanupSounds();
 
@@ -151,19 +182,30 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
+    // grab it
     float DeltaTime = GetFrameTime();
-    ProcessAllUpdates(DeltaTime);
-    soundUpdate();
+    // check for render
+    if(GameShouldRender()){
+        ProcessAllUpdates(DeltaTime);
+        soundUpdate();
 
-    UpdateCamera3D();
-    BeginDrawing();
-    ClearBackground(BLACK);
-    ProcessAllDraws(DeltaTime);
-    drawTimer();
-    EndDrawing();
+        UpdateCamera3D();
+        BeginDrawing();
+        ClearBackground(BLACK);
+        ProcessAllDraws(DeltaTime);
+        drawTimer();
+        EndDrawing();
 
-    ProcessFreshAdd();
-    ProcessAllDestroys();
+        ProcessFreshAdd();
+        ProcessAllDestroys();
+    }
+    // handle menus
+    else {
+        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
+            _MainMenu_Update(DeltaTime);
+            _MainMenu_Draw();
+        }
+    }
 }
 
 /// @brief Generates all objects for initial gamestate.
@@ -176,6 +218,11 @@ static void generateObjects()
     // Player object.
     PLAYER_OBJECT_REF = CreatePlayer();
     AddToPool(PLAYER_OBJECT_REF);
+
+    // Shield object
+    SHIELD_OBJECT_REF = CreateShieldObject();
+    AddToPool(SHIELD_OBJECT_REF);
+
 
     // Asteroid object.
     // TODO: succeed with an asteroid handler that can scale up & down asteroids.
@@ -190,6 +237,7 @@ static void generateObjects()
     }
 
     // Background Object
+    //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
     BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
     for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
     {

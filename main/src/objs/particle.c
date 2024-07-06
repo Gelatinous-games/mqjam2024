@@ -44,6 +44,9 @@ _Particle* _particles;
 int _particleCount;
 int _ParticleObject_Particles_Global_Counter;
 
+
+int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lifetime, Color color, char doOutline, char doFadeout, void* func_ptr, void* func_data);
+
 int _ParticleObject_Particles_DestroyParticle(_Particle* particle) {
     if (particle->func && particle->func_data) {
         free(particle->func_data);
@@ -74,7 +77,10 @@ int _ParticleObject_Update(void* self, float DeltaTime) {
         particle.color.a = (unsigned char)((float)particle.oAlpha * (particle.timeout / particle.maxTime));
 
         if (particle.func) {
-            particle.func_ptr(&particle, DeltaTime);
+            int updateReturn = particle.func_ptr(&particle, DeltaTime);
+            if(updateReturn == -1){
+                perror("BAD PARTICLE UPDATE");
+            }
         }
 
         if (particle.timeout <= 0) {
@@ -148,7 +154,7 @@ int SpawnParticleEX(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float l
     tmp.size = size;
     tmp.doOutline = doOutline;
     tmp.func = 0;
-    tmp.doFadeout = 
+    tmp.doFadeout = doFadeout;
 
     tmp.maxTime = lifetime;
     tmp.oAlpha = color.a;
