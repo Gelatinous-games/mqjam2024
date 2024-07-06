@@ -191,7 +191,7 @@ static void UpdateDrawFrame(void)
     // grab it
     float DeltaTime = GetFrameTime();
 
-    HandleDebuggingKillPlayerCheck(DeltaTime);
+    // HandleDebuggingKillPlayerCheck(DeltaTime);
     
     // check for render
     if(GameShouldRender()){
