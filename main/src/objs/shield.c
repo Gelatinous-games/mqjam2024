@@ -61,6 +61,7 @@ GameObj_Base* CreateShieldObject() {
 int _ShieldObject_Destroy(void* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
+    printf("%s\n",">> SHIELD DESTROY");
 
     // delete the list
     free(SHIELD_DATA->particleDataList);
@@ -78,7 +79,7 @@ int _ShieldObject_Destroy(void* self, float DeltaTime) {
 int _ShieldObject_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
-    printf("%s\n","SHIELD INIT");
+    printf("%s\n",">> SHIELD INIT");
     
 
     SHIELD_DATA->shieldHealth = 0.0f; // start none
@@ -87,7 +88,8 @@ int _ShieldObject_Init(void* self, float DeltaTime) {
     SHIELD_DATA->deltaTimeSinceLastImpact=0.0f;
     SHIELD_DATA->timeSinceLastShieldParticle = 0.0f;
 
-    SHIELD_DATA->shieldRadius = 0.5f;
+    SHIELD_DATA->shieldRadius = SHIELD_BASE_RADIUS;
+
 
     SHIELD_DATA->nextParticleDataIndex = 0;     
 
@@ -136,7 +138,6 @@ void _ShieldObject_handlePlayerDeath(void *self, float DeltaTime){
 }
 
 void _ShieldObject_updateShieldHealth(void *self, float DeltaTime){
-    printf("%s\n","shield update");
 
     // HANDLE THE REGEN
 
@@ -274,35 +275,22 @@ int _ShieldParticle_Update(void *self, float DeltaTime){
     // to access the particle
     _Particle *particleObj = ((_Particle *)self);
 
-    if(particleObj){
-        // ...
-        printf("%s\n","has it");
-        if(particleObj->func_data){
-            // ..
-            // to access the data
-            ShieldParticle_Data *currentShieldParticleData = (ShieldParticle_Data *)(particleObj->func_data);
+    // check they exist
+    if(particleObj && particleObj->func_data){
+        // ..
+        // to access the data
+        ShieldParticle_Data *currentShieldParticleData = (ShieldParticle_Data *)(particleObj->func_data);
 
-            // generate how much it rotates
-            float rotationAmount = (currentShieldParticleData->orbitRotationSpeed) * DeltaTime;
+        // generate how much it rotates
+        float rotationAmount = (currentShieldParticleData->orbitRotationSpeed) * DeltaTime;
 
-            // rotate it by the angle 
-            currentShieldParticleData->orbitCurrentVector = Vector2Rotate(currentShieldParticleData->orbitCurrentVector, rotationAmount);
+        // rotate it by the angle 
+        currentShieldParticleData->orbitCurrentVector = Vector2Rotate(currentShieldParticleData->orbitCurrentVector, rotationAmount);
 
-            // make the position be the shield position offset by the vector
-            particleObj->position = Vector2Add(SHIELD_OBJECT_REF->position, currentShieldParticleData->orbitCurrentVector);
-
-            // successful?
-            return 0;
-        }
-        else {
-            printf("%s\n","none data");
-            return -1;
-        }
+        // make the position be the shield position offset by the vector
+        particleObj->position = Vector2Add(SHIELD_OBJECT_REF->position, currentShieldParticleData->orbitCurrentVector);
     }
-    else{
-        printf("%s\n","none obj");
-        return -1;
-    }
+    return 0;
     
 }
 
