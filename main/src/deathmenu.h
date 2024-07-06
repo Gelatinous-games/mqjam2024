@@ -38,4 +38,4 @@ int _DeathMenu_Update(float DeltaTime);
 int _DeathMenu_Draw();
 int _DeathMenu_Cleanup();
 
-void _DeathMenu_HandleStartGame();
+void _DeathMenu_ScheduleRestartGame();

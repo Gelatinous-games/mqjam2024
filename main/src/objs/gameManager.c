@@ -31,6 +31,7 @@ typedef struct {
     float spawnDistance;
 } _GameManager_Data;
 
+
 #define DATA ((_GameManager_Data *)(THIS->data_struct))
 
 #define MAX_ASTEROIDS 5
@@ -42,7 +43,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     // How far the player travels before it gets harder
     DATA->spawnDistance = 100;
 
-    DATA->starCount = 0;
+    DATA->starCount = 2;
     DATA->asteroidCount = 1;
 
     PLAYER_OBJECT_REF = CreatePlayer();

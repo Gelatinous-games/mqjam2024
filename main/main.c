@@ -1,23 +1,17 @@
-/*******************************************************************************************
- *
- *   raylib [core] example - Basic 3d example
- *
- *   Welcome to raylib!
- *
- *   To compile example, just press F5.
- *   Note that compiled executable is placed in the same folder as .c file
- *
- *   You can find all basic examples on C:\raylib\raylib\examples folder or
- *   raylib official webpage: www.raylib.com
- *
- *   Enjoy using raylib. :)
- *
- *   This example has been created using raylib 1.0 (www.raylib.com)
- *   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
- *
- *   Copyright (c) 2013-2023 Ramon Santamaria (@raysan5)
- *
- ********************************************************************************************/
+/**
+ * 
+ * 
+ *      DA BIG BAD MAIN FILE
+ *          
+ *          ONLY BADDIES USE THIS FILE FOR MAJOR CODING
+ * 
+ *         why are you still reading this
+ * 
+ * 
+ * 
+ * 
+ * 
+*/
 
 // what da henk
 #define invoken(a, b) a->b(a->self)
@@ -120,6 +114,7 @@ static void UpdateDrawFrame(void); // Update and draw one frame
 static void generateObjects();
 static void prepareSounds();
 static void cleanupSounds();
+void HandleDebuggingKillPlayerCheck(float DeltaTime);
 
 static int GameShouldRender(){
     return (CURRENT_GAME_SCENE_STATE != GAME_SCENE_STATE_MAINMENU);
@@ -146,14 +141,16 @@ int main()
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
 
-    prepareSounds();
-    setAllTracksVolume(0.5f);
-
 
     _MainMenu_Init();
     _DeathMenu_Init();
 
     generateObjects();
+
+
+    prepareSounds();
+    setAllTracksVolume(0.5f);
+
 
     ProcessFreshAdd();
 
@@ -193,6 +190,7 @@ static void UpdateDrawFrame(void)
     // grab it
     float DeltaTime = GetFrameTime();
 
+    HandleDebuggingKillPlayerCheck(DeltaTime);
     
     // check for render
     if(GameShouldRender()){
@@ -243,7 +241,16 @@ static void UpdateDrawFrame(void)
 
 
     if(NEXT_FRAME_GAME_STARTS){
+        
+        if( __GAMEMANAGER_INITIALISED_BEFORE ){
+            // __GAMEMANAGER_REF = CreateGameManager();
+            // AddToPool(__GAMEMANAGER_REF);
+            // aaaa
+        }
+
         CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+        NEXT_FRAME_GAME_STARTS = 0;
+
     }
 }
 
@@ -254,5 +261,15 @@ static void generateObjects()
     // Particle handler.
     AddToPool(CreateParticleObject());
 
-    AddToPool(CreateGameManager());
+    __GAMEMANAGER_INITIALISED_BEFORE = 1;
+    __GAMEMANAGER_REF = CreateGameManager();
+    AddToPool(__GAMEMANAGER_REF);
+}
+
+void HandleDebuggingKillPlayerCheck(float DeltaTime){
+    // kill player for debugging
+    if(IsKeyDown(KEY_K)){
+        playSoundOnce(HIT_SOUND_ID);
+        PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,1,1);
+    }
 }

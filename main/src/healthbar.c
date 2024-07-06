@@ -108,15 +108,11 @@ int _HealthBar_Init(void* self, float DeltaTime) {
 }
 
 int _HealthBar_Update(void* self, float DeltaTime) {
-    
-
 
     // TOO LOW
     if(GetPlayerHullPercentage() <= 0.0f){ 
         // dont draw
         HEALTHBAR_DATA->currentHealthBarIndex = -1;
-        // also handle death
-        PlayDeathSound();
     }
     // TOO FAR
     else if(GetPlayerHullPercentage() >= 1.0f){ 

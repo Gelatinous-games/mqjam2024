@@ -29,6 +29,7 @@ int _Player_Update(void* self, float DeltaTime) {
     PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
 
     // ================
+
     updateThrustingSoundState(self, DeltaTime);
 
     handlePlayerMovement(self, DeltaTime);
@@ -98,10 +99,12 @@ void updateThrustingSoundState(void *self, float DeltaTime){
     // when starting to thrust
     float trackSettingVolume = 0.0f;
     if (
-        IsKeyDown(KEY_W) ||
-        IsKeyDown(KEY_A) ||
-        IsKeyDown(KEY_S) ||
-        IsKeyDown(KEY_D)
+        (
+            IsKeyDown(KEY_W) ||
+            IsKeyDown(KEY_A) ||
+            IsKeyDown(KEY_S) ||
+            IsKeyDown(KEY_D)
+        ) && IsPlayerAlive()
     ) {
         // forward backwards max, just rotate is half volume
         if(IsKeyDown(KEY_W)||IsKeyDown(KEY_S)){
@@ -164,6 +167,7 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
             // ... collision sound
+            // TODO: hit sound only if not death sound
             playSoundOnce(HIT_SOUND_ID);
 
             Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
@@ -208,6 +212,7 @@ void handleGravityInteractions(void *self, float DeltaTime){
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
             // ... collided
+            // TODO: hit sound only when not playing dead
             playSoundOnce(HIT_SOUND_ID);
 
             PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED);
@@ -245,6 +250,7 @@ void handlePlayerMovement(void *self, float DeltaTime){
     // ================
     // Default steering movement NOT STRAFING mode.
     int rotate_delta = GetKeyDelta(KEY_D, KEY_A);
+    if( !IsPlayerAlive() ) rotate_delta = 0;
     if (rotate_delta) {
         // PLAYER_DATA->rotateRate += PLAYER_DATA->rotateJerk * rotate_delta * DeltaTime; // Disabled this as its a headache to control.
         PLAYER_DATA->headingVector = Vector2Rotate(PLAYER_DATA->headingVector, rotate_delta * PLAYER_DATA->rotateJerk * DeltaTime);
@@ -253,6 +259,7 @@ void handlePlayerMovement(void *self, float DeltaTime){
 
     // Acceleration control.
     int accel_delta = GetKeyDelta(KEY_W, KEY_S);
+    if( !IsPlayerAlive() ) accel_delta = 0;
     if (accel_delta) {
         THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(PLAYER_DATA->headingVector, accel_delta * DeltaTime * PLAYER_DATA->accelRate));
     }
@@ -292,6 +299,7 @@ void handlePlayerMovement(void *self, float DeltaTime){
         );
 
     }
+    // TODO: could rotate delta particles here
 }
 
 void constrainPlayerToCamera(void *self, float DeltaTime){
@@ -331,9 +339,7 @@ void handleCameraRelativity(void *self, float DeltaTime){
 void updateHealth(void *self, float DeltaTime){
     // when hull is gone
     if(GetPlayerHullPercentage()<=0.0f){
-        CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
-
-        _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
+        HandlePlayerDeath(DeltaTime);
     }
     // otherwise handle regens
     else {
@@ -410,7 +416,22 @@ int IsPlayerAlive(){
 }
 
 
+void HandlePlayerDeath(float DeltaTime){
+    CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
+    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_DEAD;
+    // silence any impact sounds
+    setTrackVolume(HIT_SOUND_ID,0.0f);
+    setTrackVolume(THRUST_END_ID, 0.0f);
+    setTrackVolume(THRUST_START_ID, 0.0f);
+    setTrackVolume(THRUST_LOOP_ID, 0.0f);
+    // max volume scale
+    setTrackVolume(DEATH_SOUND_ID, 1.0f);
 
+    PlayDeathSound();
+
+    _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
+
+}
 
 
 

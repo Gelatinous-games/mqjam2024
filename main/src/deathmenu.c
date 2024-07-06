@@ -77,7 +77,7 @@ int _DeathMenu_Update(float DeltaTime){
         ( IsKeyDown(KEY_SPACE) ) ||
         ( MouseOverRectangle(restartButtonBoundsBG) && IsMouseButtonDown(MOUSE_BUTTON_LEFT) )
     ){
-        _DeathMenu_HandleStartGame();
+        _DeathMenu_ScheduleRestartGame();
     }
 
     // ************************************************************************************
@@ -93,8 +93,8 @@ int _DeathMenu_Draw(){
     // ************************************************************************************
     // ******** DEATH MENU FRAME
 
-    DrawRectangleRec(restartButtonBoundsBG, DEATH_MENU_BG_COLOUR);
-    DrawRectangleRoundedLines(restartButtonBoundsOutline, 0.0f, 4, 3.0f, BLACK);
+    DrawRectangleRec(deathMenuFrameBoundsBG, DEATH_MENU_BG_COLOUR);
+    DrawRectangleRoundedLines(deathMenuFrameBoundsOutline, 0.0f, 4, 3.0f, BLACK);
 
     // ************************************************************************************
     // ************************************************************************************
@@ -121,9 +121,11 @@ int _DeathMenu_Cleanup(){
 
 
 
-void _DeathMenu_HandleStartGame(){
+void _DeathMenu_ScheduleRestartGame(){
     //...
-    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+    // ...
+    NEXT_FRAME_GAME_STARTS = 1;
+    // __GAMEMANAGER_REF->awaitDestroy = 1;
 }
 
 

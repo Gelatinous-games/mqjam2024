@@ -179,10 +179,6 @@ static float getTrackVolume(int soundID){
 
 
 static void PlayDeathSound(){
-    // silence any impact sounds
-    setTrackVolume(HIT_SOUND_ID,0.0f);
-    // max volume scale
-    setTrackVolume(DEATH_SOUND_ID, 1.0f);
     // tell it to play if it isnt, and never played
     if( !(IsSoundPlaying(TRACKS[DEATH_SOUND_ID]->track)) && !PLAYED_DEATH_SOUND_BEFORE ){
         playSoundOnce(DEATH_SOUND_ID);
