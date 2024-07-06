@@ -40,7 +40,7 @@ typedef struct {
 int _GameManager_Init(void* self, float DeltaTime) {
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
-    DATA->spawnDistance = 0;
+    DATA->spawnDistance = GAME_SPAWN_DIST;
 
     DATA->starCount = 0;
     DATA->asteroidCount = 1;
