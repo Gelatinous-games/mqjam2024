@@ -31,7 +31,11 @@
 
 typedef struct {
     float a;
+    float sin;
     float tmr;
+    float spawnCountdown;
+    float deathCountdown;
+    char spawned;
     Sprite* sprite;
 } ExampleObject_Data;
 
@@ -48,6 +52,12 @@ int _ExampleObject_Init(void* self, float DeltaTime) {
     EXAMPLEOBJECT_DATA->tmr = 0;
     EXAMPLEOBJECT_DATA->sprite = CreateSprite("resources/kitr_temp.png");
 
+    THIS->position.y = (FLOAT_RAND * 2 * cameraBounds.y) - cameraBounds.y; 
+
+    EXAMPLEOBJECT_DATA->deathCountdown = (FLOAT_RAND * 5) + 5;
+    EXAMPLEOBJECT_DATA->spawnCountdown = (FLOAT_RAND * EXAMPLEOBJECT_DATA->deathCountdown * 0.5) + 2;
+    EXAMPLEOBJECT_DATA->spawned = 0;
+
 
     return 0;
 }
@@ -55,7 +65,8 @@ int _ExampleObject_Init(void* self, float DeltaTime) {
 int _ExampleObject_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
 
-    THIS->position.x = (float)(sin(EXAMPLEOBJECT_DATA->a * (PI / 2)) * 5);
+    EXAMPLEOBJECT_DATA->sin = (float)(sin(EXAMPLEOBJECT_DATA->a * (PI / 2)) * 5);
+    THIS->position.x = EXAMPLEOBJECT_DATA->sin;
     EXAMPLEOBJECT_DATA->a += DeltaTime;
 
     // An example of spawning a particle
@@ -78,13 +89,25 @@ int _ExampleObject_Update(void* self, float DeltaTime) {
         // Do an operation with the result...
     }
 
+    EXAMPLEOBJECT_DATA->spawnCountdown -= DeltaTime;
+    EXAMPLEOBJECT_DATA->deathCountdown -= DeltaTime;
+
+    if (!EXAMPLEOBJECT_DATA->spawned && EXAMPLEOBJECT_DATA->spawnCountdown <= 0) {
+        AddToPool(CreateExampleObject());
+        EXAMPLEOBJECT_DATA->spawned = 1;
+    }
+
+    if (EXAMPLEOBJECT_DATA->deathCountdown <= 0) {
+        THIS->awaitDestroy = 1;
+    }
+
     return 0;
 }
 
 int _ExampleObject_Draw(void* self, float DeltaTime) {
     // ibid
 
-    RenderSpriteRelative(EXAMPLEOBJECT_DATA->sprite, THIS->position, THIS->size, sin(EXAMPLEOBJECT_DATA->a)*90, WHITE);
+    RenderSpriteRelative(EXAMPLEOBJECT_DATA->sprite, THIS->position, THIS->size, RAD2DEG * EXAMPLEOBJECT_DATA->sin, WHITE);
     //RenderSquareRelative(THIS->position, THIS->size, 0, WHITE);
 
     return 0;

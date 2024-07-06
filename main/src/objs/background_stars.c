@@ -48,10 +48,11 @@ typedef struct
 typedef struct
 {
     Vector2 position;
+    Color colour;
 } BGStar_Data;
 
 #define BACKGROUNDSTARS_DATA ((BackgroundStars_Data *)(THIS->data_struct))
-BGStar_Data **BGSTART_POOL;
+BGStar_Data **BGSTAR_POOL;
 
 GameObj_Base *player;
 BGStar_Data BGstars[100];
@@ -63,9 +64,10 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 
     SetRandomSeed(GAME_TIME);
     // BACKGROUNDSTARS_DATA->randomSeed =
-    BACKGROUNDSTARS_DATA->maxStars = 50;
-    BACKGROUNDSTARS_DATA->minStars = 30;
+    BACKGROUNDSTARS_DATA->maxStars = 30;
+    BACKGROUNDSTARS_DATA->minStars = 10;
     BACKGROUNDSTARS_DATA->numStars = GetRandomValue(BACKGROUNDSTARS_DATA->minStars, BACKGROUNDSTARS_DATA->maxStars);
+    // get the random sequence for star position
     BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100,  BACKGROUNDSTARS_DATA->ObScale * (cameraBounds.x + 1) * 100);
     THIS->position = cameraPosition;
     BACKGROUNDSTARS_DATA->starSize = 0.1f;
@@ -75,10 +77,11 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
 
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
    //Create the array of stars to hole their posistions. 
-    BGSTART_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *) * BACKGROUNDSTARS_DATA->numStars);
+    BGSTAR_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *) * BACKGROUNDSTARS_DATA->numStars);
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i)
     {
-        BGSTART_POOL[i] = malloc(sizeof(BGStar_Data));
+        BGSTAR_POOL[i] = malloc(sizeof(BGStar_Data));
+        BGSTAR_POOL[i]->colour = CLITERAL(Color){253,249,200,100};//yellow
     }
     return 0;
 }
@@ -91,7 +94,7 @@ int _BackgroundStars_Update(void *self, float DeltaTime)
     //move the stars across the screen
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; i++)
     {
-        BGSTART_POOL[i]->position = Vector2Add(BGSTART_POOL[i]->position, Vector2Scale(THIS->velocity, DeltaTime * BACKGROUNDSTARS_DATA->ObScale));
+        BGSTAR_POOL[i]->position = Vector2Add(BGSTAR_POOL[i]->position, Vector2Scale(THIS->velocity, DeltaTime * BACKGROUNDSTARS_DATA->ObScale));
     }
     // THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
 
@@ -106,19 +109,19 @@ void _BackgroundStars_Populate(void *self){
     tailLength = tailLength == 0 ? 1 : tailLength;
     tailLength = tailLength < 0 ? -1 * tailLength : tailLength;
 
-    for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; j++) // populate the screen with stars at random posistion
+    for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; ++j) // populate the screen with stars at random posistion
     {
         //set star's random seeded posistions
         float xVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[j]; // add the tail
         float yVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j];
 
         // add the player velocity to the stars. make the stars move
-        Vector2 pos = Vector2Subtract(BGSTART_POOL[j]->position, (Vector2){xVal, yVal});
+        Vector2 pos = Vector2Subtract(BGSTAR_POOL[j]->position, (Vector2){xVal, yVal});
 
         // camera left screen bounds reposition the start to the right
         if (pos.x < -16 * BACKGROUNDSTARS_DATA->ObScale)
         {
-            BGSTART_POOL[j]->position = (Vector2){16, 0};
+            BGSTAR_POOL[j]->position = (Vector2){16, 0};
         }
 
         // scale the pos with the screenFactor
@@ -128,7 +131,7 @@ void _BackgroundStars_Populate(void *self){
         Vector2 v3 = (Vector2){pos.x, pos.y};
         Vector2 v2 = (Vector2){pos.x, pos.y - (BACKGROUNDSTARS_DATA->starSize)};
         Vector2 v1 = (Vector2){pos.x + 1 * tailLength, pos.y - (BACKGROUNDSTARS_DATA->starSize) * 3 * player->velocity.y}; // tail point;
-        RenderTriangleAbsolute(v1, v2, v3, WHITE);
+        RenderTriangleAbsolute(v1, v2, v3, BGSTAR_POOL[j]->colour);
     }
 }
 
@@ -146,9 +149,9 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
     UnloadRandomSequence(BACKGROUNDSTARS_DATA->listRandomSequence);
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i)
     {
-        free(BGSTART_POOL[i]);
+        free(BGSTAR_POOL[i]);
     }
-    free(BGSTART_POOL);
+    free(BGSTAR_POOL);
     free(BACKGROUNDSTARS_DATA);
 
     return 0;

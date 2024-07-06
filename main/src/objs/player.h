@@ -46,6 +46,7 @@ typedef struct {
     float hullHealth;
     float hullRegenerationRate;
 
+    float damageImmunity;
 
     float deltaTimeSinceLastImpact;
 

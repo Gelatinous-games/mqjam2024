@@ -134,6 +134,8 @@ void _Asteroid_Randomize(void *self) {
     // Finally we'll add our origin velocity on the X axis to our velocity.
 
     THIS->velocity.x = originVel.x; 
+
+    printf("SPAWNED ASTEROID AT %f, %f (origin %f, %f)\n", THIS->position.x, THIS->position.y, originPos.x, originPos.y);
 }
 
 int _Asteroid_Init(void* self, float DeltaTime) {
@@ -172,12 +174,13 @@ int _Asteroid_Update(void* self, float DeltaTime) {
     THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
     
     if(THIS->position.y > cameraBounds.y + THIS->size.y || THIS->position.y < -(cameraBounds.y + THIS->size.y)
-     || fabsf(cameraPosition.x - THIS->position.x) > 4 * cameraBounds.x ){
+     || fabsf(cameraPosition.x - THIS->position.x) > 2 * cameraBounds.x ){
         // destroy me! release me from this realm of hurt!
         // (and, also, let the asteroid_processor create a new one if it so chooses.)
         // TODO: figure out an asteroid handler!
 
         // for now we will just reposition the asteroid similar to above.
+        // printf("I AM REBORN\n");
         _Asteroid_Randomize(self);
     }
 
