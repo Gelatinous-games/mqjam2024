@@ -104,6 +104,8 @@
 #endif
 
 #include "src/objs/gameManager.c"
+#include "src/objs/titlemanager.c"
+#include "src/objs/deathManager.c"
 
 
 
@@ -218,7 +220,7 @@ static void generateObjects()
     // Particle handler.
     AddToPool(CreateParticleObject());
 
-    AddToPool(CreateGameManager());
+    AddToPool(CreateTitleManager());
 
     // AddToPool(CreateExampleObject());
 }

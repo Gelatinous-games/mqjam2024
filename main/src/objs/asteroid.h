@@ -77,7 +77,7 @@ typedef struct {
 #define ASTEROID_RANDOM_RANGE 4
 
 Sprite** _asteroidSprites;
-
+int asteroidsUsing = 0;
 
 Color GetAsteroidParticleColor();
 
@@ -138,6 +138,7 @@ void _Asteroid_Randomize(void *self) {
 }
 
 int _Asteroid_Init(void* self, float DeltaTime) {
+    asteroidsUsing++;
     // If they havent yet been loaded, load all the asteroid sprites.
     if (!_asteroidSprites) {
         _asteroidSprites = malloc(sizeof(Sprite*) * ASTEROID_SPRITE_COUNT);
@@ -241,6 +242,15 @@ int _Asteroid_Draw(void* self, float DeltaTime) {
 int _Asteroid_Destroy(void* self, float DeltaTime) {
     // DestroySprite(ASTEROIDDATA->sprite);
     free(ASTEROIDDATA);
+    asteroidsUsing = 0;
+    if (!asteroidsUsing) {
+        for (int i = 0; i < 4; i++) {
+            Sprite* tmp = _asteroidSprites[i];
+            DestroySprite(tmp);
+        }
+        free(_asteroidSprites);
+        _asteroidSprites = 0;
+    }
     return 0;
 }
 

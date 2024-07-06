@@ -129,6 +129,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     free(DATA);
 
     // ONLY ONCE DELETED can we add an instance of the manager for the next scene!
+    AddToPool(CreateDeathManager());
     return 0;
 }
 
