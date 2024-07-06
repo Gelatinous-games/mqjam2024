@@ -8,42 +8,42 @@
 #include "../base.h"
 #include "../settings.h"
 
-
 #ifndef _camera
-    #define _camera
-    #include "../camera.c"
+#define _camera
+#include "../camera.c"
 #endif
 
-
 #ifndef _obj_pool
-    #define _obj_pool
-    #include "../obj_pool.c"
+#define _obj_pool
+#include "../obj_pool.c"
 #endif
 
 #ifndef _obj_particle
-    #define _obj_particle
-    #include "./particle.c"
+#define _obj_particle
+#include "./particle.c"
 #endif
 
 #ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
+#define _sprite
+#include "../sprite.c"
 #endif
 
-typedef struct {
-    Sprite* sprite;
+typedef struct
+{
+    Sprite *sprite;
     float distanceFromStart;
 } Wormhole_Data;
 
 #define WORMHOLE_DATA ((Wormhole_Data *)(THIS->data_struct))
 
-int _Wormhole_Init(void* self, float DeltaTime) {
+int _Wormhole_Init(void *self, float DeltaTime)
+{
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
 
     THIS->data_struct = malloc(sizeof(Wormhole_Data));
 
-    WORMHOLE_DATA->distanceFromStart = 100;
+    WORMHOLE_DATA->distanceFromStart = WORMHOLE_SPWAWN_POSITION_X;
     WORMHOLE_DATA->sprite = CreateSprite("resources/wormhole/w1.png");
 
     THIS->position.x = WORMHOLE_DATA->distanceFromStart;
@@ -55,10 +55,11 @@ int _Wormhole_Init(void* self, float DeltaTime) {
     return 0;
 }
 
-int _Wormhole_Update(void* self, float DeltaTime) {
-    
+int _Wormhole_Update(void *self, float DeltaTime)
+{
+
     // we can cast our data struct to the right data like so:
-    Wormhole_Data* data = THIS->data_struct;
+    Wormhole_Data *data = THIS->data_struct;
 
     // // dont let the player past the wormhole
     // if (PLAYER_OBJECT_REF->position.x > THIS->position.x) {
@@ -66,12 +67,14 @@ int _Wormhole_Update(void* self, float DeltaTime) {
     // }
 
     // An example of searching for objects with neutral flag.
-    for (int i = 0; i != -1; ) {
-        GameObj_Base* obj;
+    for (int i = 0; i != -1;)
+    {
+        GameObj_Base *obj;
         i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
 
         // Check if obj is not null
-        if (!obj || i == -1) break;
+        if (!obj || i == -1)
+            break;
 
         // Do an operation with the result...
     }
@@ -79,29 +82,32 @@ int _Wormhole_Update(void* self, float DeltaTime) {
     return 0;
 }
 
-int _Wormhole_Draw(void* self, float DeltaTime) {
+int _Wormhole_Draw(void *self, float DeltaTime)
+{
     // ibid
-    Wormhole_Data* data = THIS->data_struct;
+    Wormhole_Data *data = THIS->data_struct;
 
     RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
 
     return 0;
 }
 
-int _Wormhole_Destroy(void* self, float DeltaTime) {
+int _Wormhole_Destroy(void *self, float DeltaTime)
+{
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    Wormhole_Data* data = THIS->data_struct;
+    Wormhole_Data *data = THIS->data_struct;
     free(data->sprite);
     free(data);
 
     return 0;
 }
 
-GameObj_Base* CreateWormhole() {
-    GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
+GameObj_Base *CreateWormhole()
+{
+    GameObj_Base *obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_Wormhole_Init;
     obj_ptr->Update_Func = &_Wormhole_Update;

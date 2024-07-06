@@ -67,8 +67,8 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     // generate the seed
     SetRandomSeed(GAME_TIME);
     // BACKGROUNDSTARS_DATA->randomSeed =
-    BACKGROUNDSTARS_DATA->maxNumberOfStars = 20;
-    BACKGROUNDSTARS_DATA->minNumberOfStars = 10;
+    BACKGROUNDSTARS_DATA->maxNumberOfStars = BACKGROUNDSTARS_MIN_NUMBER_STARS;
+    BACKGROUNDSTARS_DATA->minNumberOfStars = BACKGROUNDSTARS_MAX_NUMBER_STARS;
     BACKGROUNDSTARS_DATA->numberOfStars = GetRandomValue(BACKGROUNDSTARS_DATA->minNumberOfStars, BACKGROUNDSTARS_DATA->maxNumberOfStars);
     // get the random sequence for star position
     // index between 0->numberOfStars-1 is the x positions, index between numberOfStars -> numberOfStars*2-1 is the y positions
@@ -87,7 +87,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numberOfStars; ++i)
     {
         BACKGROUNDSTARS_POOL[i] = malloc(sizeof(BackgroundStar_Data));
-        BACKGROUNDSTARS_POOL[i]->colour = CLITERAL(Color){253, 249, 200, 100}; // yellow
+        BACKGROUNDSTARS_POOL[i]->colour = BACKGROUNDSTARS_COLOUR; // yellow
     }
     return 0;
 }
