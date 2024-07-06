@@ -220,5 +220,5 @@ static void generateObjects()
 
     AddToPool(CreateGameManager());
 
-    //AddToPool(CreateExampleObject());
+    // AddToPool(CreateExampleObject());
 }

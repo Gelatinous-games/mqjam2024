@@ -16,6 +16,8 @@ int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
+    PLAYER_DATA->damageImmunity = 0;
+
     setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
@@ -26,7 +28,7 @@ int _Player_Init(void* self, float DeltaTime) {
 
 int _Player_Update(void* self, float DeltaTime) {
     // INCREASE TIMER SINCE LAST IMPACT
-    PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
+    PLAYER_DATA->deltaTimeSinceLastImpact -= DeltaTime;
 
     // ================
     updateThrustingSoundState(self, DeltaTime);
@@ -163,19 +165,21 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
         Vector2 impartSelf, impartAsteroid;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
-            // ... collision sound
-            playSoundOnce(HIT_SOUND_ID);
-
             Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
             THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
 
+            if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
+                continue;
+            }
+
             // get the damage rate and apply
             PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
 
+            // ... collision sound
+            playSoundOnce(HIT_SOUND_ID);
             // create a spark effect or something
-
-            int randomCount = (FLOAT_RAND * 4) + 4;
+            int randomCount = 2 * ((FLOAT_RAND * 8) + 8);
             for (int i = 0; i < randomCount; i++) {
                 // pick a palette of 4
                 Color colourVal = GetImpactParticleColor();
@@ -392,7 +396,10 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
     // TODO: shake the health bar
 
     // reset the time since counter
-    PLAYER_DATA->deltaTimeSinceLastImpact = 0.0f;
+    if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
+        return;
+    }
+    PLAYER_DATA->deltaTimeSinceLastImpact = PLAYER_DAMAGE_IMMUNITY_TIMEOUT; // set to the timout
 
     float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
     PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;

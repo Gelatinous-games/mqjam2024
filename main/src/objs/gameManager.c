@@ -40,7 +40,7 @@ typedef struct {
 int _GameManager_Init(void* self, float DeltaTime) {
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
-    DATA->spawnDistance = 100;
+    DATA->spawnDistance = 0;
 
     DATA->starCount = 0;
     DATA->asteroidCount = 1;
@@ -81,6 +81,27 @@ int _GameManager_Init(void* self, float DeltaTime) {
 
 int _GameManager_Update(void* self, float DeltaTime) {
     // Perform some logic to check if the scene should end - if so, prepare for deletion on myself.
+
+    GameObj_Base* obj;
+    GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &obj);
+
+    if (!obj) return -1; // NO PLAYER FOUND!!
+
+    DATA->spawnDistance -= obj->velocity.x * DeltaTime;
+
+    if (DATA->spawnDistance < 0) {
+        DATA->spawnDistance = GAME_SPAWN_DIST;
+        if (FLOAT_RAND < GAME_SPAWN_ASTEROID && DATA->asteroidCount < MAX_ASTEROIDS) {
+            printf("SPAWNING ASTEROID!\n");
+            AddToPool(CreateAsteroid());
+            DATA->asteroidCount++;
+        }
+        else if (DATA->starCount < MAX_ASTEROIDS) {
+            printf("SPAWNING STAR!\n");
+            AddToPool(CreateStarObject());
+            DATA->starCount++;
+        }
+    }
     return 0;
 }
 
