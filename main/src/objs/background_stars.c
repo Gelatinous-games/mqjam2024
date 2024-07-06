@@ -66,11 +66,13 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->maxStars = 50;
     BACKGROUNDSTARS_DATA->minStars = 30;
     BACKGROUNDSTARS_DATA->numStars = GetRandomValue(BACKGROUNDSTARS_DATA->minStars, BACKGROUNDSTARS_DATA->maxStars);
-    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100, (cameraBounds.x + 1) * 100);
+    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100,  BACKGROUNDSTARS_DATA->ObScale * (cameraBounds.x + 1) * 100);
     THIS->position = cameraPosition;
     BACKGROUNDSTARS_DATA->starSize = 0.1f;
     BACKGROUNDSTARS_DATA->tailLength = 30;
-    BACKGROUNDSTARS_DATA->ObScale = scaleF;
+
+    // BACKGROUNDSTARS_DATA->ObScale = scaleF;
+
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
    //Create the array of stars to hole their posistions. 
     BGSTART_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *) * BACKGROUNDSTARS_DATA->numStars);
@@ -120,7 +122,7 @@ void _BackgroundStars_Populate(void *self){
         }
 
         // scale the pos with the screenFactor
-        pos = Vector2Scale(pos, BACKGROUNDSTARS_DATA->ObScale);
+        // pos = Vector2Scale(pos, BACKGROUNDSTARS_DATA->ObScale);
 
         // draw STAR
         Vector2 v3 = (Vector2){pos.x, pos.y};
@@ -161,6 +163,9 @@ GameObj_Base *CreateBackgroundStars(enum LAYER_ID layer, float objectScale)
     // ============================================================
     // ==== setup the data scruct data
     obj_ptr->data_struct = malloc(sizeof(BackgroundStars_Data));
+
+    BackgroundStars_Data* tmp = obj_ptr->data_struct;
+    tmp->ObScale = objectScale;
 
     // ============================================================
 
