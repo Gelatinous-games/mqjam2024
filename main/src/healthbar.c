@@ -11,6 +11,7 @@
 #include "./settings.h"
 
 #include "objs/player.h"
+#include "objs/shield.h"
 
 #ifndef _camera
     #define _camera
@@ -36,20 +37,24 @@
 
 
 #define HEALTHBAR_GASLEVEL_SPRITE_COUNT 10
+#define HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT 10
 
 Sprite *HEALTHBAR_FRAME_SPRITE;
 Sprite *HEALTHBAR_OVERLAY_SPRITE;
 Sprite **HEALTHBAR_GASLEVEL_LIST;
+Sprite **HEALTHBAR_SHIELDLEVEL_LIST;
 
 
 typedef struct {
     int currentHealthBarIndex;
+    int currentShieldBarIndex;
 } HealthBar_DataStruct;
 
 #define HEALTHBAR_DATA ((HealthBar_DataStruct *)(THIS->data_struct))
 
 
-#define CURRENT_SPRITE (HEALTHBAR_GASLEVEL_LIST[HEALTHBAR_DATA->currentHealthBarIndex])
+#define CURRENT_HEALTH_SPRITE (HEALTHBAR_GASLEVEL_LIST[HEALTHBAR_DATA->currentHealthBarIndex])
+#define CURRENT_SHIELD_SPRITE (HEALTHBAR_GASLEVEL_LIST[HEALTHBAR_DATA->currentShieldBarIndex])
 
 
 int _HealthBar_Init(void* self, float DeltaTime) {
@@ -75,13 +80,26 @@ int _HealthBar_Init(void* self, float DeltaTime) {
         HEALTHBAR_GASLEVEL_LIST[7] = CreateSprite("resources/gasbar/gasbar_gaslevel_08.png");
         HEALTHBAR_GASLEVEL_LIST[8] = CreateSprite("resources/gasbar/gasbar_gaslevel_09.png");
         HEALTHBAR_GASLEVEL_LIST[9] = CreateSprite("resources/gasbar/gasbar_gaslevel_10.png");
+
+        HEALTHBAR_SHIELDLEVEL_LIST = (Sprite **)malloc(sizeof(Sprite*) * HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT);
+
+        HEALTHBAR_SHIELDLEVEL_LIST[0] = CreateSprite("resources/gasbar/gasbar_shieldlevel_01.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[1] = CreateSprite("resources/gasbar/gasbar_shieldlevel_02.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[2] = CreateSprite("resources/gasbar/gasbar_shieldlevel_03.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[3] = CreateSprite("resources/gasbar/gasbar_shieldlevel_04.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[4] = CreateSprite("resources/gasbar/gasbar_shieldlevel_05.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[5] = CreateSprite("resources/gasbar/gasbar_shieldlevel_06.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[6] = CreateSprite("resources/gasbar/gasbar_shieldlevel_07.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[7] = CreateSprite("resources/gasbar/gasbar_shieldlevel_08.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[8] = CreateSprite("resources/gasbar/gasbar_shieldlevel_09.png");
+        HEALTHBAR_SHIELDLEVEL_LIST[9] = CreateSprite("resources/gasbar/gasbar_shieldlevel_10.png");
     }
 
     HEALTHBAR_DATA->currentHealthBarIndex = HEALTHBAR_GASLEVEL_SPRITE_COUNT-1;
 
 
     THIS->position.x = WINDOW_WIDTH/2;
-    THIS->position.y = WINDOW_HEIGHT-(CURRENT_SPRITE->tex.height);
+    THIS->position.y = WINDOW_HEIGHT-(CURRENT_HEALTH_SPRITE->tex.height);
 
     THIS->size.x = 256.0f;
     THIS->size.y = 128.0f;
@@ -92,33 +110,35 @@ int _HealthBar_Init(void* self, float DeltaTime) {
 int _HealthBar_Update(void* self, float DeltaTime) {
     
 
-    // grab the health, divide it by the numer of slides
-    //  then cast to integer for picturing
-    HEALTHBAR_DATA->currentHealthBarIndex = (int)((((Player_Data *)PLAYER_OBJECT_REF->data_struct)->health)/((float)(HEALTHBAR_GASLEVEL_SPRITE_COUNT-1)));
 
     // TOO LOW
-    if(HEALTHBAR_DATA->currentHealthBarIndex <= 0){ 
-        // set to 0
+    if(GetPlayerHullPercentage() <= 0.0f){ 
+        // dont draw
         HEALTHBAR_DATA->currentHealthBarIndex = -1;
-
         // also handle death
         PlayDeathSound();
     }
     // TOO FAR
-    else if(HEALTHBAR_DATA->currentHealthBarIndex >= HEALTHBAR_GASLEVEL_SPRITE_COUNT){ 
+    else if(GetPlayerHullPercentage() >= 1.0f){ 
         HEALTHBAR_DATA->currentHealthBarIndex = HEALTHBAR_GASLEVEL_SPRITE_COUNT-1;
     }
-
-    // An example of searching for objects with neutral flag.
-    for (int i = 0; i != -1; ) {
-        GameObj_Base* obj;
-        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
-
-        // Check if obj is not null
-        if (!obj || i == -1) break;
-
-        // Do an operation with the result...
+    else {
+        HEALTHBAR_DATA->currentHealthBarIndex = (int)(GetPlayerHullPercentage() * (float)(HEALTHBAR_GASLEVEL_SPRITE_COUNT));
     }
+
+    if(_ShieldObject_GetPlayerShieldPercentage() <= 0.0f){
+        // dont draw
+        HEALTHBAR_DATA->currentShieldBarIndex = -1;
+    }
+    else if(_ShieldObject_GetPlayerShieldPercentage() >= 1.0f){ 
+        HEALTHBAR_DATA->currentShieldBarIndex = HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT-1;
+    }
+    else {
+        // ...
+        HEALTHBAR_DATA->currentShieldBarIndex = (int)(_ShieldObject_GetPlayerShieldPercentage() * (float)(HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT));
+    }
+    
+
 
 
 
@@ -135,22 +155,37 @@ int _HealthBar_Draw(void* self, float DeltaTime) {
     HEALTHBAR_FRAME_SPRITE->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
     HEALTHBAR_FRAME_SPRITE->origin = Vector2Scale(THIS->size, 0.5);
 
-    DrawTexturePro(HEALTHBAR_FRAME_SPRITE->tex, HEALTHBAR_FRAME_SPRITE->src, HEALTHBAR_FRAME_SPRITE->dst, HEALTHBAR_FRAME_SPRITE->origin, 0, WHITE);
+    // frame tinter
+    Color frameTint = WHITE;
+    if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) frameTint = DEATH_HEALTHBAR_FRAME_TINT;
+
+    DrawTexturePro(HEALTHBAR_FRAME_SPRITE->tex, HEALTHBAR_FRAME_SPRITE->src, HEALTHBAR_FRAME_SPRITE->dst, HEALTHBAR_FRAME_SPRITE->origin, 0, frameTint);
 
 
     // ===========================================
     // === draw level
 
-    // RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
-
     // not dead
     if(HEALTHBAR_DATA->currentHealthBarIndex >= 0){
-        Sprite *sprite = HEALTHBAR_GASLEVEL_LIST[HEALTHBAR_DATA->currentHealthBarIndex];
+        // grab the sprite
+        Sprite *healthLevelSprite = HEALTHBAR_GASLEVEL_LIST[HEALTHBAR_DATA->currentHealthBarIndex];
 
-        sprite->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
-        sprite->origin = Vector2Scale(THIS->size, 0.5);
+        healthLevelSprite->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
+        healthLevelSprite->origin = Vector2Scale(THIS->size, 0.5);
 
-        DrawTexturePro(sprite->tex, sprite->src, sprite->dst, sprite->origin, 0, WHITE);
+        DrawTexturePro(healthLevelSprite->tex, healthLevelSprite->src, healthLevelSprite->dst, healthLevelSprite->origin, 0, WHITE);
+    }
+    // has shields
+    if(HEALTHBAR_DATA->currentShieldBarIndex >= 0){
+        // deal with shield sprite
+
+        // grab the sprite
+        Sprite *shieldLevelSprite = HEALTHBAR_SHIELDLEVEL_LIST[HEALTHBAR_DATA->currentShieldBarIndex];
+
+        shieldLevelSprite->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
+        shieldLevelSprite->origin = Vector2Scale(THIS->size, 0.5);
+
+        DrawTexturePro(shieldLevelSprite->tex, shieldLevelSprite->src, shieldLevelSprite->dst, shieldLevelSprite->origin, 0, (Color){255,255,255,127});
     }
 
     // ===========================================
@@ -159,7 +194,12 @@ int _HealthBar_Draw(void* self, float DeltaTime) {
     HEALTHBAR_OVERLAY_SPRITE->dst = (Rectangle) { THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y };
     HEALTHBAR_OVERLAY_SPRITE->origin = Vector2Scale(THIS->size, 0.5);
 
-    DrawTexturePro(HEALTHBAR_OVERLAY_SPRITE->tex, HEALTHBAR_OVERLAY_SPRITE->src, HEALTHBAR_OVERLAY_SPRITE->dst, HEALTHBAR_OVERLAY_SPRITE->origin, 0, WHITE);
+    // overlay tintind
+    Color overlayTint = WHITE;
+    if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) overlayTint = DEATH_HEALTHBAR_OVERLAY_TINT;
+
+    // draw it
+    DrawTexturePro(HEALTHBAR_OVERLAY_SPRITE->tex, HEALTHBAR_OVERLAY_SPRITE->src, HEALTHBAR_OVERLAY_SPRITE->dst, HEALTHBAR_OVERLAY_SPRITE->origin, 0, overlayTint);
 
     // ===========================================
 

@@ -79,7 +79,7 @@ static void prepareSounds(){
     TRACKS[DEATH_SOUND_ID]->loopingTrack     = 0;
     // volumes
     TRACKS[BGMUSIC_LOOP_ID]->baseVolume    = 0.7f;
-    TRACKS[HIT_SOUND_ID]->baseVolume        = 0.5f;
+    TRACKS[HIT_SOUND_ID]->baseVolume        = 0.333333f;
     TRACKS[THRUST_LOOP_ID]->baseVolume     = 1.0f;
     TRACKS[STAR_PROXIMITY_LOOP_ID]->baseVolume = 1.0f;
     TRACKS[THRUST_END_ID]->baseVolume      = 1.0f;
@@ -178,6 +178,8 @@ static float getTrackVolume(int soundID){
 
 
 static void PlayDeathSound(){
+    // silence any impact sounds
+    setTrackVolume(HIT_SOUND_ID,0.0f);
     // max volume scale
     setTrackVolume(DEATH_SOUND_ID, 1.0f);
     // tell it to play if it isnt, and never played

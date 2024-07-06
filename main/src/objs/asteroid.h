@@ -78,6 +78,10 @@ typedef struct {
 
 Sprite** _asteroidSprites;
 
+
+Color GetAsteroidParticleColor();
+
+
 void _Asteroid_Randomize(void *self) {
     Vector2 originVel, originPos;
     GameObj_Base* player;
@@ -196,18 +200,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
             int randNum = (FLOAT_RAND * 4) + 4;
             for (int i = 0; i < randNum; i++) {
                 // pick a palette of 4
-                Color col;
-                int k = (FLOAT_RAND * 4);
-                switch (k) {
-                    case 0: col = (Color) {75, 35, 35, 127};
-                    break;
-                    case 1: col = (Color) {142, 27, 27, 127};
-                    break;
-                    case 2: col = (Color) {50, 44, 44, 127};
-                    break;
-                    case 3: col = (Color) {100, 100, 100, 127};
-                    break;
-                }
+                Color col = GetAsteroidParticleColor();
                 SpawnParticle(midPoint, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .125), (FLOAT_RAND * 1.75) + .25, col, 1);
             }
         }
@@ -275,4 +268,15 @@ GameObj_Base* CreateAsteroid() {
     obj_ptr->size = (Vector2) {2, 2};
 
     return obj_ptr;
+}
+
+Color GetAsteroidParticleColor(){
+    int diceRoll = (INT_RAND % 4);
+    switch (diceRoll) {
+        default:
+        case 0: return (Color) {75, 35, 35, 127};
+        case 1: return (Color) {142, 27, 27, 127};
+        case 2: return (Color) {50, 44, 44, 127};
+        case 3: return (Color) {100, 100, 100, 127};
+    }
 }

@@ -71,10 +71,12 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 
 #### === Health ===
 
-* needs something to happen when we run out of health
-* how do we regain health? over time? we can ++ the health int then while it's `health < 100`
-* should the gas bar aurora made be the health or boost or thrown in the bin?
-    * sprite needs work, maybe seperate to layers
+* or we just make a shield handler
+* health needs seperation into
+    * hull health
+    * shield health
+* need a health manager
+* health manager can say states?
 
 
 #### === Sprite layering ===
@@ -82,10 +84,6 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 * needs something to handle multi-layer sprites so we can transform individual layers
 * can just be an array
 * probably also handles tinting layers
-
-#### === light shifting ===
-
-* whemstve the henk light shift go? do stars?
 
 #### === Sprite managing ===
 

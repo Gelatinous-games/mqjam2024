@@ -40,7 +40,16 @@
 #include "src/sound.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
-#include "src/objs/player.h"
+
+#ifndef _player
+#define _player
+#include "src/objs/player.c"
+#endif
+
+#ifndef _shield
+#define _shield
+#include "src/objs/shield.c"
+#endif
 
 #include "src/timer.c"
 
@@ -176,6 +185,11 @@ static void generateObjects()
     // Player object.
     PLAYER_OBJECT_REF = CreatePlayer();
     AddToPool(PLAYER_OBJECT_REF);
+
+    // Shield object
+    SHIELD_OBJECT_REF = CreateShieldObject();
+    AddToPool(SHIELD_OBJECT_REF);
+
 
     // Asteroid object.
     // TODO: succeed with an asteroid handler that can scale up & down asteroids.
