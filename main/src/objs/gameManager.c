@@ -58,10 +58,24 @@ int _GameManager_Init(void* self, float DeltaTime) {
     // Planet Object
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
+
+    // Background Object
+    //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
+    BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
+    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
+    {
+        /* code */
+        BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
+        AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
+    }
+    
+    BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
+    AddToPool(BACKGROUND_OBJECT_REF);
     return 0;
 }
 
 int _GameManager_Update(void* self, float DeltaTime) {
+    // Perform some logic to check if the scene should end - if so, prepare for deletion on myself.
     return 0;
 }
 
@@ -70,6 +84,25 @@ int _GameManager_Draw(void* self, float DeltaTime) {
 }
 
 int _GameManager_Destroy(void* self, float DeltaTime) {
+    GameObj_Base* obj;
+
+    // search for and delete all player, asteroid, star, wormhole, background stars, etc.
+    for (int sIDX = 0; sIDX != -1; ) {
+        sIDX = GetObjectWithFlagsAny(
+            FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND,
+            sIDX,
+            &obj
+        );
+
+        if (sIDX == -1 || !obj) break;
+
+        obj->awaitDestroy = 1;
+    }
+
+    free(BACKGROUNDSTARS_EFFECT_REF_LIST);
+    free(DATA);
+
+    // ONLY ONCE DELETED can we add an instance of the manager for the next scene!
     return 0;
 }
 
