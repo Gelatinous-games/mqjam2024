@@ -111,6 +111,7 @@ static void startSounds(){
         if (TRACKS[i]->loopingTrack)
         {
             /* code */
+            SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
             PlaySound(TRACKS[i]->track);      // Play WAV sound
             SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
         }

@@ -142,7 +142,7 @@ int main()
 
     prepareSounds();
     setAllTracksVolume(0.5f);
-    startSounds();
+
 
     _MainMenu_Init();
 
@@ -184,28 +184,47 @@ static void UpdateDrawFrame(void)
 {
     // grab it
     float DeltaTime = GetFrameTime();
+
+    
     // check for render
     if(GameShouldRender()){
-        ProcessAllUpdates(DeltaTime);
+        if(!SoundsStarted){
+            startSounds();
+            SoundsStarted = true;
+        }
+        // ...
         soundUpdate();
-
-        UpdateCamera3D();
-        BeginDrawing();
-        ClearBackground(BLACK);
-        ProcessAllDraws(DeltaTime);
-        drawTimer();
-        EndDrawing();
-
-        ProcessFreshAdd();
-        ProcessAllDestroys();
+        ProcessAllUpdates(DeltaTime);
     }
     // handle menus
     else {
         if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
             _MainMenu_Update(DeltaTime);
+        }
+    }
+
+
+    UpdateCamera3D();
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    // check for render
+    if(GameShouldRender()){
+        ProcessAllDraws(DeltaTime);
+        drawTimer();
+    }
+    // handle menus
+    else {
+        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
             _MainMenu_Draw();
         }
     }
+
+        
+    EndDrawing();
+
+    ProcessFreshAdd();
+    ProcessAllDestroys();
 }
 
 /// @brief Generates all objects for initial gamestate.

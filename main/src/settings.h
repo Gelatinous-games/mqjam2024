@@ -18,9 +18,9 @@ enum GAME_SCENE_STATE {
     GAME_SCENE_STATE_INGAME = 1
 };
 
-// static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
-// skip till it's implemented
-static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+// // skip till it's implemented
+// static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
 
 
 #define CAMERA_COAST_SPEED 3
@@ -57,7 +57,7 @@ static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
 #define STAR_IMPACT_DAMMAGE_HULL 30
 
 
-
+static int SoundsStarted = false;
 
 
 #define SHIELD_PARTICLE_COLOUR_0 (Color){  34, 195, 222, 127 }
