@@ -54,7 +54,8 @@ int _Player_Update(void* self, float DeltaTime) {
 }
 
 int _Player_Draw(void* self, float DeltaTime) {
-    RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+    if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
+        RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
     return 0;
 }
@@ -180,12 +181,17 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
 
+            if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
+                continue;
+            }
+
             // get the damage rate and apply
             PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
 
+            // ... collision sound
+            playSoundOnce(HIT_SOUND_ID);
             // create a spark effect or something
-
-            int randomCount = (FLOAT_RAND * 4) + 4;
+            int randomCount = 2 * ((FLOAT_RAND * 8) + 8);
             for (int i = 0; i < randomCount; i++) {
                 // pick a palette of 4
                 Color colourVal = GetImpactParticleColor();
@@ -412,7 +418,10 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
     // TODO: shake the health bar
 
     // reset the time since counter
-    PLAYER_DATA->deltaTimeSinceLastImpact = 0.0f;
+    if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
+        return;
+    }
+    PLAYER_DATA->deltaTimeSinceLastImpact = PLAYER_DAMAGE_IMMUNITY_TIMEOUT; // set to the timout
 
     float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
     PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;

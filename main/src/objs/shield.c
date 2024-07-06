@@ -140,6 +140,10 @@ void _ShieldObject_handlePlayerDeath(void *self, float DeltaTime){
 void _ShieldObject_updateShieldHealth(void *self, float DeltaTime){
 
     // HANDLE THE REGEN
+    if (SHIELD_DATA->deltaTimeSinceLastImpact < SHIELD_REGEN_TIMEOUT_DELTATIME) {
+        return;
+    }
+    SHIELD_DATA->deltaTimeSinceLastImpact = SHIELD_REGEN_TIMEOUT_DELTATIME + 1;
 
     // not max shields
     //  also been long enough since last impact
