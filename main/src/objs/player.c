@@ -16,8 +16,6 @@ int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
-    PLAYER_DATA->damageImmunity = 0;
-
 
     PLAYER_DATA->deltaTimeSinceLastDeathParticle = 0.0f;
 
@@ -30,8 +28,7 @@ int _Player_Init(void* self, float DeltaTime) {
 }
 
 int _Player_Update(void* self, float DeltaTime) {
-    // INCREASE TIMER SINCE LAST IMPACT
-    PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
+    PLAYER_DATA->deltaTimeSinceLastImpact -= DeltaTime;
     PLAYER_DATA->deltaTimeSinceLastDeathParticle += DeltaTime;
 
     // ================
@@ -56,7 +53,8 @@ int _Player_Update(void* self, float DeltaTime) {
 }
 
 int _Player_Draw(void* self, float DeltaTime) {
-    RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+    if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
+        RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
     return 0;
 }

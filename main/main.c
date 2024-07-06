@@ -102,6 +102,8 @@
 #endif
 
 #include "src/objs/gameManager.c"
+#include "src/objs/titlemanager.c"
+#include "src/objs/deathManager.c"
 
 
 
@@ -263,7 +265,7 @@ static void generateObjects()
     __GAMEMANAGER_REF = CreateGameManager();
     AddToPool(__GAMEMANAGER_REF);
 
-    // AddToPool(CreateGameManager());
+    AddToPool(CreateTitleManager());
     __GAMEMANAGER_INITIALISED_BEFORE = 1;
 }
 

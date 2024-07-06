@@ -41,7 +41,7 @@ typedef struct {
 int _GameManager_Init(void* self, float DeltaTime) {
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
-    DATA->spawnDistance = 0;
+    DATA->spawnDistance = GAME_SPAWN_DIST;
 
     DATA->starCount = 2;
     DATA->asteroidCount = 1;
@@ -130,6 +130,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     free(DATA);
 
     // ONLY ONCE DELETED can we add an instance of the manager for the next scene!
+    AddToPool(CreateDeathManager());
     return 0;
 }
 
