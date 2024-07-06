@@ -97,11 +97,9 @@ static GameObj_Base *SHIELD_OBJECT_REF;
 static GameObj_Base *PLAYER_OBJECT_REF;
 
 
-
-static GameObj_Base *BACKGROUND_OBJECT_REF;
-
 const static int NUMBER_OF_BACKGROUNDSTARS_LAYERS = 3;
 static GameObj_Base **BACKGROUNDSTARS_EFFECT_REF_LIST;
+static GameObj_Base **BACKGROUND_OBJECT_REF_LIST;
 
 
 

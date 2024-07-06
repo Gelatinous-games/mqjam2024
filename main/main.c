@@ -237,17 +237,21 @@ static void generateObjects()
     }
 
     // Background Object
-    //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
     BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
+    BACKGROUND_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
     for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
     {
         /* code */
+        // Background Stars 3 layers
         BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
         AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
+
+        // Background sprites 3 layers, Small/Medium/Large
+        BACKGROUND_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
+        AddToPool(BACKGROUND_OBJECT_REF_LIST[i]);
     }
     
-    BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
-    AddToPool(BACKGROUND_OBJECT_REF);
+    
 
     AddToPool(CreateHealthBar());
 

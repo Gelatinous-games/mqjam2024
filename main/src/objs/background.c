@@ -33,6 +33,11 @@
 #include "../misc.c"
 #endif
 
+enum SPRITE_LAYER{
+    SMALL = 0,
+    MEDIUM = 1,
+    LARGE = 2,
+};
 
 typedef struct {
     // the particular sprite
@@ -131,6 +136,7 @@ int _BackgroundSprites_Draw(void *self, float DeltaTime)
         // determine if we should index into our list
         // or if it was the star brush we rolled
         BackgroundSprite_SpriteData *spriteDataList = spriteTypeToSpriteDataList(self, DeltaTime, BACKGROUND_DATA->backgroundGeneratedObjects[i].spriteType);
+        THIS->currentLayer = spriteDataList->spriteLayer;
         // draw it
         RenderSpriteRelative(
             spriteDataList[BACKGROUND_DATA->backgroundGeneratedObjects[i].spriteID].sprite,
@@ -159,7 +165,7 @@ int _BackgroundSprites_Destroy(void *self, float DeltaTime)
     return 0;
 }
 
-GameObj_Base *CreateBackgroundSprites()
+GameObj_Base *CreateBackgroundSprites(enum LAYER_ID layer)
 {
     GameObj_Base *obj_ptr = malloc(sizeof(GameObj_Base));
 
@@ -183,7 +189,7 @@ GameObj_Base *CreateBackgroundSprites()
     // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = FLAG_BACKGROUND;
 
-    obj_ptr->currentLayer = LAYER_BACKGROUND_STARSCAPE_0;
+    obj_ptr->currentLayer = layer;
 
     return obj_ptr;
 }
