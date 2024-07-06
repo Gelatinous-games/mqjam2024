@@ -195,7 +195,7 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
 
 
 void handleGravityInteractions(void *self, float DeltaTime){
-
+    
     // check for gravity interactions
     GameObj_Base* extobj;
     // TODO
