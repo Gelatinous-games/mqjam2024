@@ -62,7 +62,7 @@ typedef struct
     Vector2 bgSpace_position;
     float bgSpace_rotation;
     Vector2 bgSpace_scale;
-     // position offset
+    // position offset
     float spritePositionOffset;
 
 } BackgroundSprite_GenerationData;
@@ -130,9 +130,27 @@ int _BackgroundSprites_Update(void *self, float DeltaTime)
     return 0;
 }
 
+void setScaleFactorToLayer(void *self)
+{
+    switch (THIS->currentLayer)
+    {
+    default:
+    case LAYER_BACKGROUND_STARSCAPE_0:
+        scaleFactor = (Vector2){3, 3};
+        break;
+    case LAYER_BACKGROUND_STARSCAPE_1:
+        scaleFactor = (Vector2){2, 2};
+        break;
+    case LAYER_BACKGROUND_STARSCAPE_2:
+        scaleFactor = (Vector2){1, 1};
+        break;
+    }
+}
+
 int _BackgroundSprites_Draw(void *self, float DeltaTime)
 {
 
+    setScaleFactorToLayer(self);
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
     {
         // printf("drawing %d\n",i);
@@ -199,9 +217,9 @@ GameObj_Base *CreateBackgroundSprites(enum LAYER_ID layer)
 
 void resetBackgroundSpritesPositionIfOutOfBounds(void *self, Vector2 position, int idx)
 {
-    if (abs(((int)position.x) < cameraPosition.x - 40))
+    if (abs(((int)position.x) < cameraPosition.x-100))
     {
-        BACKGROUND_DATA->backgroundGeneratedObjects[idx].spritePositionOffset += 50;
+        BACKGROUND_DATA->backgroundGeneratedObjects[idx].spritePositionOffset += 100+cameraBounds.x*scaleFactor.x;
     }
 }
 
@@ -317,7 +335,7 @@ void prepareBackgroundGenerationData(void *self, float DeltaTime)
     // printf("%s\n","making bg objects list");
     // object reference array
     BACKGROUND_DATA->backgroundGeneratedObjects = (BackgroundSprite_GenerationData *)malloc(BACKGROUND_OBJECT_COUNT * sizeof(BackgroundSprite_GenerationData));
-    
+
     // roll each object
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
     {
