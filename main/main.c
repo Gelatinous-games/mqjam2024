@@ -103,6 +103,8 @@
 #include "src/healthbar.c"
 #endif
 
+#include "src/objs/gameManager.c"
+
 
 
 
@@ -234,51 +236,5 @@ static void generateObjects()
     // Particle handler.
     AddToPool(CreateParticleObject());
 
-    // Player object.
-    PLAYER_OBJECT_REF = CreatePlayer();
-    AddToPool(PLAYER_OBJECT_REF);
-
-    // Shield object
-    SHIELD_OBJECT_REF = CreateShieldObject();
-    AddToPool(SHIELD_OBJECT_REF);
-
-
-    // Asteroid object.
-    // TODO: succeed with an asteroid handler that can scale up & down asteroids.
-    // Decide upon some criteria for how asteroid handler should work - should it control the scene?
-    // Place stars and other elements down?
-    ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_ASTEROIDS);
-    for (int i = 0; i < NUMBER_OF_ASTEROIDS; i++)
-    {
-        /* code */
-        ASTEROID_REF_LIST[i] = CreateAsteroid();
-        AddToPool(ASTEROID_REF_LIST[i]);
-    }
-
-    // Background Object
-    //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
-    BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
-    {
-        /* code */
-        BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
-        AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
-    }
-    
-    BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
-    AddToPool(BACKGROUND_OBJECT_REF);
-
-    AddToPool(CreateHealthBar());
-
-    // Wormhole Object
-    WORMHOLE_OBJECT_REF = CreateWormhole();
-    AddToPool(WORMHOLE_OBJECT_REF);
-
-    // Planet Object
-    PLANET_OBJECT_REF = CreatePlanet();
-    AddToPool(PLANET_OBJECT_REF);
-
-    // Star Object
-    STAR_OBJECT_REF = CreateStarObject();
-    AddToPool(STAR_OBJECT_REF);
+    AddToPool(CreateGameManager());
 }

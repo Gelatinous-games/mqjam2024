@@ -16,7 +16,7 @@ int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
-
+    setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
 

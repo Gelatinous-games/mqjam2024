@@ -48,7 +48,12 @@ int _GameManager_Init(void* self, float DeltaTime) {
     PLAYER_OBJECT_REF = CreatePlayer();
     AddToPool(PLAYER_OBJECT_REF);
 
+    // Shield object
+    SHIELD_OBJECT_REF = CreateShieldObject();
+    AddToPool(SHIELD_OBJECT_REF);
+
     AddToPool(CreateAsteroid());
+    // AddToPool(CreateStarObject());
     AddToPool(CreateHealthBar());
 
      // Wormhole Object
