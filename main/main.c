@@ -46,7 +46,11 @@
 
 #ifndef _mainmenu
 #define _mainmenu
-#include "mainmenu.c"
+#include "src/mainmenu.c"
+#endif
+#ifndef _deathmenu
+#define _deathmenu
+#include "src/deathmenu.c"
 #endif
 
 #ifndef _player
@@ -118,7 +122,7 @@ static void prepareSounds();
 static void cleanupSounds();
 
 static int GameShouldRender(){
-    return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
+    return (CURRENT_GAME_SCENE_STATE != GAME_SCENE_STATE_MAINMENU);
 }
 
 int main()
@@ -147,6 +151,7 @@ int main()
 
 
     _MainMenu_Init();
+    _DeathMenu_Init();
 
     generateObjects();
 
@@ -165,6 +170,7 @@ int main()
 
 
     _MainMenu_Cleanup();
+    _DeathMenu_Cleanup();
 
     cleanupSounds();
 
@@ -197,6 +203,7 @@ static void UpdateDrawFrame(void)
         // ...
         soundUpdate();
         ProcessAllUpdates(DeltaTime);
+        _DeathMenu_Update(DeltaTime);
     }
     // handle menus
     else {
@@ -214,6 +221,11 @@ static void UpdateDrawFrame(void)
     if(GameShouldRender()){
         ProcessAllDraws(DeltaTime);
         drawTimer();
+        // when dead scene
+        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD){
+            // draw death menu over the top
+            _DeathMenu_Draw();
+        }
     }
     // handle menus
     else {
@@ -227,6 +239,12 @@ static void UpdateDrawFrame(void)
 
     ProcessFreshAdd();
     ProcessAllDestroys();
+
+
+
+    if(NEXT_FRAME_GAME_STARTS){
+        CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+    }
 }
 
 /// @brief Generates all objects for initial gamestate.
