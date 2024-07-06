@@ -54,7 +54,6 @@ typedef struct
 BGStar_Data **BGSTART_POOL;
 
 GameObj_Base *player;
-Vector2 camPos;
 BGStar_Data BGstars[100];
 int offsetX = 0;
 float scaleF = 1; // camera zoom
@@ -73,22 +72,21 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->tailLength = 30;
     BACKGROUNDSTARS_DATA->ObScale = scaleF;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
+   //Create the array of stars to hole their posistions. 
     BGSTART_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *) * BACKGROUNDSTARS_DATA->numStars);
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i)
     {
         BGSTART_POOL[i] = malloc(sizeof(BGStar_Data));
     }
-    camPos = cameraPosition;
-    THIS->velocity = (Vector2){-1, 0};
-
     return 0;
 }
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
-
+    //get the player's velocity
     THIS->velocity = (Vector2){-1.0f * (PLAYER_OBJECT_REF->velocity.x), -0.5f * (PLAYER_OBJECT_REF->velocity.y)};
 
+    //move the stars across the screen
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; i++)
     {
         BGSTART_POOL[i]->position = Vector2Add(BGSTART_POOL[i]->position, Vector2Scale(THIS->velocity, DeltaTime * BACKGROUNDSTARS_DATA->ObScale));
@@ -98,9 +96,8 @@ int _BackgroundStars_Update(void *self, float DeltaTime)
     return 0;
 }
 
-int _BackgroundStars_Draw(void *self, float DeltaTime)
-{
-    // BackgroundStars_Data *data = THIS->data_struct;
+void _BackgroundStars_Populate(void *self){
+// BackgroundStars_Data *data = THIS->data_struct;
     scaleFactor = (Vector2){BACKGROUNDSTARS_DATA->ObScale, BACKGROUNDSTARS_DATA->ObScale};
     // get the tail lenth with player velocity. ma
     int tailLength = player->velocity.x;
@@ -131,6 +128,11 @@ int _BackgroundStars_Draw(void *self, float DeltaTime)
         Vector2 v1 = (Vector2){pos.x + 1 * tailLength, pos.y - (BACKGROUNDSTARS_DATA->starSize) * 3 * player->velocity.y}; // tail point;
         RenderTriangleAbsolute(v1, v2, v3, WHITE);
     }
+}
+
+int _BackgroundStars_Draw(void *self, float DeltaTime)
+{
+    _BackgroundStars_Populate(self);
 
     return 0;
 }
