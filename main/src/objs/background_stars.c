@@ -70,7 +70,9 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     THIS->position = cameraPosition;
     BACKGROUNDSTARS_DATA->starSize = 0.1f;
     BACKGROUNDSTARS_DATA->tailLength = 30;
-    BACKGROUNDSTARS_DATA->ObScale = scaleF;
+
+    // BACKGROUNDSTARS_DATA->ObScale = scaleF;
+    
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
    //Create the array of stars to hole their posistions. 
     BGSTART_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *) * BACKGROUNDSTARS_DATA->numStars);
@@ -161,6 +163,9 @@ GameObj_Base *CreateBackgroundStars(enum LAYER_ID layer, float objectScale)
     // ============================================================
     // ==== setup the data scruct data
     obj_ptr->data_struct = malloc(sizeof(BackgroundStars_Data));
+
+    BackgroundStars_Data* tmp = obj_ptr->data_struct;
+    tmp->ObScale = objectScale;
 
     // ============================================================
 
