@@ -72,7 +72,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->tailLength = 30;
 
     // BACKGROUNDSTARS_DATA->ObScale = scaleF;
-    
+
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
    //Create the array of stars to hole their posistions. 
     BGSTART_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *) * BACKGROUNDSTARS_DATA->numStars);
@@ -122,7 +122,7 @@ void _BackgroundStars_Populate(void *self){
         }
 
         // scale the pos with the screenFactor
-        pos = Vector2Scale(pos, BACKGROUNDSTARS_DATA->ObScale);
+        // pos = Vector2Scale(pos, BACKGROUNDSTARS_DATA->ObScale);
 
         // draw STAR
         Vector2 v3 = (Vector2){pos.x, pos.y};
