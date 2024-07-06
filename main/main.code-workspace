@@ -6,13 +6,17 @@
 	],
 	"settings": {
 		"files.associations": {
+			"*.yarnproject": "jsonc",
 			"raylib.h": "c",
 			"math.h": "c",
 			"blocks.h": "c",
 			"stdio.h": "c",
 			"*.m": "c",
 			"malloc.h": "c",
-			"raymath.h": "c"
+			"raymath.h": "c",
+			"array": "c",
+			"string_view": "c",
+			"initializer_list": "c"
 		}
 	}
 }

@@ -56,29 +56,6 @@ char GetCollided(GameObj_Base* A, GameObj_Base* B, Vector2* impartA, Vector2* im
 
     // THE MESSY TASK OF CALCULATING IMPARTED VELOCITIES.
 
-    // one is player
-    if((A->flags)&FLAG_PLAYER_OBJECT|(B->flags)&FLAG_PLAYER_OBJECT){
-        // player impacting somehting - not star
-        if(!((A->flags)&FLAG_GRAVITY_WELL|(B->flags)&FLAG_GRAVITY_WELL)){
-            playSoundOnce(HIT_SOUND_ID);
-        }
-    }
-
-    if ((A->flags)&FLAG_ASTEROID)
-    {
-        // printf("%s\n","A is asteroid");
-    }
-    if ((B->flags)&FLAG_ASTEROID)
-    {
-        // printf("%s\n","B is asteroid");
-    }
-
-    if ((A->flags)&(B->flags)&FLAG_ASTEROID)
-    {
-        // printf("%s\n","asteroid to asteroid collision");
-    }
-    
-
     // figure out the angles from each to each other
     Vector2 angle_A_B = Vector2Subtract(B->position, A->position);
     Vector2 angle_B_A = Vector2Subtract(A->position, B->position);
