@@ -48,6 +48,16 @@ static void setAllTracksVolume(float volume){
     SetMasterVolume(volume);
 }
 
+static void scaleAllTracksVolume(float scale) {
+    MASTER_VOLUME = MASTER_VOLUME * scale;
+    for (int i = 0; i < TRACK_COUNT; i++)
+    {
+        TRACKS[i]->scaleOfBaseVolume = TRACKS[i]->scaleOfBaseVolume * scale;
+    }
+    
+    SetMasterVolume(MASTER_VOLUME);
+}
+
 static void prepareSounds(){
     TRACKS = (Sound_Track **)malloc(sizeof(Sound_Track*)*TRACK_COUNT);
 

@@ -143,7 +143,8 @@ int main()
     //--------------------------------------------------------------------------------------
 
     prepareSounds();
-    setAllTracksVolume(0.5f);
+    //setAllTracksVolume(0.5f);
+    scaleAllTracksVolume(0.5f);
     startSounds();
 
     _MainMenu_Init();
@@ -218,4 +219,6 @@ static void generateObjects()
     AddToPool(CreateParticleObject());
 
     AddToPool(CreateGameManager());
+
+    //AddToPool(CreateExampleObject());
 }
