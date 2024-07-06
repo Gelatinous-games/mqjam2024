@@ -370,11 +370,6 @@ float GetPlayerHullPercentage(){
 
 }
 
-Vector2 GetRandomUnitVector(){
-    float angle = FLOAT_RAND*360.0;
-    return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
-}
-
 Color GetHullParticleColor(){
     int diceRoll = (INT_RAND%4);
     switch (diceRoll) {
@@ -408,7 +403,11 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
     // }
 }
 
-
+// returns 0 when dead
+//  non zero otherwise, which is treated as true
+int IsPlayerAlive(){
+    return CURRENT_PLAYER_LIFE_STATE;
+}
 
 
 

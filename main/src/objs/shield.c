@@ -11,7 +11,6 @@
 #define SHIELD_DATA ((ShieldObject_Data *)(THIS->data_struct))
 
 
-
 // ------------------------------------------------------------
 // ------------------------------------------------------------
 
@@ -48,6 +47,10 @@ int _ShieldObject_Destroy(void* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
+    // delete the list
+    free(SHIELD_DATA->particleDataList);
+
+
     // free our data struct here. free anything contained.
     // free(SHIELD_DATA->sprite);
     free(SHIELD_DATA);
@@ -63,18 +66,21 @@ int _ShieldObject_Init(void* self, float DeltaTime) {
 
     THIS->data_struct = malloc(sizeof(ShieldObject_Data)); 
 
-
-
     SHIELD_DATA->shieldHealth = 0.0f; // start none
     SHIELD_DATA->shieldRegenerationRate = SHIELD_REGEN_BASE_RATE;
 
     SHIELD_DATA->deltaTimeSinceLastImpact=0.0f;
     SHIELD_DATA->timeSinceLastShieldParticle = 0.0f;
 
-    SHIELD_DATA->shieldMaxPull = 20.0f;
-    SHIELD_DATA->shieldMaxRange = 10.0f;
-    SHIELD_DATA->shieldMinRange = 0.5f;
+    SHIELD_DATA->shieldRadius = 0.5f;
 
+    // make the list of particles
+    int maximumPossibleParticles = (int)(roundf(SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA * SHIELD_PARTICLE_LIFE_MAX));
+    // for later on
+    SHIELD_DATA->maximumShieldParticles = maximumPossibleParticles;
+
+    // init the list
+    SHIELD_DATA->particleDataList = (ShieldParticle_Data **)malloc(maximumPossibleParticles * (sizeof(ShieldParticle_Data *)));
 
     return 0;
 }
@@ -111,7 +117,6 @@ void _ShieldObject_MirrorPlayer(void *self, float DeltaTime){
     // ...
     THIS->position = PLAYER_OBJECT_REF->position;
     THIS->size = PLAYER_OBJECT_REF->size;
-    
 }
 
 
@@ -127,7 +132,7 @@ void _ShieldObject_updateShieldHealth(void *self, float DeltaTime){
 
     // not max shields
     //  also been long enough since last impact
-    if(_ShieldObject_GetPlayerShieldPercentage() < 1.0f && (SHIELD_DATA->deltaTimeSinceLastImpact >= SHIELD_REGEN_TIMEOUT_DELTATIME)){
+    if(_ShieldObject_GetPlayerShieldPercentage() < 1.0f && (SHIELD_DATA->deltaTimeSinceLastImpact >= SHIELD_REGEN_TIMEOUT_DELTATIME) && IsPlayerAlive()){
         // if we're needing to regen shields
         (SHIELD_DATA->shieldHealth) += (SHIELD_DATA->shieldRegenerationRate)*DeltaTime;
     }
@@ -152,31 +157,45 @@ void _ShieldObject_emitShieldParticle(void *self, float DeltaTime){
     // reset particle emission timer
     SHIELD_DATA->timeSinceLastShieldParticle = 0.0f;
 
-    // BUG: use the new code that takes pointer to update function
-
-    // pick a palette of 4
-    Color rolledShieldParticleColour = _ShieldObject_GetShieldParticleColor();
-    Vector2 direction = GetRandomUnitVector();
-
+    // build the data and give it to the particle for use
+    ShieldParticle_Data tempParticleData = (ShieldParticle_Data){
+        // spawn at a random point on the circle
+        Vector2Scale(GetRandomUnitVector(), SHIELD_DATA_GLOBAL_ACCESS->shieldRadius),
+        // rotates degrees per second
+        Lerp(SHIELD_PARTICLE_ORBIT_RATE_MIN, SHIELD_PARTICLE_ORBIT_RATE_MAX, FLOAT_RAND)
+    };
+    
     // spawn a particle
-    int shieldParticleID = SpawnParticle(
+    SpawnParticleEX(
+        // v-- pos --v
         THIS->position,
-        direction,
+        // v-- vel --v
         Vector2Zero(),
-        Vector2Scale(Vector2One(), FLOAT_RAND * .25),
-        (FLOAT_RAND * 1.75) + .25,
-        rolledShieldParticleColour,
-        1
+        // v-- acc --v
+        Vector2Zero(), 
+        // v-- size --v
+        Vector2Scale(
+            Vector2One(),
+            Lerp(SHIELD_PARTICLE_SCALE_MIN, SHIELD_PARTICLE_SCALE_MAX, FLOAT_RAND)
+        ),
+        // v-- lifetime --v
+        Lerp(
+            SHIELD_PARTICLE_LIFE_MIN,
+            SHIELD_PARTICLE_LIFE_MAX,
+            FLOAT_RAND
+        ),
+        // v-- color --v
+        _ShieldObject_GetShieldParticleColor(),
+        // v-- do outline --v
+        true,
+        // v-- do fadeout --v
+        true,
+        // v-- func_ptr --v
+        _ShieldParticle_Update,
+        // v-- func_data --v
+        _ShieldParticle_constructData( tempParticleData ) 
+        // --- -------- ---
     );
-    // find the particle
-    _Particle *emittedParticleObject = GetParticle(shieldParticleID);
-
-    // TODO: change to shield layer???
-
-    // give the particle the function pointer some how
-
-    emittedParticleObject->func = true;
-    emittedParticleObject->func_ptr = _ShieldParticle_Update;
 }
 
 
@@ -245,70 +264,39 @@ float _ShieldObject_TakeDamage(float rawDamage){
 
 
 int _ShieldParticle_Update(void *self, float DeltaTime){
+    // to access the particle
     _Particle *particleObj = ((_Particle *)self);
 
+    // to access the data
+    ShieldParticle_Data *currentShieldParticleData = (ShieldParticle_Data *)(particleObj->func_data);
 
-    
+    // generate how much it rotates
+    float rotationAmount = (currentShieldParticleData->orbitRotationSpeed) * DeltaTime;
 
-    Vector2 vectorTowardsPlayer = Vector2Subtract(SHIELD_OBJECT_REF->position, particleObj->position);
-    // get the accel
-    Vector2 particleAcceleration = _ShieldParticle_GetShieldParticleAccelerationToPlayer(particleObj);
-    // and dist
-    float distanceToParticle = Vector2Length(vectorTowardsPlayer);
+    // rotate it by the angle 
+    currentShieldParticleData->orbitCurrentVector = Vector2Rotate(currentShieldParticleData->orbitCurrentVector, rotationAmount);
 
-    // repel if we're less than minimum range
-    float minShieldRange = SHIELD_DATA_GLOBAL_ACCESS->shieldMinRange;
-    if( distanceToParticle <  minShieldRange){
-        // when we're closer than minimum, we want to leave the area
-        float percentageOfInnerDistance = 1.0f-(distanceToParticle/minShieldRange);
-        // inverse the acceleration to repel
-        Vector2 newAccel = Vector2Negate(Vector2Scale(particleAcceleration, percentageOfInnerDistance));
-        // randomly rotate the acceleration vector
-        float rotationCone = 90.0f;
-        float randomRotation = FLOAT_RAND*(rotationCone-(rotationCone/2.0f));
-        Vector2 rotatedAccel = Vector2Rotate(newAccel,randomRotation);
-        // check which is pointing more perpendicular to the direction of the player
-        //  we want the one that's closest to 0 to be perpendicular
-        float repelPerpendicularityToVectorToPlayer = fabsf(Vector2DotProduct(vectorTowardsPlayer, newAccel));
-        float rotatedPerpendicularityToVectorToPlayer = fabsf(Vector2DotProduct(vectorTowardsPlayer, rotatedAccel));
-
-        if(repelPerpendicularityToVectorToPlayer<=rotatedPerpendicularityToVectorToPlayer){
-            // but also make it less effective the less it's perpendicular
-            particleAcceleration = Vector2Scale(newAccel, 1.0f-repelPerpendicularityToVectorToPlayer);
-        }
-        else {
-            // but also make it less effective the less it's perpendicular
-            particleAcceleration = Vector2Scale(rotatedAccel, 1.0f-rotatedPerpendicularityToVectorToPlayer);
-        }
-        
-    }
+    // make the position be the shield position offset by the vector
+    particleObj->position = Vector2Add(SHIELD_OBJECT_REF->position, currentShieldParticleData->orbitCurrentVector);
     
-    // apply to particle
-    particleObj->acceleration = particleAcceleration;
-    
-    // but also get perpendicular
-    // but also quick apply it to get the over correction
-    particleObj->velocity = Vector2Add(particleObj->velocity, Vector2Scale(particleAcceleration, DeltaTime));
-    
+    // successful?
     return 0;
 }
 
-// chopped up version of the star gravity interaction
-Vector2 _ShieldParticle_GetShieldParticleAccelerationToPlayer(_Particle *particleObj){
 
-    float dist = Vector2Distance(SHIELD_OBJECT_REF->position, particleObj->position);
 
-    if (dist > (SHIELD_DATA_GLOBAL_ACCESS->shieldMaxRange)) return Vector2Zero();
-
-    float delta = dist/(SHIELD_DATA_GLOBAL_ACCESS->shieldMaxRange);
-    delta = 1-delta; // inverse it to get 1 when closest.
-    delta = delta * delta; // square it to get it reducing furher away
-
-    Vector2 ang = Vector2Subtract(SHIELD_OBJECT_REF->position, particleObj->position);
-    ang = Vector2Normalize(ang);
-    ang = Vector2Scale(ang, delta * (SHIELD_DATA_GLOBAL_ACCESS->shieldMaxPull) );
-
-    return ang;
+ShieldParticle_Data *_ShieldParticle_constructData( ShieldParticle_Data tempData ){
+    // generate the data
+    (SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ]) = (ShieldParticle_Data *)malloc(sizeof(ShieldParticle_Data));
+    // local ref to it
+    ShieldParticle_Data *usingParticleData = SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ];
+    // prepare the indexer for the next one 
+    //  cycle it so we go back to the beginning as well
+    (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) = (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex)%(SHIELD_DATA_GLOBAL_ACCESS->maximumShieldParticles);
+    
+    // copy the information in
+    usingParticleData->orbitCurrentVector = (Vector2){ tempData.orbitCurrentVector.x, tempData.orbitCurrentVector.y };
+    usingParticleData->orbitRotationSpeed = tempData.orbitRotationSpeed;
+    // give it to them
+    return usingParticleData;
 }
-
-

@@ -97,12 +97,12 @@ int _HealthBar_Init(void* self, float DeltaTime) {
 
     HEALTHBAR_DATA->currentHealthBarIndex = HEALTHBAR_GASLEVEL_SPRITE_COUNT-1;
 
+    THIS->size.x = HEALTHBAR_FRAME_SPRITE->tex.width;
+    THIS->size.y = HEALTHBAR_FRAME_SPRITE->tex.height;
 
     THIS->position.x = WINDOW_WIDTH/2;
-    THIS->position.y = WINDOW_HEIGHT-(CURRENT_HEALTH_SPRITE->tex.height);
+    THIS->position.y = WINDOW_HEIGHT-(THIS->size.y);
 
-    THIS->size.x = 256.0f;
-    THIS->size.y = 128.0f;
 
     return 0;
 }
@@ -156,7 +156,7 @@ int _HealthBar_Draw(void* self, float DeltaTime) {
     HEALTHBAR_FRAME_SPRITE->origin = Vector2Scale(THIS->size, 0.5);
 
     // frame tinter
-    Color frameTint = WHITE;
+    Color frameTint = ALIVE_HEALTHBAR_FRAME_TINT;
     if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) frameTint = DEATH_HEALTHBAR_FRAME_TINT;
 
     DrawTexturePro(HEALTHBAR_FRAME_SPRITE->tex, HEALTHBAR_FRAME_SPRITE->src, HEALTHBAR_FRAME_SPRITE->dst, HEALTHBAR_FRAME_SPRITE->origin, 0, frameTint);

@@ -31,6 +31,12 @@ const static int WINDOW_HEIGHT = 768;
 
 
 
+#define SHIELD_PARTICLE_SCALE_MIN 0.15f
+#define SHIELD_PARTICLE_SCALE_MAX 0.35f
+#define SHIELD_PARTICLE_LIFE_MIN 0.25f
+#define SHIELD_PARTICLE_LIFE_MAX 1.5f
+#define SHIELD_PARTICLE_ORBIT_RATE_MIN 12
+#define SHIELD_PARTICLE_ORBIT_RATE_MAX 35
 #define SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA 40
 
 
@@ -50,7 +56,8 @@ const static int WINDOW_HEIGHT = 768;
 #define SHIELD_PARTICLE_COLOUR_3 (Color){  25,  66, 219, 127 }
 
 
-#define DEATH_HEALTHBAR_FRAME_TINT (Color){150,100,100,127}
+#define ALIVE_HEALTHBAR_FRAME_TINT (Color){255,255,255,127}
+#define DEATH_HEALTHBAR_FRAME_TINT (Color){150,100,100,75}
 #define DEATH_HEALTHBAR_OVERLAY_TINT (Color){255,255,255,127}
 
 
@@ -97,6 +104,9 @@ static GameObj_Base *STAR_OBJECT_REF;
 
 
 unsigned long long currMillis();
+Vector2 GetRandomUnitVector();
+
+
 
 
 #define THIS ((GameObj_Base *)self)
@@ -105,7 +115,7 @@ unsigned long long currMillis();
 #define INT_RAND (int)(random())
 #define FLOAT_RAND ((float)(random()) / (float)RAND_MAX)
 #define CHAR_RAND ((char)(random() & 0xff))
-#define GAME_TIME 0
+#define GAME_TIME currMillis()
 // #define GAME_TIME GetSystemTime( &systemTime )
 #else
 // windows randoming
@@ -128,4 +138,9 @@ unsigned long long currMillis(){
         (unsigned long long)(timeVal.tv_usec) / 1000;
     
     return millisecondsSinceEpoch;
+}
+
+Vector2 GetRandomUnitVector(){
+    float angle = FLOAT_RAND*360.0;
+    return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
 }

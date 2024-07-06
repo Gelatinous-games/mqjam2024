@@ -10,6 +10,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "player.h"
 
 
 #ifndef _camera
@@ -35,6 +36,11 @@
 
 
 
+typedef struct {
+    Vector2 orbitCurrentVector;
+    float orbitRotationSpeed;
+} ShieldParticle_Data;
+
 // instance fields
 typedef struct {
     float deltaTimeSinceLastImpact;
@@ -43,9 +49,12 @@ typedef struct {
     float shieldRegenerationRate;
     
     float timeSinceLastShieldParticle;
-    float shieldMinRange;
-    float shieldMaxRange;
-    float shieldMaxPull;
+    float shieldRadius;
+
+    int maximumShieldParticles;
+    ShieldParticle_Data **particleDataList;
+    int nextParticleDataIndex;
+
 
 } ShieldObject_Data;
 
@@ -64,7 +73,6 @@ int _ShieldObject_Draw(void* self, float DeltaTime);
 // specialised instance methods
 void _ShieldObject_MirrorPlayer(void *self, float DeltaTime);
 
-// TODO: have this referenced by update health
 void _ShieldObject_handlePlayerDeath(void *self, float DeltaTime);
 void _ShieldObject_updateShieldHealth(void *self, float DeltaTime);
 
@@ -80,4 +88,5 @@ float _ShieldObject_TakeDamage(float rawDamage);
 
 
 int _ShieldParticle_Update(void *self, float DeltaTime);
-Vector2 _ShieldParticle_GetShieldParticleAccelerationToPlayer(_Particle *particleObj);
+
+ShieldParticle_Data *_ShieldParticle_constructData( ShieldParticle_Data tempData );
