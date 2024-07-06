@@ -42,7 +42,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     // How far the player travels before it gets harder
     DATA->spawnDistance = 100;
 
-    DATA->starCount = 1;
+    DATA->starCount = 0;
     DATA->asteroidCount = 1;
 
     PLAYER_OBJECT_REF = CreatePlayer();
@@ -53,7 +53,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     AddToPool(SHIELD_OBJECT_REF);
 
     AddToPool(CreateAsteroid());
-    AddToPool(CreateStarObject());
+    // AddToPool(CreateStarObject());
     AddToPool(CreateHealthBar());
 
      // Wormhole Object
