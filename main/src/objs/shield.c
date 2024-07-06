@@ -271,43 +271,66 @@ float _ShieldObject_TakeDamage(float rawDamage){
 
 
 int _ShieldParticle_Update(void *self, float DeltaTime){
+
     // to access the particle
     _Particle *particleObj = ((_Particle *)self);
 
-    // to access the data
-    ShieldParticle_Data *currentShieldParticleData = (ShieldParticle_Data *)(particleObj->func_data);
+    if(particleObj){
+        // ...
+        printf("%s\n","has it");
+        if(particleObj->func_data){
+            // ..
+            // to access the data
+            ShieldParticle_Data *currentShieldParticleData = (ShieldParticle_Data *)(particleObj->func_data);
 
-    // generate how much it rotates
-    float rotationAmount = (currentShieldParticleData->orbitRotationSpeed) * DeltaTime;
+            // generate how much it rotates
+            float rotationAmount = (currentShieldParticleData->orbitRotationSpeed) * DeltaTime;
 
-    // rotate it by the angle 
-    currentShieldParticleData->orbitCurrentVector = Vector2Rotate(currentShieldParticleData->orbitCurrentVector, rotationAmount);
+            // rotate it by the angle 
+            currentShieldParticleData->orbitCurrentVector = Vector2Rotate(currentShieldParticleData->orbitCurrentVector, rotationAmount);
 
-    // make the position be the shield position offset by the vector
-    particleObj->position = Vector2Add(SHIELD_OBJECT_REF->position, currentShieldParticleData->orbitCurrentVector);
+            // make the position be the shield position offset by the vector
+            particleObj->position = Vector2Add(SHIELD_OBJECT_REF->position, currentShieldParticleData->orbitCurrentVector);
+
+            // successful?
+            return 0;
+        }
+        else {
+            printf("%s\n","none data");
+            return -1;
+        }
+    }
+    else{
+        printf("%s\n","none obj");
+        return -1;
+    }
     
-    // successful?
-    return 0;
 }
 
 
 
 ShieldParticle_Data *_ShieldParticle_constructData( Vector2 randomVec, float rotationSpeed ){
-    ShieldParticle_Data tempData = (ShieldParticle_Data){
-        randomVec,
-        rotationSpeed
-    };
-    // generate the data
-    (SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ]) = (ShieldParticle_Data *)malloc(sizeof(ShieldParticle_Data));
-    // local ref to it
-    ShieldParticle_Data *usingParticleData = SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ];
-    // prepare the indexer for the next one 
-    //  cycle it so we go back to the beginning as well
-    (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) = (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex)%(SHIELD_DATA_GLOBAL_ACCESS->maximumShieldParticles);
-    
-    // copy the information in
-    usingParticleData->orbitCurrentVector = (Vector2){ tempData.orbitCurrentVector.x, tempData.orbitCurrentVector.y };
-    usingParticleData->orbitRotationSpeed = tempData.orbitRotationSpeed;
-    // give it to them
-    return usingParticleData;
+    if(SHIELD_DATA_GLOBAL_ACCESS->particleDataList){
+        // ...
+        ShieldParticle_Data tempData = (ShieldParticle_Data){
+            randomVec,
+            rotationSpeed
+        };
+        // generate the data
+        (SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ]) = (ShieldParticle_Data *)malloc(sizeof(ShieldParticle_Data));
+        // local ref to it
+        ShieldParticle_Data *usingParticleData = SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ];
+        // prepare the indexer for the next one 
+        //  cycle it so we go back to the beginning as well
+        (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) = (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex)%(SHIELD_DATA_GLOBAL_ACCESS->maximumShieldParticles);
+        
+        // copy the information in
+        usingParticleData->orbitCurrentVector = (Vector2){ tempData.orbitCurrentVector.x, tempData.orbitCurrentVector.y };
+        usingParticleData->orbitRotationSpeed = tempData.orbitRotationSpeed;
+        // give it to them
+        return usingParticleData;
+    }
+    else {
+        return NULL;
+    }
 }

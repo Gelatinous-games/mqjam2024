@@ -77,7 +77,10 @@ int _ParticleObject_Update(void* self, float DeltaTime) {
         particle.color.a = (unsigned char)((float)particle.oAlpha * (particle.timeout / particle.maxTime));
 
         if (particle.func) {
-            particle.func_ptr(&particle, DeltaTime);
+            int updateReturn = particle.func_ptr(&particle, DeltaTime);
+            if(updateReturn == -1){
+                perror("BAD PARTICLE UPDATE");
+            }
         }
 
         if (particle.timeout <= 0) {
