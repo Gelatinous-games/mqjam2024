@@ -89,7 +89,7 @@ int _ShieldObject_Init(void* self, float DeltaTime) {
 
     SHIELD_DATA->shieldRadius = 0.5f;
 
-
+    SHIELD_DATA->nextParticleDataIndex = 0;     
 
     return 0;
 }
@@ -107,7 +107,7 @@ int _ShieldObject_Update(void* self, float DeltaTime) {
 
 
     _ShieldObject_handleShieldEffect(self, DeltaTime);
-
+    
     return 0;
 }
 
@@ -271,7 +271,6 @@ float _ShieldObject_TakeDamage(float rawDamage){
 
 
 int _ShieldParticle_Update(void *self, float DeltaTime){
-
     // to access the particle
     _Particle *particleObj = ((_Particle *)self);
 
@@ -317,12 +316,17 @@ ShieldParticle_Data *_ShieldParticle_constructData( Vector2 randomVec, float rot
             rotationSpeed
         };
         // generate the data
-        (SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ]) = (ShieldParticle_Data *)malloc(sizeof(ShieldParticle_Data));
+        //(SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ]) = (ShieldParticle_Data *)malloc(sizeof(ShieldParticle_Data));
+        int idx = (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex);
+        // generate the data
+        
+        (SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ idx ]) = (ShieldParticle_Data *)malloc(sizeof(ShieldParticle_Data));
         // local ref to it
         ShieldParticle_Data *usingParticleData = SHIELD_DATA_GLOBAL_ACCESS->particleDataList[ (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) ];
         // prepare the indexer for the next one 
         //  cycle it so we go back to the beginning as well
-        (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) = (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex)%(SHIELD_DATA_GLOBAL_ACCESS->maximumShieldParticles);
+       
+        (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex) = (SHIELD_DATA_GLOBAL_ACCESS->nextParticleDataIndex+1)%(SHIELD_DATA_GLOBAL_ACCESS->maximumShieldParticles);
         
         // copy the information in
         usingParticleData->orbitCurrentVector = (Vector2){ tempData.orbitCurrentVector.x, tempData.orbitCurrentVector.y };
