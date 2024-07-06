@@ -125,7 +125,7 @@ void _DeathMenu_ScheduleRestartGame(){
     //...
     // ...
     NEXT_FRAME_GAME_STARTS = 1;
-    // __GAMEMANAGER_REF->awaitDestroy = 1;
+    __GAMEMANAGER_REF->awaitDestroy = 1;
 }
 
 
