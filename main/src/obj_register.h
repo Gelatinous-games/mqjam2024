@@ -12,6 +12,7 @@ enum OBJECT_FLAG {
     FLAG_PARTICLE = 64,
     FLAG_BACKGROUND = 128,
     FLAG_WORMHOLE = 256,
+    FLAG_MANAGER = 512
 };
 
 enum LAYER_ID {
@@ -74,3 +75,4 @@ GameObj_Base* CreateParticleObject();
 GameObj_Base* CreatePlanet();
 GameObj_Base* CreateStarObject();
 GameObj_Base* CreateWormhole();
+GameObj_Base* CreateGameManager();
