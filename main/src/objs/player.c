@@ -16,6 +16,9 @@ int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
+
+    PLAYER_DATA->deltaTimeSinceLastDeathParticle = 0.0f;
+
     setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
@@ -27,6 +30,7 @@ int _Player_Init(void* self, float DeltaTime) {
 int _Player_Update(void* self, float DeltaTime) {
     // INCREASE TIMER SINCE LAST IMPACT
     PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
+    PLAYER_DATA->deltaTimeSinceLastDeathParticle += DeltaTime;
 
     // ================
 
@@ -43,6 +47,8 @@ int _Player_Update(void* self, float DeltaTime) {
     handleCameraRelativity(self, DeltaTime);
 
     updateHealth(self, DeltaTime);
+
+    UndeadEffects(self, DeltaTime);
 
     return 0;
 }
@@ -394,6 +400,14 @@ Color GetImpactParticleColor(){
     return GetHullParticleColor();
 }
 
+
+Color GetDeathParticleColor(){
+    // 
+    return DARKGRAY;
+}
+
+
+
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate){
     // TODO: shake the health bar
 
@@ -430,6 +444,25 @@ void HandlePlayerDeath(float DeltaTime){
     PlayDeathSound();
 
     _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
+
+}
+
+void UndeadEffects(void *self, float DeltaTime){
+    // ...
+
+    if( !IsPlayerAlive() && (PLAYER_DATA->deltaTimeSinceLastDeathParticle >= (1.0f/DEATH_PARTICLE_RATE))){
+        // ...
+        Color colourVal = GetDeathParticleColor();
+        SpawnParticle(
+            THIS->position,
+            Vector2Scale( GetRandomUnitVector(), Lerp(0.5f, 3.0f, FLOAT_RAND) ),
+            Vector2Scale( GetRandomUnitVector(), Lerp(0.5f, 9.8f, FLOAT_RAND) ),
+            Vector2Scale( Vector2One(), Lerp(0.1f, 0.8f, FLOAT_RAND) ),
+            Lerp(1.0f, 4.5f, FLOAT_RAND),
+            colourVal,
+            1
+        );
+    }
 
 }
 

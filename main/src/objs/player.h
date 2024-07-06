@@ -48,6 +48,10 @@ typedef struct {
 
 
     float deltaTimeSinceLastImpact;
+
+
+
+    float deltaTimeSinceLastDeathParticle;
 } Player_Data;
 
 
@@ -78,6 +82,7 @@ float GetPlayerHullPercentage();
 
 Color GetHullParticleColor();
 Color GetImpactParticleColor();
+Color GetDeathParticleColor();
 
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate);
 
@@ -85,3 +90,6 @@ int IsPlayerAlive();
 
 
 void HandlePlayerDeath(float DeltaTime);
+
+void UndeadEffects(void *self, float DeltaTime);
+
