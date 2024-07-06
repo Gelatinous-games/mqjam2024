@@ -259,50 +259,6 @@ static void generateObjects()
     AddToPool(CreateParticleObject());
 
     AddToPool(CreateTitleManager());
-
-    // // Shield object
-    // SHIELD_OBJECT_REF = CreateShieldObject();
-    // AddToPool(SHIELD_OBJECT_REF);
-
-    // // Asteroid object.
-    // // TODO: succeed with an asteroid handler that can scale up & down asteroids.
-    // // Decide upon some criteria for how asteroid handler should work - should it control the scene?
-    // // Place stars and other elements down?
-    // ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_ASTEROIDS);
-    // for (int i = 0; i < NUMBER_OF_ASTEROIDS; i++)
-    // {
-    //     /* code */
-    //     ASTEROID_REF_LIST[i] = CreateAsteroid();
-    //     AddToPool(ASTEROID_REF_LIST[i]);
-    // }
-
-    // // Background Object
-    // BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    // BACKGROUND_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    // for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
-    // {
-    //     /* code */
-    //     // Background Stars 3 layers
-    //     BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
-    //     AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
-
-    //     // Background sprites 3 layers, Small/Medium/Large
-    //     BACKGROUND_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
-    //     AddToPool(BACKGROUND_OBJECT_REF_LIST[i]);
-    // }
-
-    // AddToPool(CreateHealthBar());
-
-    // // Wormhole Object
-    // WORMHOLE_OBJECT_REF = CreateWormhole();
-    // AddToPool(WORMHOLE_OBJECT_REF);
-
-    // // Planet Object
-    // PLANET_OBJECT_REF = CreatePlanet();
-    // AddToPool(PLANET_OBJECT_REF);
-
-    // // Star Object
-    // STAR_OBJECT_REF = CreateStarObject();
-    // AddToPool(STAR_OBJECT_REF);
+   
     // AddToPool(CreateExampleObject());
 }

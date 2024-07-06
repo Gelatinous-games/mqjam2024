@@ -163,11 +163,18 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
 {
     // free our data struct here. free anything contained.
     UnloadRandomSequence(BACKGROUNDSTARS_DATA->listOfStarsPosistion);
-    for (int i = 0; i < BACKGROUNDSTARS_DATA->numberOfStars; ++i)
-    {
-        free(BACKGROUNDSTARS_POOL[i]);
+    if (BACKGROUNDSTARS_POOL) {
+        for (int i = 0; i < BACKGROUNDSTARS_DATA->numberOfStars; ++i)
+        {
+            BackgroundStar_Data* obj = BACKGROUNDSTARS_POOL[i];
+            if (obj)
+               free(obj);
+            BACKGROUNDSTARS_POOL[i] = 0;
+        }
+    
+        free(BACKGROUNDSTARS_POOL);
+        BACKGROUNDSTARS_POOL = 0;
     }
-    free(BACKGROUNDSTARS_POOL);
     free(BACKGROUNDSTARS_DATA);
 
     return 0;
