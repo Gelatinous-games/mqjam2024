@@ -36,10 +36,18 @@
 
 // project header includes
 #include "src/settings.h"
-#include "src/base.h"
 #include "src/sound.h"
+
+
+#include "src/base.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
+
+
+#ifndef _mainmenu
+#define _mainmenu
+#include "mainmenu.c"
+#endif
 
 #ifndef _player
 #define _player
@@ -95,12 +103,21 @@
 #include "src/healthbar.c"
 #endif
 
+
+
+
+
+
 static void UpdateDrawFrame(void); // Update and draw one frame
 
 // let C know this exists
 static void generateObjects();
 static void prepareSounds();
 static void cleanupSounds();
+
+static int GameShouldRender(){
+    return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
+}
 
 int main()
 {
@@ -127,6 +144,8 @@ int main()
     setAllTracksVolume(0.5f);
     startSounds();
 
+    _MainMenu_Init();
+
     generateObjects();
 
     ProcessFreshAdd();
@@ -141,6 +160,9 @@ int main()
     // printf("%s\n",">> main() :: emscripten");
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
+
+
+    _MainMenu_Cleanup();
 
     cleanupSounds();
 
@@ -160,19 +182,30 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
+    // grab it
     float DeltaTime = GetFrameTime();
-    ProcessAllUpdates(DeltaTime);
-    soundUpdate();
+    // check for render
+    if(GameShouldRender()){
+        ProcessAllUpdates(DeltaTime);
+        soundUpdate();
 
-    UpdateCamera3D();
-    BeginDrawing();
-    ClearBackground(BLACK);
-    ProcessAllDraws(DeltaTime);
-    drawTimer();
-    EndDrawing();
+        UpdateCamera3D();
+        BeginDrawing();
+        ClearBackground(BLACK);
+        ProcessAllDraws(DeltaTime);
+        drawTimer();
+        EndDrawing();
 
-    ProcessFreshAdd();
-    ProcessAllDestroys();
+        ProcessFreshAdd();
+        ProcessAllDestroys();
+    }
+    // handle menus
+    else {
+        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
+            _MainMenu_Update(DeltaTime);
+            _MainMenu_Draw();
+        }
+    }
 }
 
 /// @brief Generates all objects for initial gamestate.

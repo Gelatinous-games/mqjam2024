@@ -13,6 +13,15 @@ const static int WINDOW_WIDTH = 1366;
 const static int WINDOW_HEIGHT = 768;
 
 
+enum GAME_SCENE_STATE {
+    GAME_SCENE_STATE_MAINMENU = 0,
+    GAME_SCENE_STATE_INGAME = 1
+};
+
+// static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
+// skip till it's implemented
+static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+
 
 #define CAMERA_COAST_SPEED 3
 
