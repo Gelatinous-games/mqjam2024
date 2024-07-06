@@ -151,32 +151,38 @@ void _ShieldObject_handleShieldEffect(void *self, float DeltaTime){
 void _ShieldObject_emitShieldParticle(void *self, float DeltaTime){
     // reset particle emission timer
     SHIELD_DATA->timeSinceLastShieldParticle = 0.0f;
-
-    // BUG: use the new code that takes pointer to update function
-
-    // pick a palette of 4
-    Color rolledShieldParticleColour = _ShieldObject_GetShieldParticleColor();
-    Vector2 direction = GetRandomUnitVector();
-
+    
     // spawn a particle
-    int shieldParticleID = SpawnParticle(
+    SpawnParticleEX(
+        // v-- pos --v
         THIS->position,
-        direction,
-        Vector2Zero(),
-        Vector2Scale(Vector2One(), FLOAT_RAND * .25),
-        (FLOAT_RAND * 1.75) + .25,
-        rolledShieldParticleColour,
-        1
+        // v-- vel --v
+        GetRandomUnitVector(),
+        // v-- acc --v
+        Vector2Zero(), 
+        // v-- size --v
+        Vector2Scale(
+            Vector2One(),
+            Lerp(SHIELD_PARTICLE_SCALE_MIN, SHIELD_PARTICLE_SCALE_MAX, FLOAT_RAND)
+        ),
+        // v-- lifetime --v
+        Lerp(
+            SHIELD_PARTICLE_LIFE_MIN,
+            SHIELD_PARTICLE_LIFE_MAX,
+            FLOAT_RAND
+        ),
+        // v-- color --v
+        _ShieldObject_GetShieldParticleColor(),
+        // v-- do outline --v
+        true,
+        // v-- do fadeout --v
+        true,
+        // v-- func_ptr --v
+        _ShieldParticle_Update,
+        // v-- func_data --v
+        NULL 
+        // --- -------- ---
     );
-    // find the particle
-    _Particle *emittedParticleObject = GetParticle(shieldParticleID);
-
-    // TODO: change to shield layer???
-
-    // give the particle the function pointer some how
-
-    emittedParticleObject->func = true;
-    emittedParticleObject->func_ptr = _ShieldParticle_Update;
 }
 
 
