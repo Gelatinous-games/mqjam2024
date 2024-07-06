@@ -49,7 +49,8 @@ int _Player_Update(void* self, float DeltaTime) {
 }
 
 int _Player_Draw(void* self, float DeltaTime) {
-    RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+    if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
+        RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
     return 0;
 }
@@ -338,7 +339,27 @@ void updateHealth(void *self, float DeltaTime){
         CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
 
         _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
-    }
+
+        // create a scatter of particles
+
+        for (int i = 0; i < 16; i++) {
+            Color col;
+            int rng = FLOAT_RAND * 3;
+            switch (rng) {
+                case 0: col = (Color) {132,132,132,127};
+                break;
+                case 2: col = (Color) {200,200,200,127};
+                break;
+                case 1: col = (Color) {75,75,75,127};
+                break;
+            }
+
+                SpawnParticle(
+                    Vector2Add(THIS->position, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
+                    Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
+                    Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
+            }
+        }
     // otherwise handle regens
     else {
         // HANDLE THE STATE
