@@ -72,9 +72,7 @@ int _ShieldObject_Init(void* self, float DeltaTime) {
     SHIELD_DATA->deltaTimeSinceLastImpact=0.0f;
     SHIELD_DATA->timeSinceLastShieldParticle = 0.0f;
 
-    SHIELD_DATA->shieldMaxPull = 20.0f;
-    SHIELD_DATA->shieldMaxRange = 10.0f;
-    SHIELD_DATA->shieldMinRange = 0.5f;
+    SHIELD_DATA->shieldRadius = 0.5f;
 
     // make the list of particles
     int maximumPossibleParticles = (int)(roundf(SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA * SHIELD_PARTICLE_LIFE_MAX));
@@ -162,9 +160,9 @@ void _ShieldObject_emitShieldParticle(void *self, float DeltaTime){
     // build the data and give it to the particle for use
     ShieldParticle_Data tempParticleData = (ShieldParticle_Data){
         // spawn at a random point on the circle
-        Vector2Scale(GetRandomUnitVector(), SHIELD_DATA_GLOBAL_ACCESS->shieldMinRange),
-        // rotates 30 degrees per second
-        30.0f
+        Vector2Scale(GetRandomUnitVector(), SHIELD_DATA_GLOBAL_ACCESS->shieldRadius),
+        // rotates degrees per second
+        Lerp(SHIELD_PARTICLE_ORBIT_RATE_MIN, SHIELD_PARTICLE_ORBIT_RATE_MAX, FLOAT_RAND)
     };
     
     // spawn a particle

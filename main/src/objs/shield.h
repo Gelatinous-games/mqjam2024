@@ -48,9 +48,7 @@ typedef struct {
     float shieldRegenerationRate;
     
     float timeSinceLastShieldParticle;
-    float shieldMinRange;
-    float shieldMaxRange;
-    float shieldMaxPull;
+    float shieldRadius;
 
     int maximumShieldParticles;
     ShieldParticle_Data **particleDataList;
