@@ -67,17 +67,29 @@ const static int WINDOW_HEIGHT = 768;
 
 
 
-const static int NUMBER_OF_ASTEROIDS = 4;
-static GameObj_Base **ASTEROID_REF_LIST;
 
 
 struct timeval timerStart;
 
+
+#define SHIELD_DATA_GLOBAL_ACCESS ((ShieldObject_Data *)SHIELD_OBJECT_REF->data_struct)
+static GameObj_Base *SHIELD_OBJECT_REF;
+
+
+#define PLAYER_DATA_GLOBAL_ACCESS ((Player_Data *)PLAYER_OBJECT_REF->data_struct)
 static GameObj_Base *PLAYER_OBJECT_REF;
 
+
+
 static GameObj_Base *BACKGROUND_OBJECT_REF;
+
 const static int NUMBER_OF_BACKGROUNDSTARS_LAYERS = 3;
 static GameObj_Base **BACKGROUNDSTARS_EFFECT_REF_LIST;
+
+
+
+const static int NUMBER_OF_ASTEROIDS = 4;
+static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *WORMHOLE_OBJECT_REF;
 static GameObj_Base *PLANET_OBJECT_REF;

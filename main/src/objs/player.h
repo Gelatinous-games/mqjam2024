@@ -8,6 +8,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "shield.h"
 
 #ifndef _camera
     #define _camera
@@ -45,13 +46,6 @@ typedef struct {
     float hullHealth;
     float hullRegenerationRate;
 
-    float shieldHealth;
-    float shieldRegenerationRate;
-    
-    float timeSinceLastShieldParticle;
-    float shieldMinRange;
-    float shieldMaxRange;
-    float shieldMaxPull;
 
     float deltaTimeSinceLastImpact;
 } Player_Data;
@@ -78,38 +72,31 @@ void handlePlayerMovement(void *self, float DeltaTime);
 void constrainPlayerToCamera(void *self, float DeltaTime);
 void handleCameraRelativity(void *self, float DeltaTime);
 void updateHealth(void *self, float DeltaTime);
-void handleShieldEffect(void *self, float DeltaTime);
-void emitShieldParticle(void *self, float DeltaTime);
+
+
 Vector2 GetRandomUnitVector();
-float GetPlayerShieldPercentage();
+
 float GetPlayerHullPercentage();
 
-int ParticleOrbitPlayer(void *self, float DeltaTime);
-Vector2 GetShieldParticleAccelerationToPlayer(_Particle *particleObj);
 
-Color GetShieldParticleColor();
 Color GetHullParticleColor();
 Color GetImpactParticleColor();
 
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate);
 
 int _Player_Init(void* self, float DeltaTime) {
+    PLAYER_DATA->deltaTimeSinceLastImpact=0.0f;
+
+
     PLAYER_DATA->hullHealth = MAXIMUM_HULL; // start max
     PLAYER_DATA->hullRegenerationRate = HULL_REGEN_BASE_RATE;
-    PLAYER_DATA->shieldHealth = 0.0f; // start none
-    PLAYER_DATA->shieldRegenerationRate = SHIELD_REGEN_BASE_RATE;
 
     PLAYER_DATA->headingVector = (Vector2) { 1, 0 };
     PLAYER_DATA->rotateRate = 0; // velocity for rotation. affected by rotatejerk.
     PLAYER_DATA->rotateJerk = 3; // veryy low.
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
-    PLAYER_DATA->deltaTimeSinceLastImpact=0.0f;
 
-    PLAYER_DATA->timeSinceLastShieldParticle = 0.0f;
-    PLAYER_DATA->shieldMaxPull = 20.0f;
-    PLAYER_DATA->shieldMaxRange = 10.0f;
-    PLAYER_DATA->shieldMinRange = 0.5f;
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
 
@@ -120,8 +107,6 @@ int _Player_Init(void* self, float DeltaTime) {
 int _Player_Update(void* self, float DeltaTime) {
     // INCREASE TIMER SINCE LAST IMPACT
     PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
-
-    // printf("shield DT: %f\n", PLAYER_DATA->deltaTimeSinceLastImpact);
 
     // ================
     updateThrustingSoundState(self, DeltaTime);
@@ -138,7 +123,6 @@ int _Player_Update(void* self, float DeltaTime) {
 
     updateHealth(self, DeltaTime);
 
-    handleShieldEffect(self, DeltaTime);
     return 0;
 }
 
@@ -428,16 +412,16 @@ void updateHealth(void *self, float DeltaTime){
     // when hull is gone
     if(GetPlayerHullPercentage()<=0.0f){
         CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
-        // empty out the shield health
-        PLAYER_DATA->shieldHealth = 0.0f;
+
+        _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
     }
     // otherwise handle regens
     else {
         // HANDLE THE STATE
-        if(GetPlayerShieldPercentage() < MINIMUM_SHIELD_PERCENT){
+        if(_ShieldObject_GetPlayerShieldPercentage() < MINIMUM_SHIELD_PERCENT){
             CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
         }
-        else if(GetPlayerShieldPercentage() >= MINIMUM_SHIELD_PERCENT){
+        else if(_ShieldObject_GetPlayerShieldPercentage() >= MINIMUM_SHIELD_PERCENT){
             CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISSHIELDED;
         }
 
@@ -447,12 +431,6 @@ void updateHealth(void *self, float DeltaTime){
         if(GetPlayerHullPercentage() < 1.0f){
             // just increase it by the regen rate every second
             (PLAYER_DATA->hullHealth) += (PLAYER_DATA->hullRegenerationRate)*DeltaTime;
-        }
-        // not max shields
-        //  also been long enough since last impact
-        if(GetPlayerShieldPercentage() < 1.0f && (PLAYER_DATA->deltaTimeSinceLastImpact >= SHIELD_REGEN_TIMEOUT_DELTATIME)){
-            // if we're needing to regen shields
-            (PLAYER_DATA->shieldHealth) += (PLAYER_DATA->shieldRegenerationRate)*DeltaTime;
         }
     }
 
@@ -471,157 +449,12 @@ float GetPlayerHullPercentage(){
     return currHealth / MAXIMUM_HULL;
 
 }
-float GetPlayerShieldPercentage(){
-    // health without hull health
-    float currShield = (((Player_Data *)PLAYER_OBJECT_REF->data_struct)->shieldHealth);
-    // max
-    if(currShield>=MAXIMUM_SHIELDS) return 1.0f;
-    // no shield or negative
-    if(currShield<0.0f) return 0.0f;
-    // otherwise
-    return currShield / MAXIMUM_SHIELDS;
-
-}
-
-void handleShieldEffect(void *self, float DeltaTime){
-    PLAYER_DATA->timeSinceLastShieldParticle += DeltaTime;
-
-    float emitterParticlesPerDelta = (SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA * GetPlayerShieldPercentage());
-
-    float deltaTimeToEmitParticle = 1.0f / emitterParticlesPerDelta;
-    if( PLAYER_DATA->timeSinceLastShieldParticle >= deltaTimeToEmitParticle){
-        // emit a shield particle
-        emitShieldParticle(self, DeltaTime);
-    }
-    // check based on how long since last emitting a particle?
-
-
-
-    /**
-    
-        * when the shield emitter strength is strong enough to emit a particle
-
-        * roll to see we're rolling high enough to get past shield_depletion dice check
-
-        * based on what the shield emitter strength is
-        
-        * and deltaTime long enough that we can emit a new particle
-        
-
-    */
-    // float 
-}
-void emitShieldParticle(void *self, float DeltaTime){
-    // reset timer
-    PLAYER_DATA->timeSinceLastShieldParticle = 0.0f;
-
-
-    // pick a palette of 4
-    Color rolledShieldParticleColour = GetShieldParticleColor();
-    Vector2 direction = GetRandomUnitVector();
-    // spawn a particle
-    int shieldParticleID = SpawnParticle(
-        THIS->position,
-        direction,
-        Vector2Zero(),
-        Vector2Scale(Vector2One(), FLOAT_RAND * .25),
-        (FLOAT_RAND * 1.75) + .25,
-        rolledShieldParticleColour,
-        1
-    );
-    // find the particle
-    _Particle *emittedParticleObject = GetParticle(shieldParticleID);
-
-    // TODO: change to shield layer???
-
-    // give the particle the function pointer some how
-
-    emittedParticleObject->func = true;
-    emittedParticleObject->func_ptr = ParticleOrbitPlayer;
-}
 
 Vector2 GetRandomUnitVector(){
     float angle = FLOAT_RAND*360.0;
     return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
 }
 
-int ParticleOrbitPlayer(void *self, float DeltaTime){
-    // less goofy
-    _Particle *particleObj = ((_Particle *)self);
-
-    Vector2 vectorTowardsPlayer = Vector2Subtract(PLAYER_OBJECT_REF->position, particleObj->position);
-    // get the accel
-    Vector2 particleAcceleration = GetShieldParticleAccelerationToPlayer(particleObj);
-    // and dist
-    float distanceToParticle = Vector2Length(vectorTowardsPlayer);
-
-    // repel if we're less than minimum range
-    float minShieldRange = ((Player_Data *)(PLAYER_OBJECT_REF->data_struct))->shieldMinRange;
-    if( distanceToParticle <  minShieldRange){
-        // when we're closer than minimum, we want to leave the area
-        float percentageOfInnerDistance = 1.0f-(distanceToParticle/minShieldRange);
-        // inverse the acceleration to repel
-        Vector2 newAccel = Vector2Negate(Vector2Scale(particleAcceleration, percentageOfInnerDistance));
-        // randomly rotate the acceleration vector
-        float rotationCone = 90.0f;
-        float randomRotation = FLOAT_RAND*(rotationCone-(rotationCone/2.0f));
-        Vector2 rotatedAccel = Vector2Rotate(newAccel,randomRotation);
-        // check which is pointing more perpendicular to the direction of the player
-        //  we want the one that's closest to 0 to be perpendicular
-        float repelPerpendicularityToVectorToPlayer = fabsf(Vector2DotProduct(vectorTowardsPlayer, newAccel));
-        float rotatedPerpendicularityToVectorToPlayer = fabsf(Vector2DotProduct(vectorTowardsPlayer, rotatedAccel));
-
-        if(repelPerpendicularityToVectorToPlayer<=rotatedPerpendicularityToVectorToPlayer){
-            // but also make it less effective the less it's perpendicular
-            particleAcceleration = Vector2Scale(newAccel, 1.0f-repelPerpendicularityToVectorToPlayer);
-        }
-        else {
-            // but also make it less effective the less it's perpendicular
-            particleAcceleration = Vector2Scale(rotatedAccel, 1.0f-rotatedPerpendicularityToVectorToPlayer);
-        }
-        
-    }
-    
-    // apply to particle
-    particleObj->acceleration = particleAcceleration;
-    
-    // but also get perpendicular
-    // but also quick apply it to get the over correction
-    particleObj->velocity = Vector2Add(particleObj->velocity, Vector2Scale(particleAcceleration, DeltaTime));
-    
-    return 0;
-}
-
-
-// chopped up version of the star gravity interaction
-Vector2 GetShieldParticleAccelerationToPlayer(_Particle *particleObj){
-
-    Player_Data* playerData = (Player_Data*)(PLAYER_OBJECT_REF->data_struct);
-    float dist = Vector2Distance(PLAYER_OBJECT_REF->position, particleObj->position);
-
-    if (dist > playerData->shieldMaxRange) return Vector2Zero();
-
-    float delta = dist/playerData->shieldMaxRange;
-    delta = 1-delta; // inverse it to get 1 when closest.
-    delta = delta * delta; // square it to get it reducing furher away
-
-    Vector2 ang = Vector2Subtract(PLAYER_OBJECT_REF->position, particleObj->position);
-    ang = Vector2Normalize(ang);
-    ang = Vector2Scale(ang, delta * playerData->shieldMaxPull);
-
-    return ang;
-}
-
-Color GetShieldParticleColor(){
-    int diceRoll = (INT_RAND%4);
-    switch (diceRoll) {
-        default:
-        case 0: return SHIELD_PARTICLE_COLOUR_0;
-        case 1: return SHIELD_PARTICLE_COLOUR_1;
-        case 2: return SHIELD_PARTICLE_COLOUR_2;
-        case 3: return SHIELD_PARTICLE_COLOUR_3;
-    }
-}
 Color GetHullParticleColor(){
     int diceRoll = (INT_RAND%4);
     switch (diceRoll) {
@@ -635,23 +468,22 @@ Color GetHullParticleColor(){
 
 Color GetImpactParticleColor(){
     if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISSHIELDED){
-        return GetShieldParticleColor();
+        return _ShieldObject_GetShieldParticleColor();
     }
-    else {
-        return GetHullParticleColor();
-    }
+    return GetHullParticleColor();
 }
 
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate){
+    // TODO: shake the health bar
+
     // reset the time since counter
     PLAYER_DATA->deltaTimeSinceLastImpact = 0.0f;
 
-    // TODO: shield "trample" to hull (magic the gathering)
-    if(CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISHULL) PLAYER_DATA->hullHealth -= hullRate;
-    else if(CURRENT_PLAYER_LIFE_STATE==PLAYER_LIFE_STATUS_ISSHIELDED) PLAYER_DATA->shieldHealth -= shieldRate;
-    else {
-        // .. 
-        // dead ghost debris taking damage from something?
-        // TODO: shake the health bar
-    }
+    float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
+    PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;
+
+    // else {
+    //     ... 
+    //     dead ghost debris taking damage from something?
+    // }
 }

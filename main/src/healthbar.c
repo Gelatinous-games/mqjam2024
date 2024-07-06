@@ -11,6 +11,7 @@
 #include "./settings.h"
 
 #include "objs/player.h"
+#include "objs/shield.h"
 
 #ifndef _camera
     #define _camera
@@ -125,29 +126,19 @@ int _HealthBar_Update(void* self, float DeltaTime) {
         HEALTHBAR_DATA->currentHealthBarIndex = (int)(GetPlayerHullPercentage() * (float)(HEALTHBAR_GASLEVEL_SPRITE_COUNT));
     }
 
-    if(GetPlayerShieldPercentage() <= 0.0f){
+    if(_ShieldObject_GetPlayerShieldPercentage() <= 0.0f){
         // dont draw
         HEALTHBAR_DATA->currentShieldBarIndex = -1;
     }
-    else if(GetPlayerShieldPercentage() >= 1.0f){ 
+    else if(_ShieldObject_GetPlayerShieldPercentage() >= 1.0f){ 
         HEALTHBAR_DATA->currentShieldBarIndex = HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT-1;
     }
     else {
         // ...
-        HEALTHBAR_DATA->currentShieldBarIndex = (int)(GetPlayerShieldPercentage() * (float)(HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT));
+        HEALTHBAR_DATA->currentShieldBarIndex = (int)(_ShieldObject_GetPlayerShieldPercentage() * (float)(HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT));
     }
     
 
-    // An example of searching for objects with neutral flag.
-    for (int i = 0; i != -1; ) {
-        GameObj_Base* obj;
-        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
-
-        // Check if obj is not null
-        if (!obj || i == -1) break;
-
-        // Do an operation with the result...
-    }
 
 
 
