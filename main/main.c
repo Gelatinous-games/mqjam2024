@@ -237,6 +237,7 @@ static void generateObjects()
     }
 
     // Background Object
+    //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
     BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
     for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
     {
