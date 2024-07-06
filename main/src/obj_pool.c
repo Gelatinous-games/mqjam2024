@@ -137,8 +137,13 @@ void ProcessAllDestroys() {
         GameObj_Base* obj = _gameObjPool[i];
 
         if (obj->awaitDestroy) {
+            // replace this index with the end of the active pool 
             _gameObjPool[i] = _gameObjPool[_gameObjPoolSize-1];
-            _gameObjPool[_gameObjPoolSize-1] = 0;
+            // replace that index with the end of the awaiting creation buffer
+            _gameObjPool[_gameObjPoolSize-1] = _gameObjPool[(_gameObjPoolSize + _gameObjPoolDelta)-1];
+            // and replace THAT index with null (0)
+            _gameObjPool[(_gameObjPoolSize + _gameObjPoolDelta)-1] = 0;
+            
             _gameObjPoolSize -= 1; // decrement the number of objects in the pool by 1 as the one at the end is nulled.
             i -=1; // and since we've just bubbled the last down, decrease i so we can redo that step.
 

@@ -141,6 +141,9 @@ int main()
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
 
+    prepareSounds();
+    setAllTracksVolume(0.5f);
+    startSounds();
 
     _MainMenu_Init();
     _DeathMenu_Init();
@@ -261,15 +264,5 @@ static void generateObjects()
     // Particle handler.
     AddToPool(CreateParticleObject());
 
-    __GAMEMANAGER_INITIALISED_BEFORE = 1;
-    __GAMEMANAGER_REF = CreateGameManager();
-    AddToPool(__GAMEMANAGER_REF);
-}
-
-void HandleDebuggingKillPlayerCheck(float DeltaTime){
-    // kill player for debugging
-    if(IsKeyDown(KEY_K)){
-        playSoundOnce(HIT_SOUND_ID);
-        PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,1,1);
-    }
+    AddToPool(CreateGameManager());
 }
