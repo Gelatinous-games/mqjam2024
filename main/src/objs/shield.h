@@ -1,5 +1,7 @@
 #pragma once
 
+// import this when you want the functions
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -44,7 +46,6 @@ typedef struct {
     float shieldMinRange;
     float shieldMaxRange;
     float shieldMaxPull;
-
 
 } ShieldObject_Data;
 

@@ -40,7 +40,11 @@
 #include "src/sound.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
-#include "src/objs/player.h"
+
+#ifndef _player
+#define _player
+#include "src/objs/player.c"
+#endif
 
 #ifndef _shield
 #define _shield
