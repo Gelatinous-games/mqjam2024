@@ -1,23 +1,17 @@
-/*******************************************************************************************
+/**
  *
- *   raylib [core] example - Basic 3d example
  *
- *   Welcome to raylib!
+ *      DA BIG BAD MAIN FILE
  *
- *   To compile example, just press F5.
- *   Note that compiled executable is placed in the same folder as .c file
+ *          ONLY BADDIES USE THIS FILE FOR MAJOR CODING
  *
- *   You can find all basic examples on C:\raylib\raylib\examples folder or
- *   raylib official webpage: www.raylib.com
+ *         why are you still reading this
  *
- *   Enjoy using raylib. :)
  *
- *   This example has been created using raylib 1.0 (www.raylib.com)
- *   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
  *
- *   Copyright (c) 2013-2023 Ramon Santamaria (@raysan5)
  *
- ********************************************************************************************/
+ *
+ */
 
 // what da henk
 #define invoken(a, b) a->b(a->self)
@@ -38,15 +32,17 @@
 #include "src/settings.h"
 #include "src/sound.h"
 
-
 #include "src/base.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
 
-
 #ifndef _mainmenu
 #define _mainmenu
-#include "mainmenu.c"
+#include "src/mainmenu.c"
+#endif
+#ifndef _deathmenu
+#define _deathmenu
+#include "src/deathmenu.c"
 #endif
 
 #ifndef _player
@@ -103,10 +99,9 @@
 #include "src/healthbar.c"
 #endif
 
-
-
-
-
+#include "src/objs/gameManager.c"
+#include "src/objs/titlemanager.c"
+#include "src/objs/deathManager.c"
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
@@ -114,9 +109,11 @@ static void UpdateDrawFrame(void); // Update and draw one frame
 static void generateObjects();
 static void prepareSounds();
 static void cleanupSounds();
+void HandleDebuggingKillPlayerCheck(float DeltaTime);
 
-static int GameShouldRender(){
-    return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
+static int GameShouldRender()
+{
+    return (CURRENT_GAME_SCENE_STATE != GAME_SCENE_STATE_MAINMENU);
 }
 
 int main()
@@ -140,13 +137,13 @@ int main()
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
 
-    prepareSounds();
-    setAllTracksVolume(0.5f);
-    startSounds();
-
     _MainMenu_Init();
+    _DeathMenu_Init();
 
     generateObjects();
+
+    prepareSounds();
+    scaleAllTracksVolume(0.5f);
 
     ProcessFreshAdd();
 
@@ -161,8 +158,8 @@ int main()
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
 
-
     _MainMenu_Cleanup();
+    _DeathMenu_Cleanup();
 
     cleanupSounds();
 
@@ -184,27 +181,73 @@ static void UpdateDrawFrame(void)
 {
     // grab it
     float DeltaTime = GetFrameTime();
+
+    // HandleDebuggingKillPlayerCheck(DeltaTime);
+
     // check for render
-    if(GameShouldRender()){
-        ProcessAllUpdates(DeltaTime);
+    if (GameShouldRender())
+    {
+        if (!SoundsStarted)
+        {
+            startSounds();
+            SoundsStarted = true;
+        }
+        // ...
         soundUpdate();
-
-        UpdateCamera3D();
-        BeginDrawing();
-        ClearBackground(BLACK);
-        ProcessAllDraws(DeltaTime);
-        drawTimer();
-        EndDrawing();
-
-        ProcessFreshAdd();
-        ProcessAllDestroys();
+        ProcessAllUpdates(DeltaTime);
+        _DeathMenu_Update(DeltaTime);
     }
     // handle menus
-    else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
+    else
+    {
+        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
+        {
             _MainMenu_Update(DeltaTime);
+        }
+    }
+
+    UpdateCamera3D();
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    // check for render
+    if (GameShouldRender())
+    {
+        ProcessAllDraws(DeltaTime);
+        drawTimer();
+        // when dead scene
+        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD)
+        {
+            // draw death menu over the top
+            _DeathMenu_Draw();
+        }
+    }
+    // handle menus
+    else
+    {
+        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
+        {
             _MainMenu_Draw();
         }
+    }
+
+    EndDrawing();
+
+    ProcessFreshAdd();
+    ProcessAllDestroys();
+
+    if (NEXT_FRAME_GAME_STARTS)
+    {
+
+        if (__GAMEMANAGER_INITIALISED_BEFORE)
+        {
+            // __GAMEMANAGER_REF = CreateGameManager();
+            // AddToPool(__GAMEMANAGER_REF);
+            // aaaa
+        }
+
+        CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+        NEXT_FRAME_GAME_STARTS = 0;
     }
 }
 
@@ -215,55 +258,51 @@ static void generateObjects()
     // Particle handler.
     AddToPool(CreateParticleObject());
 
-    // Player object.
-    PLAYER_OBJECT_REF = CreatePlayer();
-    AddToPool(PLAYER_OBJECT_REF);
+    AddToPool(CreateTitleManager());
 
-    // Shield object
-    SHIELD_OBJECT_REF = CreateShieldObject();
-    AddToPool(SHIELD_OBJECT_REF);
+    // // Shield object
+    // SHIELD_OBJECT_REF = CreateShieldObject();
+    // AddToPool(SHIELD_OBJECT_REF);
 
+    // // Asteroid object.
+    // // TODO: succeed with an asteroid handler that can scale up & down asteroids.
+    // // Decide upon some criteria for how asteroid handler should work - should it control the scene?
+    // // Place stars and other elements down?
+    // ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_ASTEROIDS);
+    // for (int i = 0; i < NUMBER_OF_ASTEROIDS; i++)
+    // {
+    //     /* code */
+    //     ASTEROID_REF_LIST[i] = CreateAsteroid();
+    //     AddToPool(ASTEROID_REF_LIST[i]);
+    // }
 
-    // Asteroid object.
-    // TODO: succeed with an asteroid handler that can scale up & down asteroids.
-    // Decide upon some criteria for how asteroid handler should work - should it control the scene?
-    // Place stars and other elements down?
-    ASTEROID_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_ASTEROIDS);
-    for (int i = 0; i < NUMBER_OF_ASTEROIDS; i++)
-    {
-        /* code */
-        ASTEROID_REF_LIST[i] = CreateAsteroid();
-        AddToPool(ASTEROID_REF_LIST[i]);
-    }
+    // // Background Object
+    // BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
+    // BACKGROUND_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
+    // for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
+    // {
+    //     /* code */
+    //     // Background Stars 3 layers
+    //     BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
+    //     AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
 
-    // Background Object
-    BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    BACKGROUND_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
-    {
-        /* code */
-        // Background Stars 3 layers
-        BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
-        AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
+    //     // Background sprites 3 layers, Small/Medium/Large
+    //     BACKGROUND_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
+    //     AddToPool(BACKGROUND_OBJECT_REF_LIST[i]);
+    // }
 
-        // Background sprites 3 layers, Small/Medium/Large
-        BACKGROUND_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
-        AddToPool(BACKGROUND_OBJECT_REF_LIST[i]);
-    }
-    
-    
+    // AddToPool(CreateHealthBar());
 
-    AddToPool(CreateHealthBar());
+    // // Wormhole Object
+    // WORMHOLE_OBJECT_REF = CreateWormhole();
+    // AddToPool(WORMHOLE_OBJECT_REF);
 
-    // Wormhole Object
-    WORMHOLE_OBJECT_REF = CreateWormhole();
-    AddToPool(WORMHOLE_OBJECT_REF);
+    // // Planet Object
+    // PLANET_OBJECT_REF = CreatePlanet();
+    // AddToPool(PLANET_OBJECT_REF);
 
-    // Planet Object
-    PLANET_OBJECT_REF = CreatePlanet();
-    AddToPool(PLANET_OBJECT_REF);
-
-    // Star Object
-    STAR_OBJECT_REF = CreateStarObject();
-    AddToPool(STAR_OBJECT_REF);
+    // // Star Object
+    // STAR_OBJECT_REF = CreateStarObject();
+    // AddToPool(STAR_OBJECT_REF);
+    // AddToPool(CreateExampleObject());
 }

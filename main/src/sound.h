@@ -48,6 +48,16 @@ static void setAllTracksVolume(float volume){
     SetMasterVolume(volume);
 }
 
+static void scaleAllTracksVolume(float scale) {
+    MASTER_VOLUME = MASTER_VOLUME * scale;
+    for (int i = 0; i < TRACK_COUNT; i++)
+    {
+        TRACKS[i]->scaleOfBaseVolume = TRACKS[i]->scaleOfBaseVolume * scale;
+    }
+    
+    SetMasterVolume(MASTER_VOLUME);
+}
+
 static void prepareSounds(){
     TRACKS = (Sound_Track **)malloc(sizeof(Sound_Track*)*TRACK_COUNT);
 
@@ -111,6 +121,7 @@ static void startSounds(){
         if (TRACKS[i]->loopingTrack)
         {
             /* code */
+            // SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
             PlaySound(TRACKS[i]->track);      // Play WAV sound
             SetSoundVolume(TRACKS[i]->track, (TRACKS[i]->baseVolume)*(TRACKS[i]->scaleOfBaseVolume));
         }
@@ -178,10 +189,6 @@ static float getTrackVolume(int soundID){
 
 
 static void PlayDeathSound(){
-    // silence any impact sounds
-    setTrackVolume(HIT_SOUND_ID,0.0f);
-    // max volume scale
-    setTrackVolume(DEATH_SOUND_ID, 1.0f);
     // tell it to play if it isnt, and never played
     if( !(IsSoundPlaying(TRACKS[DEATH_SOUND_ID]->track)) && !PLAYED_DEATH_SOUND_BEFORE ){
         playSoundOnce(DEATH_SOUND_ID);

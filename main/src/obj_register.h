@@ -76,3 +76,5 @@ GameObj_Base* CreatePlanet();
 GameObj_Base* CreateStarObject();
 GameObj_Base* CreateWormhole();
 GameObj_Base* CreateGameManager();
+GameObj_Base* CreateTitleManager();
+GameObj_Base* CreateDeathManager();

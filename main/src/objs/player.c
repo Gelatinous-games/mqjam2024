@@ -17,6 +17,9 @@ int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->accelRate = 6.5; // 5u/s
 
 
+    PLAYER_DATA->deltaTimeSinceLastDeathParticle = 0.0f;
+
+    setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
 
@@ -27,8 +30,10 @@ int _Player_Init(void* self, float DeltaTime) {
 int _Player_Update(void* self, float DeltaTime) {
     // INCREASE TIMER SINCE LAST IMPACT
     PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
+    PLAYER_DATA->deltaTimeSinceLastDeathParticle += DeltaTime;
 
     // ================
+
     updateThrustingSoundState(self, DeltaTime);
 
     handlePlayerMovement(self, DeltaTime);
@@ -43,11 +48,14 @@ int _Player_Update(void* self, float DeltaTime) {
 
     updateHealth(self, DeltaTime);
 
+    UndeadEffects(self, DeltaTime);
+
     return 0;
 }
 
 int _Player_Draw(void* self, float DeltaTime) {
-    RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+    if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
+        RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
     return 0;
 }
@@ -98,10 +106,12 @@ void updateThrustingSoundState(void *self, float DeltaTime){
     // when starting to thrust
     float trackSettingVolume = 0.0f;
     if (
-        IsKeyDown(KEY_W) ||
-        IsKeyDown(KEY_A) ||
-        IsKeyDown(KEY_S) ||
-        IsKeyDown(KEY_D)
+        (
+            IsKeyDown(KEY_W) ||
+            IsKeyDown(KEY_A) ||
+            IsKeyDown(KEY_S) ||
+            IsKeyDown(KEY_D)
+        ) && IsPlayerAlive()
     ) {
         // forward backwards max, just rotate is half volume
         if(IsKeyDown(KEY_W)||IsKeyDown(KEY_S)){
@@ -163,19 +173,21 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
         Vector2 impartSelf, impartAsteroid;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
-            // ... collision sound
-            playSoundOnce(HIT_SOUND_ID);
 
             Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
             THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
 
+            if (PLAYER_DATA->deltaTimeSinceLastImpact < PLAYER_DAMAGE_IMMUNITY_TIMEOUT) {
+                continue;
+            }
+
             // get the damage rate and apply
             PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
-
+            // ... collision sound
+            playSoundOnce(HIT_SOUND_ID);
             // create a spark effect or something
-
-            int randomCount = (FLOAT_RAND * 4) + 4;
+            int randomCount = 2 * ((FLOAT_RAND * 8) + 8);
             for (int i = 0; i < randomCount; i++) {
                 // pick a palette of 4
                 Color colourVal = GetImpactParticleColor();
@@ -195,7 +207,7 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
 
 
 void handleGravityInteractions(void *self, float DeltaTime){
-
+    
     // check for gravity interactions
     GameObj_Base* extobj;
     // TODO
@@ -208,6 +220,7 @@ void handleGravityInteractions(void *self, float DeltaTime){
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
             // ... collided
+            // TODO: hit sound only when not playing dead
             playSoundOnce(HIT_SOUND_ID);
 
             PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED);
@@ -245,6 +258,7 @@ void handlePlayerMovement(void *self, float DeltaTime){
     // ================
     // Default steering movement NOT STRAFING mode.
     int rotate_delta = GetKeyDelta(KEY_D, KEY_A);
+    if( !IsPlayerAlive() ) rotate_delta = 0;
     if (rotate_delta) {
         // PLAYER_DATA->rotateRate += PLAYER_DATA->rotateJerk * rotate_delta * DeltaTime; // Disabled this as its a headache to control.
         PLAYER_DATA->headingVector = Vector2Rotate(PLAYER_DATA->headingVector, rotate_delta * PLAYER_DATA->rotateJerk * DeltaTime);
@@ -253,6 +267,7 @@ void handlePlayerMovement(void *self, float DeltaTime){
 
     // Acceleration control.
     int accel_delta = GetKeyDelta(KEY_W, KEY_S);
+    if( !IsPlayerAlive() ) accel_delta = 0;
     if (accel_delta) {
         THIS->velocity = Vector2Add(THIS->velocity, Vector2Scale(PLAYER_DATA->headingVector, accel_delta * DeltaTime * PLAYER_DATA->accelRate));
     }
@@ -292,6 +307,7 @@ void handlePlayerMovement(void *self, float DeltaTime){
         );
 
     }
+    // TODO: could rotate delta particles here
 }
 
 void constrainPlayerToCamera(void *self, float DeltaTime){
@@ -331,9 +347,7 @@ void handleCameraRelativity(void *self, float DeltaTime){
 void updateHealth(void *self, float DeltaTime){
     // when hull is gone
     if(GetPlayerHullPercentage()<=0.0f){
-        CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
-
-        _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
+        HandlePlayerDeath(DeltaTime);
     }
     // otherwise handle regens
     else {
@@ -388,11 +402,22 @@ Color GetImpactParticleColor(){
     return GetHullParticleColor();
 }
 
+
+Color GetDeathParticleColor(){
+    // 
+    return DARKGRAY;
+}
+
+
+
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate){
     // TODO: shake the health bar
 
     // reset the time since counter
-    PLAYER_DATA->deltaTimeSinceLastImpact = 0.0f;
+    if (PLAYER_DATA->deltaTimeSinceLastImpact < PLAYER_DAMAGE_IMMUNITY_TIMEOUT) {
+        return;
+    }
+    PLAYER_DATA->deltaTimeSinceLastImpact = 0; // set to the timout
 
     float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
     PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;
@@ -410,7 +435,41 @@ int IsPlayerAlive(){
 }
 
 
+void HandlePlayerDeath(float DeltaTime){
+    CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
+    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_DEAD;
+    // silence any impact sounds
+    setTrackVolume(HIT_SOUND_ID,0.0f);
+    setTrackVolume(THRUST_END_ID, 0.0f);
+    setTrackVolume(THRUST_START_ID, 0.0f);
+    setTrackVolume(THRUST_LOOP_ID, 0.0f);
+    // max volume scale
+    setTrackVolume(DEATH_SOUND_ID, 1.0f);
 
+    PlayDeathSound();
+
+    _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
+
+}
+
+void UndeadEffects(void *self, float DeltaTime){
+    // ...
+
+    if( !IsPlayerAlive() && (PLAYER_DATA->deltaTimeSinceLastDeathParticle >= (1.0f/DEATH_PARTICLE_RATE))){
+        // ...
+        Color colourVal = GetDeathParticleColor();
+        SpawnParticle(
+            THIS->position,
+            Vector2Scale( GetRandomUnitVector(), Lerp(0.5f, 3.0f, FLOAT_RAND) ),
+            Vector2Scale( GetRandomUnitVector(), Lerp(0.5f, 9.8f, FLOAT_RAND) ),
+            Vector2Scale( Vector2One(), Lerp(0.1f, 0.8f, FLOAT_RAND) ),
+            Lerp(1.0f, 4.5f, FLOAT_RAND),
+            colourVal,
+            1
+        );
+    }
+
+}
 
 
 
