@@ -221,7 +221,16 @@ int _Asteroid_Update(void* self, float DeltaTime) {
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
             // Destroy asteroid
             // create a billion particles as the asteroid disintegrates
-        }
+
+            int randNum = (FLOAT_RAND * 128) + 128;
+            for (int i = 0; i < randNum; i++) {
+                // pick a palette of 4
+                Color col = GetAsteroidParticleColor();
+                SpawnParticle(Vector2Add(THIS->position, (Vector2){(FLOAT_RAND - 0.5) * THIS->size.x, (FLOAT_RAND - 0.5) * THIS->size.y}), Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .125), (FLOAT_RAND * 1.75) + .25, col, 1);
+            }
+
+            _Asteroid_Randomize(self);
+        }   
         else {
             // apply gravity vector
             Vector2 accel = GetAccelerationToSink(extobj, THIS);
@@ -243,7 +252,7 @@ int _Asteroid_Destroy(void* self, float DeltaTime) {
     // DestroySprite(ASTEROIDDATA->sprite);
     free(ASTEROIDDATA);
     asteroidsUsing = 0;
-    if (!asteroidsUsing) {
+    if (!asteroidsUsing && _asteroidSprites) {
         for (int i = 0; i < 4; i++) {
             Sprite* tmp = _asteroidSprites[i];
             DestroySprite(tmp);

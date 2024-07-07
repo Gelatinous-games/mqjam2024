@@ -50,6 +50,8 @@ int _GameManager_Init(void* self, float DeltaTime) {
     
     PLAYED_DEATH_SOUND_BEFORE = 0;
     setTrackVolume(HIT_SOUND_ID, 1);
+    ClearParticles();
+    gettimeofday(&timerStart, NULL);
 
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
@@ -144,6 +146,8 @@ int _GameManager_Update(void* self, float DeltaTime) {
 }
 
 int _GameManager_Draw(void* self, float DeltaTime) {
+    drawTimer();
+
     return 0;
 }
 

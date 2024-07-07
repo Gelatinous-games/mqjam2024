@@ -186,6 +186,21 @@ int SpawnParticle(Vector2 pos, Vector2 vel, Vector2 acc, Vector2 size, float lif
     return SpawnParticleEX(pos, vel, acc, size, lifetime, color, doOutline, 1, NULL, NULL);
 }
 
+/// @brief Deletes all active particles
+/// @return 
+int ClearParticles() {
+    for (int i = 0; i < _particleCount; i++) {
+        _Particle obj = _particles[i];
+        if (obj.func && obj.func_data) {
+            free(obj.func_data);
+            obj.func_data = 0;
+        }
+        _particles[i] = obj;
+    }
+    _particleCount = 0;
+    return 0;
+}
+
 /// @brief Gets a particle object with the given ID.
 /// @param ParticleID 
 /// @return Null if none found.

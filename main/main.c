@@ -200,7 +200,6 @@ static void UpdateDrawFrame(void)
         BeginDrawing();
         ClearBackground(BLACK);
         ProcessAllDraws(DeltaTime);
-        drawTimer();
         EndDrawing();
 
         ProcessFreshAdd();
