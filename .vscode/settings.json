@@ -6,6 +6,9 @@
         "string_view": "c",
         "vector": "c",
         "stdio.h": "c",
-        "__node_handle": "c"
+        "__node_handle": "c",
+        "__split_buffer": "c",
+        "bitset": "c",
+        "initializer_list": "c"
     }
 }

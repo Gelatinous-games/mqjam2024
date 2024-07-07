@@ -274,11 +274,16 @@ static void SoundManagerHandleDeath(){
         PLAYED_DEATH_SOUND_BEFORE = 1;
     }
 }
-static void SoundManagerHandleGameStart(){
-    // ....
-}
 
 static void SoundManagerHandleImpact(enum IMPACT_TYPE impactTypeData){
-    // ... collision sound
-    playSoundOnce(HIT_SOUND_ID);
+    switch(impactTypeData){
+        // ..
+        default:
+        case DEATH_IMPACT:
+        case HULL_IMPACT:
+        playSoundOnce(HIT_SOUND_ID);
+        break;
+        case SHIELD_IMPACT:
+        playSoundOnce(SHIELD_HIT_SOUND_ID);
+    }
 }

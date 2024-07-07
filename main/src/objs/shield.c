@@ -148,8 +148,14 @@ void _ShieldObject_updateShieldHealth(void *self, float DeltaTime){
     // not max shields
     //  also been long enough since last impact
     if(_ShieldObject_GetPlayerShieldPercentage() < 1.0f && (SHIELD_DATA->deltaTimeSinceLastImpact >= SHIELD_REGEN_TIMEOUT_DELTATIME) && IsPlayerAlive()){
+        SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
         // if we're needing to regen shields
         (SHIELD_DATA->shieldHealth) += (SHIELD_DATA->shieldRegenerationRate)*DeltaTime;
+    }
+    else if(!SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED){
+        // playing it
+        SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = true;
+        playSoundOnce(SHIELD_REGEN_SOUND_ID);
     }
 
 }

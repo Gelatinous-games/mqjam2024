@@ -37,8 +37,8 @@ enum IMPACT_TYPE {
     DEATH_IMPACT
 };
 
-
-
+// reset this to 0 whenever you take shield damage 
+int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
 
 
 
