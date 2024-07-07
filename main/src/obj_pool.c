@@ -40,6 +40,8 @@ void GameObjPoolDestroy() {
 /// @param obj 
 /// @return 
 int AddToPool(GameObj_Base* obj) {
+    obj->isCreated = 0;
+    
     if (_gameObjPoolSize + _gameObjPoolDelta >= OBJECT_POOL_CAPACITY) return -1;
     
     _gameObjPool[_gameObjPoolSize + _gameObjPoolDelta] = obj;
@@ -56,6 +58,7 @@ int ProcessFreshAdd() {
     for (int i = _gameObjPoolSize; i < _gameObjPoolDelta + _gameObjPoolSize; i++) {
         GameObj_Base* obj = _gameObjPool[i];
         obj->Init_Func(obj, 0);
+        obj->isCreated = 1;
     }
 
     _gameObjPoolSize += _gameObjPoolDelta;

@@ -81,6 +81,11 @@
 #include "src/objs/star.c"
 #endif
 
+#ifndef _textobj
+    #define _textobj
+    #include "src/objs/textobj.c"
+#endif
+
 #ifndef _wormhole_obj
 #define _wormhole_obj
 #include "src/objs/wormhole.c"
@@ -106,9 +111,6 @@
 #include "src/objs/gameManager.c"
 #include "src/objs/titlemanager.c"
 #include "src/objs/deathManager.c"
-
-
-
 
 
 

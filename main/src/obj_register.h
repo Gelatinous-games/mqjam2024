@@ -12,7 +12,9 @@ enum OBJECT_FLAG {
     FLAG_PARTICLE = 64,
     FLAG_BACKGROUND = 128,
     FLAG_WORMHOLE = 256,
-    FLAG_MANAGER = 512
+    FLAG_MANAGER = 512,
+    FLAG_GAME_MANAGER = 1024,
+    FLAG_GUI = 2048
 };
 
 enum LAYER_ID {
@@ -29,6 +31,7 @@ enum LAYER_ID {
     LAYER_PARTICLES,
     LAYER_PLAYER,
     LAYER_GUI,
+    LAYER_GUI_2,
 
     // DO NOT, I REPEAT, DO NOT REMOVE OR OVERWRITE LAYER_BOOKEND!
     // THIS SHOULD ALWAYS BE AT THE END OF THE ENUM!!! DO NOT REMOVE OR OVERWRITE ME!!! 
@@ -78,3 +81,4 @@ GameObj_Base* CreateWormhole();
 GameObj_Base* CreateGameManager();
 GameObj_Base* CreateTitleManager();
 GameObj_Base* CreateDeathManager();
+GameObj_Base* CreateTextObj();

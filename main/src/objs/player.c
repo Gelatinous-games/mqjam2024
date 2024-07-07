@@ -2,7 +2,7 @@
 
 // for just in this file
 #define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
-
+#define DEBUG_ON
 
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->deltaTimeSinceLastImpact=0.0f;
@@ -32,6 +32,8 @@ int _Player_Update(void* self, float DeltaTime) {
 
     // ================
     updateThrustingSoundState(self, DeltaTime);
+    
+    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) return 0;
 
     handlePlayerMovement(self, DeltaTime);
 
@@ -44,6 +46,11 @@ int _Player_Update(void* self, float DeltaTime) {
     handleCameraRelativity(self, DeltaTime);
 
     updateHealth(self, DeltaTime);
+    
+    #ifdef DEBUG_ON
+        if (IsKeyDown(KEY_K))
+            PLAYER_DATA->hullHealth = -1;
+    #endif
 
     return 0;
 }
@@ -334,15 +341,17 @@ void handleCameraRelativity(void *self, float DeltaTime){
 }
 
 void updateHealth(void *self, float DeltaTime){
+    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) return;
+
     // when hull is gone
-    if(GetPlayerHullPercentage()<=0.0f){
+    if(GetPlayerHullPercentage()<=0.0f ){
         CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
 
         _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
 
         // create a scatter of particles
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 64; i++) {
             Color col;
             int rng = FLOAT_RAND * 3;
             switch (rng) {
@@ -436,11 +445,6 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
 int IsPlayerAlive(){
     return CURRENT_PLAYER_LIFE_STATE;
 }
-
-
-
-
-
 
 // remove it from existence
 #undef PLAYER_DATA

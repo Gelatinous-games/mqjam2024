@@ -61,6 +61,14 @@ Vector2 GetScaledSize(Vector2 size)
     return Vector2Multiply(size, cameraUnitSize);
 }
 
+/// @brief Gets the unit shape of a pixel size.
+/// @param size 
+/// @return 
+Vector2 GetUnscaledSize(Vector2 size) {
+    size = (Vector2){size.x / cameraUnitSize.x, size.y /cameraUnitSize.y};
+    return Vector2Multiply(size, scaleFactor);
+}
+
 /// @brief Gets the pixel radius of a circle as per the scale factor. Note that the scale factor on the x axis is used, not y.
 /// @param radius
 /// @return

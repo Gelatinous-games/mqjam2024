@@ -18,6 +18,11 @@
     #include "../obj_pool.c"
 #endif
 
+#ifndef _player
+    #define _player
+    #include "player.c"
+#endif
+
 #include "../obj_register.h"
 #include "../settings.h"
 
@@ -29,6 +34,10 @@ typedef struct {
 
     float deathTimeout;
     float spawnDistance;
+
+    char madeDeathManager;
+
+    char makeTitleScreen;
 } _GameManager_Data;
 
 #define DATA ((_GameManager_Data *)(THIS->data_struct))
@@ -44,6 +53,10 @@ int _GameManager_Init(void* self, float DeltaTime) {
 
     DATA->starCount = 0;
     DATA->asteroidCount = 1;
+
+    DATA->madeDeathManager = 0;
+
+    DATA->makeTitleScreen = 0;
 
     PLAYER_OBJECT_REF = CreatePlayer();
     AddToPool(PLAYER_OBJECT_REF);
@@ -102,6 +115,26 @@ int _GameManager_Update(void* self, float DeltaTime) {
             DATA->starCount++;
         }
     }
+
+    Player_Data* pData = (Player_Data*) obj->data_struct;
+    
+    if (!IsPlayerAlive() && !DATA->madeDeathManager) {
+        AddToPool(CreateDeathManager());
+        DATA->madeDeathManager = 1;
+    }
+
+    if (!IsPlayerAlive()) {
+        // observe for R or E commands and destroy/create appropriate scene
+        if (IsKeyPressed(KEY_R)) {
+            // restart, create fresh gamemanager.
+            DATA->makeTitleScreen = 0;
+            THIS->awaitDestroy = 1;
+        }
+        else if (IsKeyPressed(KEY_E)) {
+            DATA->makeTitleScreen = 1;
+            THIS->awaitDestroy = 1;
+        }
+    }
     return 0;
 }
 
@@ -115,21 +148,28 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     // search for and delete all player, asteroid, star, wormhole, background stars, etc.
     for (int sIDX = 0; sIDX != -1; ) {
         sIDX = GetObjectWithFlagsAny(
-            FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND,
+            FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND | FLAG_MANAGER,
             sIDX,
             &obj
         );
 
         if (sIDX == -1 || !obj) break;
 
+        if (!obj->isCreated || obj->awaitDestroy) continue;
+
         obj->awaitDestroy = 1;
     }
 
     free(BACKGROUNDSTARS_EFFECT_REF_LIST);
+
+    if (DATA->makeTitleScreen) {
+        AddToPool(CreateTitleManager());
+    }
+    else {
+        AddToPool(CreateGameManager());
+    }
     free(DATA);
 
-    // ONLY ONCE DELETED can we add an instance of the manager for the next scene!
-    AddToPool(CreateDeathManager());
     return 0;
 }
 
@@ -147,7 +187,7 @@ GameObj_Base* CreateGameManager() {
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_MANAGER;
+    obj_ptr->flags = FLAG_GAME_MANAGER;
 
     obj_ptr->currentLayer = LAYER_GUI;
 

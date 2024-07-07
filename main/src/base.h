@@ -18,6 +18,9 @@ typedef struct {
     /// @brief Set to 1 to flag it to be destroyed after the next frame.
     int awaitDestroy;
 
+    /// @brief Whether or not it has been created. Defaults to 0.
+    char isCreated;
+
     // generic data; position, velocity, size.
     Vector2 position;
     Vector2 velocity;
