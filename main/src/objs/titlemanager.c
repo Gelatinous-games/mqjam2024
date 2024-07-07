@@ -6,6 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../sound.h"
 
 
 #ifndef _camera
@@ -86,6 +87,8 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     obj->currentLayer = LAYER_GUI;
 
     AddToPool(obj);
+
+    setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
     return 0;
 }

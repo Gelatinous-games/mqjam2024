@@ -56,6 +56,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     PLAYED_DEATH_SOUND_BEFORE = 0;
     setTrackVolume(HIT_SOUND_ID, 1);
     ClearParticles();
+    doTick = 1;
     gettimeofday(&timerStart, NULL);
 
     DATA->DoLoadIn = 1;
@@ -132,12 +133,10 @@ int _GameManager_Update(void* self, float DeltaTime) {
     if (DATA->spawnDistance < 0) {
         DATA->spawnDistance = GAME_SPAWN_DIST;
         if (FLOAT_RAND < GAME_SPAWN_ASTEROID && DATA->asteroidCount < MAX_ASTEROIDS) {
-            printf("SPAWNING ASTEROID!\n");
             AddToPool(CreateAsteroid());
             DATA->asteroidCount++;
         }
         else if (DATA->starCount < MAX_ASTEROIDS) {
-            printf("SPAWNING STAR!\n");
             AddToPool(CreateStarObject());
             DATA->starCount++;
         }
@@ -148,6 +147,8 @@ int _GameManager_Update(void* self, float DeltaTime) {
     if (!IsPlayerAlive() && !DATA->madeDeathManager) {
         AddToPool(CreateDeathManager());
         DATA->madeDeathManager = 1;
+        doTick = 0;
+        setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
     }
 
     if (!IsPlayerAlive()) {

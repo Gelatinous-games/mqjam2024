@@ -39,11 +39,8 @@ int _TextObj_Init(void* self, float DeltaTime) {
 
     SetScaleFactor(1);
     // properly set size
-    printf("size is %f, %f\n", THIS->size.x, THIS->size.y);
     Vector2 size = GetScaledSize(THIS->size);
-    printf("scaled size is %f, %f\n", size.x, size.y);
     int width = MeasureText(DATA->data, size.y);
-    printf("text width is %d\n", width);
 
     // FACE MY WRATH
     //int i = 1/0;

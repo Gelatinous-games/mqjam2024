@@ -133,8 +133,6 @@ void _Asteroid_Randomize(void *self) {
     // Finally we'll add our origin velocity on the X axis to our velocity.
 
     THIS->velocity.x = originVel.x; 
-
-    printf("SPAWNED ASTEROID AT %f, %f (origin %f, %f)\n", THIS->position.x, THIS->position.y, originPos.x, originPos.y);
 }
 
 int _Asteroid_Init(void* self, float DeltaTime) {
