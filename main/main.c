@@ -103,6 +103,9 @@
 #include "src/objs/titlemanager.c"
 #include "src/objs/deathManager.c"
 
+#define DEBUG_DRAW_PRINTF_PREFIX if(true) 
+
+
 static void UpdateDrawFrame(void); // Update and draw one frame
 
 // let C know this exists
@@ -111,9 +114,14 @@ static void prepareSounds();
 static void cleanupSounds();
 void HandleDebuggingKillPlayerCheck(float DeltaTime);
 
+void StartGame();
+
 static int GameShouldRender()
 {
-    return (CURRENT_GAME_SCENE_STATE != GAME_SCENE_STATE_MAINMENU);
+    if (CURRENT_GAME_SCENE_STATE != GAME_SCENE_STATE_MAINMENU){
+        return 1;
+    }
+    return 0;
 }
 
 int main()
@@ -179,6 +187,7 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
+    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### START ###################");
     // grab it
     float DeltaTime = GetFrameTime();
 
@@ -187,14 +196,18 @@ static void UpdateDrawFrame(void)
     // check for render
     if (GameShouldRender())
     {
+        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: TRY RENDER");
         if (!SoundsStarted)
         {
             startSounds();
             SoundsStarted = true;
         }
         // ...
+        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: SOUND UPDATE");
         soundUpdate();
+        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: ALL UPDATE");
         ProcessAllUpdates(DeltaTime);
+        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU UPDATE");
         _DeathMenu_Update(DeltaTime);
     }
     // handle menus
@@ -202,10 +215,12 @@ static void UpdateDrawFrame(void)
     {
         if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
         {
+            DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU UPDATE");
             _MainMenu_Update(DeltaTime);
         }
     }
 
+    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: UPDATE CAM");
     UpdateCamera3D();
     BeginDrawing();
     ClearBackground(BLACK);
@@ -213,11 +228,14 @@ static void UpdateDrawFrame(void)
     // check for render
     if (GameShouldRender())
     {
+        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS DRAWS");
         ProcessAllDraws(DeltaTime);
+        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DRAW TIMER");
         drawTimer();
         // when dead scene
         if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD)
         {
+            DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU DRAW");
             // draw death menu over the top
             _DeathMenu_Draw();
         }
@@ -227,28 +245,20 @@ static void UpdateDrawFrame(void)
     {
         if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
         {
+            DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU DRAW");
             _MainMenu_Draw();
         }
     }
 
+    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: END DRAW");
     EndDrawing();
 
+    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS ADD/DESTROY");
     ProcessFreshAdd();
     ProcessAllDestroys();
 
-    if (NEXT_FRAME_GAME_STARTS)
-    {
-
-        if (__GAMEMANAGER_INITIALISED_BEFORE)
-        {
-            // __GAMEMANAGER_REF = CreateGameManager();
-            // AddToPool(__GAMEMANAGER_REF);
-            // aaaa
-        }
-
-        CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
-        NEXT_FRAME_GAME_STARTS = 0;
-    }
+    if (NEXT_FRAME_GAME_STARTS) StartGame();
+    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### END #####################");
 }
 
 /// @brief Generates all objects for initial gamestate.
@@ -272,3 +282,20 @@ void HandleDebuggingKillPlayerCheck(float DeltaTime){
         PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,5,5);
     }
 }
+
+void StartGame(){
+    // ...
+    if (__GAMEMANAGER_INITIALISED_BEFORE)
+    {
+        // __GAMEMANAGER_REF = CreateGameManager();
+        // AddToPool(__GAMEMANAGER_REF);
+        // aaaa
+    }
+
+    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+    NEXT_FRAME_GAME_STARTS = 0;
+}
+
+
+
+#undef DEBUG_DRAW_PRINTF_PREFIX

@@ -123,6 +123,8 @@ int _BackgroundSprites_Init(void *self, float DeltaTime)
 
 int _BackgroundSprites_Update(void *self, float DeltaTime)
 {
+    
+    printf("%s\n", "background sprites update");
     // parallax
     THIS->position.x = -0.1f * (cameraPosition.x);
     THIS->position.y = -0.1f * (cameraPosition.y);

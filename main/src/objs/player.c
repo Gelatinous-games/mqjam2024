@@ -219,8 +219,6 @@ void handleGravityInteractions(void *self, float DeltaTime){
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
             // ... collided
-            // TODO: hit sound only when not playing dead
-            playSoundOnce(HIT_SOUND_ID);
 
             PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED);
 
@@ -421,10 +419,16 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
     float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
     PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;
 
-    // else {
-    //     ... 
-    //     dead ghost debris taking damage from something?
-    // }
+
+    // TODO: hit sound only when not playing dead
+    if(IsPlayerAlive()){
+        // ...
+        playSoundOnce(HIT_SOUND_ID);
+    }
+    else {
+        // ... 
+        // dead ghost debris taking damage from something?
+    }
 }
 
 // returns 0 when dead
