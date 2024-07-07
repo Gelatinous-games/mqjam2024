@@ -23,15 +23,23 @@ typedef struct {
 
 static Sound_Track **TRACKS;
 
-#define BGMUSIC_LOOP_ID 0
-#define HIT_SOUND_ID 1
-#define THRUST_LOOP_ID 2
-#define STAR_PROXIMITY_LOOP_ID 3
-#define THRUST_END_ID 4
-#define THRUST_START_ID 5
-#define DEATH_SOUND_ID 6
+enum TRACK_INDEX_ID {
+    BGMUSIC_LOOP_ID,
+    BGMENUMUSIC_SOUND_ID,
+    HIT_SOUND_ID,
+    THRUST_LOOP_ID,
+    STAR_PROXIMITY_LOOP_ID,
+    THRUST_END_ID,
+    THRUST_START_ID,
+    DEATH_SOUND_ID,
+    
 
-#define TRACK_COUNT 7
+
+    // REMEMBER THE BOOKEND THING, IF U DONT THEN GOTO REGISTER IDK
+
+    TRACK_COUNT
+};
+
 
 
 static float MASTER_VOLUME = 0.5f;
@@ -63,6 +71,7 @@ static void prepareSounds(){
 
     // init
     TRACKS[BGMUSIC_LOOP_ID]    = (Sound_Track *)malloc(sizeof(Sound_Track));
+    TRACKS[BGMENUMUSIC_SOUND_ID] = (Sound_Track *)malloc(sizeof(Sound_Track));
     TRACKS[HIT_SOUND_ID]        = (Sound_Track *)malloc(sizeof(Sound_Track));
     TRACKS[THRUST_LOOP_ID]     = (Sound_Track *)malloc(sizeof(Sound_Track));
     TRACKS[STAR_PROXIMITY_LOOP_ID] = (Sound_Track *)malloc(sizeof(Sound_Track));
@@ -72,6 +81,7 @@ static void prepareSounds(){
 
     // paths
     TRACKS[BGMUSIC_LOOP_ID]->path    = "resources/SFX/MQGameJam_Music_loop.wav";
+    TRACKS[BGMENUMUSIC_SOUND_ID]->path    = "resources/SFX/MUSIC_muffled.wav";
     TRACKS[HIT_SOUND_ID]->path        = "resources/SFX/HitAsteroid.wav";
     TRACKS[THRUST_LOOP_ID]->path     = "resources/SFX/Thrust_loop.wav";
     TRACKS[STAR_PROXIMITY_LOOP_ID]->path = "resources/SFX/NearingStar.wav";
@@ -81,6 +91,7 @@ static void prepareSounds(){
 
     // looping
     TRACKS[BGMUSIC_LOOP_ID]->loopingTrack    = 1;
+    TRACKS[BGMENUMUSIC_SOUND_ID]->loopingTrack = 1;
     TRACKS[HIT_SOUND_ID]->loopingTrack       = 0;
     TRACKS[THRUST_LOOP_ID]->loopingTrack     = 1;
     TRACKS[STAR_PROXIMITY_LOOP_ID]->loopingTrack = 1;
@@ -89,6 +100,7 @@ static void prepareSounds(){
     TRACKS[DEATH_SOUND_ID]->loopingTrack     = 0;
     // volumes
     TRACKS[BGMUSIC_LOOP_ID]->baseVolume    = 0.7f;
+    TRACKS[BGMENUMUSIC_SOUND_ID]->baseVolume = 0.6f;
     TRACKS[HIT_SOUND_ID]->baseVolume        = 0.5;
     TRACKS[THRUST_LOOP_ID]->baseVolume     = 1.0f;
     TRACKS[STAR_PROXIMITY_LOOP_ID]->baseVolume = 1.0f;
@@ -97,6 +109,7 @@ static void prepareSounds(){
     TRACKS[DEATH_SOUND_ID]->baseVolume     = 1.0f;
 
     TRACKS[BGMUSIC_LOOP_ID]->scaleOfBaseVolume    = 1.0f;
+    TRACKS[BGMENUMUSIC_SOUND_ID]->scaleOfBaseVolume = 0.0f;
     TRACKS[HIT_SOUND_ID]->scaleOfBaseVolume        = 0.0f;
     TRACKS[THRUST_LOOP_ID]->scaleOfBaseVolume     = 0.0f;
     TRACKS[STAR_PROXIMITY_LOOP_ID]->scaleOfBaseVolume     = 0.0f;
@@ -106,6 +119,7 @@ static void prepareSounds(){
 
     // load
     TRACKS[BGMUSIC_LOOP_ID]->track     = LoadSound(TRACKS[BGMUSIC_LOOP_ID]->path);     // Load WAV audio file
+    TRACKS[BGMENUMUSIC_SOUND_ID]->track = LoadSound(TRACKS[BGMENUMUSIC_SOUND_ID]->path); // Load WAV audio file
     TRACKS[HIT_SOUND_ID]->track         = LoadSound(TRACKS[HIT_SOUND_ID]->path);         // Load WAV audio file
     TRACKS[THRUST_LOOP_ID]->track      = LoadSound(TRACKS[THRUST_LOOP_ID]->path);      // Load WAV audio file
     TRACKS[STAR_PROXIMITY_LOOP_ID]->track = LoadSound(TRACKS[STAR_PROXIMITY_LOOP_ID]->path); // Load WAV audio file
@@ -148,6 +162,7 @@ static void cleanupSounds(){
 
     // unload
     UnloadSound(TRACKS[BGMUSIC_LOOP_ID]->track);     // Unload sound data
+    UnloadSound(TRACKS[BGMENUMUSIC_SOUND_ID]->track);     // Unload sound data
     UnloadSound(TRACKS[HIT_SOUND_ID]->track);         // Unload sound data
     UnloadSound(TRACKS[THRUST_LOOP_ID]->track);      // Unload sound data
     UnloadSound(TRACKS[STAR_PROXIMITY_LOOP_ID]->track); // Unload sound data
@@ -157,6 +172,7 @@ static void cleanupSounds(){
 
     // deinit
     free(TRACKS[BGMUSIC_LOOP_ID]);
+    free(TRACKS[BGMENUMUSIC_SOUND_ID]);
     free(TRACKS[HIT_SOUND_ID]);
     free(TRACKS[THRUST_LOOP_ID]);
     free(TRACKS[STAR_PROXIMITY_LOOP_ID]);
@@ -187,7 +203,7 @@ static float getTrackVolume(int soundID){
 }
 
 
-static void PlayDeathSound(){
+static void SoundManagerHandleDeath(){
     // silence any impact sounds
     setTrackVolume(HIT_SOUND_ID,0.0f);
     // max volume scale
@@ -197,4 +213,12 @@ static void PlayDeathSound(){
         playSoundOnce(DEATH_SOUND_ID);
         PLAYED_DEATH_SOUND_BEFORE = 1;
     }
+}
+static void SoundManagerHandleGameStart(){
+    // ....
+}
+
+static void SoundManagerHandleImpact(enum IMPACT_TYPE impactTypeData){
+    // ... collision sound
+    playSoundOnce(HIT_SOUND_ID);
 }

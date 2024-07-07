@@ -84,4 +84,8 @@ Color GetImpactParticleColor();
 
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate);
 
+
+void _PLAYER_HandleDeath(void *self, float DeltaTime);
+
+
 int IsPlayerAlive();

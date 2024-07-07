@@ -195,8 +195,6 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             // get the damage rate and apply
             PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
 
-            // ... collision sound
-            playSoundOnce(HIT_SOUND_ID);
             // create a spark effect or something
             int randomCount = 2 * ((FLOAT_RAND * 8) + 8);
             for (int i = 0; i < randomCount; i++) {
@@ -230,8 +228,6 @@ void handleGravityInteractions(void *self, float DeltaTime){
         Vector2 impartSelf, impartStar;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
-            // ... collided
-            playSoundOnce(HIT_SOUND_ID);
 
             PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED);
 
@@ -356,30 +352,8 @@ void updateHealth(void *self, float DeltaTime){
 
     // when hull is gone
     if(GetPlayerHullPercentage()<=0.0f ){
-        CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
-
-        _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
-
-        // create a scatter of particles
-
-        for (int i = 0; i < 64; i++) {
-            Color col;
-            int rng = FLOAT_RAND * 3;
-            switch (rng) {
-                case 0: col = (Color) {132,132,132,127};
-                break;
-                case 2: col = (Color) {200,200,200,127};
-                break;
-                case 1: col = (Color) {75,75,75,127};
-                break;
-            }
-
-                SpawnParticle(
-                    Vector2Add(THIS->position, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
-                    Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
-                    Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
-            }
-        }
+        _PLAYER_HandleDeath(self,DeltaTime);
+    }
     // otherwise handle regens
     else {
         // HANDLE THE STATE
@@ -435,21 +409,69 @@ Color GetImpactParticleColor(){
 
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate){
     // TODO: shake the health bar
+    if(IsPlayerAlive()){
+        /// ...
+        // reset the time since counter
+        if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
+            return;
+        }
+        PLAYER_DATA->deltaTimeSinceLastImpact = PLAYER_DAMAGE_IMMUNITY_TIMEOUT; // set to the timout
 
-    // reset the time since counter
-    if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
-        return;
+        float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
+
+        if(percentageNotAbsorbedByShields != 1.0f){
+            SoundManagerHandleImpact(HULL_IMPACT);
+        }
+        else {
+            SoundManagerHandleImpact(SHIELD_IMPACT);
+        }
+
+        PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;
     }
-    PLAYER_DATA->deltaTimeSinceLastImpact = PLAYER_DAMAGE_IMMUNITY_TIMEOUT; // set to the timout
-
-    float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
-    PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;
-
-    // else {
-    //     ... 
-    //     dead ghost debris taking damage from something?
-    // }
+    else {
+        // ... 
+        // dead ghost debris taking damage from something?
+        SoundManagerHandleImpact(DEATH_IMPACT);
+    }
 }
+
+
+
+
+void _PLAYER_HandleDeath(void *self, float DeltaTime){
+
+    // also handle death
+    SoundManagerHandleDeath();
+
+    CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISDEAD;
+
+    _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
+
+    // create a scatter of particles
+
+    for (int i = 0; i < 64; i++) {
+        Color col;
+        int rng = FLOAT_RAND * 3;
+        switch (rng) {
+            case 0: col = (Color) {132,132,132,127};
+            break;
+            case 2: col = (Color) {200,200,200,127};
+            break;
+            case 1: col = (Color) {75,75,75,127};
+            break;
+        }
+
+            SpawnParticle(
+                Vector2Add(THIS->position, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
+                Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
+                Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
+    }
+}
+
+
+
+
+
 
 // returns 0 when dead
 //  non zero otherwise, which is treated as true
@@ -459,3 +481,9 @@ int IsPlayerAlive(){
 
 // remove it from existence
 #undef PLAYER_DATA
+
+
+
+
+
+
