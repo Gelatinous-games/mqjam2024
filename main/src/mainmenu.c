@@ -58,7 +58,9 @@ int _MainMenu_Update(float DeltaTime){
         ( IsKeyDown(KEY_SPACE) ) ||
         ( MouseOverRectangle(startButtonBoundsBG) && IsMouseButtonDown(MOUSE_BUTTON_LEFT) )
     ){
-        _MainMenu_ScheduleGameStart();
+        // _MainMenu_ScheduleGameStart();
+        __TITLEMANAGER_REF->awaitDestroy = 1;
+
     }
 
     // ************************************************************************************
@@ -94,10 +96,4 @@ int _MainMenu_Cleanup(){
 }
 
 
-
-
-void _MainMenu_ScheduleGameStart(){
-    //...
-    NEXT_FRAME_GAME_STARTS = true;
-}
 

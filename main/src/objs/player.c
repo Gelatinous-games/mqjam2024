@@ -28,7 +28,7 @@ int _Player_Init(void* self, float DeltaTime) {
 }
 
 int _Player_Update(void* self, float DeltaTime) {
-    PLAYER_DATA->deltaTimeSinceLastImpact -= DeltaTime;
+    PLAYER_DATA->deltaTimeSinceLastImpact += DeltaTime;
     PLAYER_DATA->deltaTimeSinceLastDeathParticle += DeltaTime;
 
     // ================
@@ -51,6 +51,8 @@ int _Player_Update(void* self, float DeltaTime) {
 
     return 0;
 }
+
+
 
 int _Player_Draw(void* self, float DeltaTime) {
     if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
@@ -419,22 +421,19 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
     float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
     PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;
 
-
-    // TODO: hit sound only when not playing dead
-    if(IsPlayerAlive()){
+    // dead ghost debris taking damage from something?
+    if(!IsPlayerAlive() && !IsSoundPlaying(TRACKS[DEATH_SOUND_ID]->track)){
         // ...
-        playSoundOnce(HIT_SOUND_ID);
+        setTrackVolume(HIT_SOUND_ID,DEATH_HITSOUND_VOLUME_PERCENT);
     }
-    else {
-        // ... 
-        // dead ghost debris taking damage from something?
-    }
+    playSoundOnce(HIT_SOUND_ID);
 }
 
 // returns 0 when dead
 //  non zero otherwise, which is treated as true
 int IsPlayerAlive(){
-    return CURRENT_PLAYER_LIFE_STATE;
+    if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD) return 1;
+    return 0;
 }
 
 
@@ -453,6 +452,8 @@ void HandlePlayerDeath(float DeltaTime){
 
     _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
 
+    // try kill game
+    __GAMEMANAGER_REF->awaitDestroy = 1;
 }
 
 void UndeadEffects(void *self, float DeltaTime){

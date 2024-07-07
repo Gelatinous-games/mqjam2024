@@ -105,27 +105,102 @@
 
 // #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
 
-
-static void UpdateDrawFrame(void); // Update and draw one frame
-
 // let C know this exists
-static void generateObjects();
+
+
+void _MAIN_InitialiseGlobalGameEnvironment();
+void _MAIN_DestroyGlobalGameEnvironment();
+
+static void _MAIN_DrawGlobalGameEnvironment(void); // Update and draw one frame
+
+
+static void _MAIN_PrepareMainMenu();
+
+
 static void prepareSounds();
 static void cleanupSounds();
-void HandleDebuggingKillPlayerCheck(float DeltaTime);
 
-void StartGame();
 
-static int GameShouldRender()
-{
-    if (CURRENT_GAME_SCENE_STATE != GAME_SCENE_STATE_MAINMENU){
-        return 1;
-    }
-    return 0;
-}
+
+
 
 int main()
 {
+
+    _MAIN_InitialiseGlobalGameEnvironment();
+
+#ifndef PLATFORM_WEB
+    SetTargetFPS(FRAMERATE);     // Set our game to run at 60 frames-per-second
+    while (!WindowShouldClose()) // Detect window close button or ESC key
+    {
+        _MAIN_DrawGlobalGameEnvironment();
+    }
+#else
+    // printf("%s\n",">> main() :: emscripten");
+    emscripten_set_main_loop(_MAIN_DrawGlobalGameEnvironment, FRAMERATE, 1);
+#endif
+
+    _MAIN_DestroyGlobalGameEnvironment();
+
+    return 0;
+}
+
+// Update and draw game frame
+static void _MAIN_DrawGlobalGameEnvironment(void)
+{
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## _MAIN_DrawGlobalGameEnvironment() ### START ###################");
+    // grab it
+    float DeltaTime = GetFrameTime();
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: TRY RENDER");
+    if (!SoundsStarted)
+    {
+        startSounds();
+        SoundsStarted = true;
+    }
+    // ...
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: SOUND UPDATE");
+    soundUpdate();
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: ALL UPDATE");
+    ProcessAllUpdates(DeltaTime);
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: UPDATE CAM");
+    UpdateCamera3D();
+    BeginDrawing();
+
+    // -------------------
+
+    ClearBackground(BLACK);
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS DRAWS");
+    ProcessAllDraws(DeltaTime);
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DRAW TIMER");
+    drawTimer();
+
+    // -------------------
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: END DRAW");
+    EndDrawing();
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS ADD/DESTROY");
+    ProcessFreshAdd();
+    ProcessAllDestroys();
+
+
+}
+
+/// @brief prepares all objects for initial main menu.
+static void _MAIN_PrepareMainMenu()
+{
+    __TITLEMANAGER_REF = CreateTitleManager();
+    AddToPool( __TITLEMANAGER_REF );
+    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
+}
+
+
+void _MAIN_InitialiseGlobalGameEnvironment(){
+
     gettimeofday(&timerStart, NULL);
 
     SetExitKey(KEY_F4); // Lets not make it *too* easy to leave lol
@@ -138,40 +213,34 @@ int main()
     cameraVelocity = Vector2Zero();
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
 
-    // Initialization
+    // OpenGL initialisation
     //--------------------------------------------------------------------------------------
     GameObjPoolInit();
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
-
-    _MainMenu_Init();
-    _DeathMenu_Init();
-
-    generateObjects();
+    
+    // Particle handler, so it's available during the main menu
+    AddToPool(CreateParticleObject());
 
     prepareSounds();
+
+
+    _MAIN_PrepareMainMenu();
+
     scaleAllTracksVolume(0.5f);
 
     ProcessFreshAdd();
+}
 
-#ifndef PLATFORM_WEB
-    SetTargetFPS(FRAMERATE);     // Set our game to run at 60 frames-per-second
-    while (!WindowShouldClose()) // Detect window close button or ESC key
-    {
-        UpdateDrawFrame();
-    }
-#else
-    // printf("%s\n",">> main() :: emscripten");
-    emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
-#endif
 
-    _MainMenu_Cleanup();
-    _DeathMenu_Cleanup();
+
+void _MAIN_DestroyGlobalGameEnvironment(){
+    // ...
 
     cleanupSounds();
 
-    // De-Initialization
+    // OpenGL De-Initialization
     //--------------------------------------------------------------------------------------
     CloseAudioDevice(); // Close audio device
     CloseWindow();      // Close window and OpenGL context
@@ -179,123 +248,12 @@ int main()
 
     GameObjPoolDestroy();
 
-    free(ASTEROID_REF_LIST);
-
-    return 0;
 }
 
-// Update and draw game frame
-static void UpdateDrawFrame(void)
-{
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### START ###################");
-    // grab it
-    float DeltaTime = GetFrameTime();
 
-    // HandleDebuggingKillPlayerCheck(DeltaTime);
-
-    // check for render
-    if (GameShouldRender())
-    {
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: TRY RENDER");
-        if (!SoundsStarted)
-        {
-            startSounds();
-            SoundsStarted = true;
-        }
-        // ...
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: SOUND UPDATE");
-        soundUpdate();
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: ALL UPDATE");
-        ProcessAllUpdates(DeltaTime);
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU UPDATE");
-        _DeathMenu_Update(DeltaTime);
-    }
-    // handle menus
-    else
-    {
-        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
-        {
-            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU UPDATE");
-            _MainMenu_Update(DeltaTime);
-        }
-    }
-
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: UPDATE CAM");
-    UpdateCamera3D();
-    BeginDrawing();
-    ClearBackground(BLACK);
-
-    // check for render
-    if (GameShouldRender())
-    {
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS DRAWS");
-        ProcessAllDraws(DeltaTime);
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DRAW TIMER");
-        drawTimer();
-        // when dead scene
-        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD)
-        {
-            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU DRAW");
-            // draw death menu over the top
-            _DeathMenu_Draw();
-        }
-    }
-    // handle menus
-    else
-    {
-        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
-        {
-            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU DRAW");
-            _MainMenu_Draw();
-        }
-    }
-
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: END DRAW");
-    EndDrawing();
-
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS ADD/DESTROY");
-    ProcessFreshAdd();
-    ProcessAllDestroys();
-
-    if (NEXT_FRAME_GAME_STARTS) StartGame();
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### END #####################");
-}
-
-/// @brief Generates all objects for initial gamestate.
-static void generateObjects()
-{
-
-    // Particle handler.
-    AddToPool(CreateParticleObject());
-
-    __GAMEMANAGER_REF = CreateGameManager();
-    AddToPool(__GAMEMANAGER_REF);
-
-    AddToPool(CreateTitleManager());
-    __GAMEMANAGER_INITIALISED_BEFORE = 1;
-}
-
-void HandleDebuggingKillPlayerCheck(float DeltaTime){
-    // kill player for debugging
-    if(IsKeyDown(KEY_K)){
-        playSoundOnce(HIT_SOUND_ID);
-        PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,5,5);
-    }
-}
-
-void StartGame(){
-    // ...
-    if (__GAMEMANAGER_INITIALISED_BEFORE)
-    {
-        // __GAMEMANAGER_REF = CreateGameManager();
-        // AddToPool(__GAMEMANAGER_REF);
-        // aaaa
-    }
-
-    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
-    NEXT_FRAME_GAME_STARTS = 0;
-}
 
 
 
 // #undef DEBUG_SPAMMER_PRINTF_PREFIX
+
+

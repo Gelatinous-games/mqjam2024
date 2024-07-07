@@ -32,7 +32,8 @@ static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
 static int NEXT_FRAME_GAME_STARTS = false;
 
 GameObj_Base *__GAMEMANAGER_REF;
-int __GAMEMANAGER_INITIALISED_BEFORE = 0;
+GameObj_Base *__TITLEMANAGER_REF;
+GameObj_Base *__DEATHMANAGER_REF;
 
 
 
@@ -65,6 +66,9 @@ int __GAMEMANAGER_INITIALISED_BEFORE = 0;
 
 
 #define DEATH_PARTICLE_RATE 10
+
+
+#define DEATH_HITSOUND_VOLUME_PERCENT 0.333333f
 
 
 #define ASTEROID_IMPACT_DAMMAGE_SHIELDED 150
@@ -113,6 +117,7 @@ static int SoundsStarted = false;
 
 
 
+
 struct timeval timerStart;
 
 
@@ -130,12 +135,9 @@ static GameObj_Base **BACKGROUNDSPRITE_OBJECT_REF_LIST;
 
 
 
-const static int NUMBER_OF_ASTEROIDS = 4;
-static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *WORMHOLE_OBJECT_REF;
 static GameObj_Base *PLANET_OBJECT_REF;
-// static GameObj_Base *STAR_OBJECT_REF;
 
 
 unsigned long long currMillis();

@@ -6,6 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../sound.h"
 
 
 #ifndef _camera
@@ -35,8 +36,17 @@ typedef struct {
 #define DATA ((_GameManager_Data *)(THIS->data_struct))
 
 
+
+
+void HandleDebuggingKillPlayerCheck(float DeltaTime);
+
+
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
+    // set the scene 
+    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
+
+
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
     DATA->spawnDistance = GAME_SPAWN_DIST;
@@ -88,6 +98,8 @@ int _GameManager_Init(void* self, float DeltaTime) {
 int _GameManager_Update(void* self, float DeltaTime) {
     // Perform some logic to check if the scene should end - if so, prepare for deletion on myself.
 
+    HandleDebuggingKillPlayerCheck(DeltaTime);
+
     GameObj_Base* obj;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &obj);
 
@@ -131,16 +143,26 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
         obj->awaitDestroy = 1;
     }
 
+
+
     free(BACKGROUNDSTARFIELD_EFFECT_REF_LIST);
     free(BACKGROUNDSPRITE_OBJECT_REF_LIST);
+
+
     free(DATA);
 
-    // ONLY ONCE DELETED can we add an instance of the manager for the next scene!
-    AddToPool(CreateDeathManager());
+
+    // make death manager
+    __DEATHMANAGER_REF = CreateDeathManager();
+    AddToPool(__DEATHMANAGER_REF);
+
+
     return 0;
 }
 
 GameObj_Base* CreateGameManager() {
+
+
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_GameManager_Init;
@@ -166,9 +188,21 @@ GameObj_Base* CreateGameManager() {
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size = Vector2Zero();
     
+    
+
+
+
     return obj_ptr;
 }
 
 #undef DATA
 
 // #undef DEBUG_SPAMMER_PRINTF_PREFIX
+
+
+void HandleDebuggingKillPlayerCheck(float DeltaTime){
+    // kill player for debugging
+    if(IsKeyDown(KEY_K)){
+        PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,100,100);
+    }
+}

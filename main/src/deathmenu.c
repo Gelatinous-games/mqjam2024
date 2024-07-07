@@ -77,7 +77,8 @@ int _DeathMenu_Update(float DeltaTime){
         ( IsKeyDown(KEY_SPACE) ) ||
         ( MouseOverRectangle(restartButtonBoundsBG) && IsMouseButtonDown(MOUSE_BUTTON_LEFT) )
     ){
-        _DeathMenu_ScheduleRestartGame();
+        // kill death manager
+        __DEATHMANAGER_REF->awaitDestroy = 1;
     }
 
     // ************************************************************************************
@@ -120,12 +121,5 @@ int _DeathMenu_Cleanup(){
 
 
 
-
-void _DeathMenu_ScheduleRestartGame(){
-    //...
-    // ...
-    NEXT_FRAME_GAME_STARTS = 1;
-    // __GAMEMANAGER_REF->awaitDestroy = 1;
-}
 
 

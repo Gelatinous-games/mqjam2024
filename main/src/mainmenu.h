@@ -33,5 +33,3 @@ int _MainMenu_Init();
 int _MainMenu_Update(float DeltaTime);
 int _MainMenu_Draw();
 int _MainMenu_Cleanup();
-
-void _MainMenu_ScheduleGameStart();
