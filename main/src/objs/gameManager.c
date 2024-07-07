@@ -38,11 +38,16 @@ typedef struct {
     char madeDeathManager;
 
     char makeTitleScreen;
+
+    float loadSphereRadius;
+    char DoLoadIn;
+    char DoLoadOut;
 } _GameManager_Data;
 
 #define DATA ((_GameManager_Data *)(THIS->data_struct))
 
-#define MAX_ASTEROIDS 5
+#define INITIAL_SPAWN_DIST 25
+#define MAX_ASTEROIDS 7
 #define MAX_STARS 2
 
 // Create everything needed for a scene
@@ -53,12 +58,16 @@ int _GameManager_Init(void* self, float DeltaTime) {
     ClearParticles();
     gettimeofday(&timerStart, NULL);
 
+    DATA->DoLoadIn = 1;
+    DATA->DoLoadOut = 0;
+    DATA->loadSphereRadius = 1;
+
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
-    DATA->spawnDistance = GAME_SPAWN_DIST;
+    DATA->spawnDistance = INITIAL_SPAWN_DIST;
 
     DATA->starCount = 0;
-    DATA->asteroidCount = 1;
+    DATA->asteroidCount = 0;
 
     DATA->madeDeathManager = 0;
 
@@ -72,7 +81,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     SHIELD_OBJECT_REF = CreateShieldObject();
     AddToPool(SHIELD_OBJECT_REF);
 
-    AddToPool(CreateAsteroid());
+    // AddToPool(CreateAsteroid());
     // AddToPool(CreateStarObject());
     AddToPool(CreateHealthBar());
 
@@ -104,11 +113,19 @@ int _GameManager_Init(void* self, float DeltaTime) {
 
 int _GameManager_Update(void* self, float DeltaTime) {
     // Perform some logic to check if the scene should end - if so, prepare for deletion on myself.
+    if (DATA->DoLoadIn) {
+        DATA->loadSphereRadius -= DeltaTime;
+        if (DATA->loadSphereRadius <= 0) {
+            DATA->DoLoadIn = 0;
+        }
+    }
 
     GameObj_Base* obj;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &obj);
 
     if (!obj) return -1; // NO PLAYER FOUND!!
+
+    THIS->position = obj->position;
 
     DATA->spawnDistance -= obj->velocity.x * DeltaTime;
 
@@ -151,11 +168,14 @@ int _GameManager_Update(void* self, float DeltaTime) {
 int _GameManager_Draw(void* self, float DeltaTime) {
     drawTimer();
 
+    if (DATA->DoLoadIn) {
+        RenderCircleRelative(THIS->position, DATA->loadSphereRadius * cameraBounds.x * 1.1, BLACK);
+    }
     return 0;
 }
 
 int _GameManager_Destroy(void* self, float DeltaTime) {
-    printf("DESTROYING SELF\n");
+    ClearParticles();
 
     GameObj_Base* obj;
 
@@ -203,7 +223,7 @@ GameObj_Base* CreateGameManager() {
     // consult the flag file (flags.md) for information on what each flag is.
     obj_ptr->flags = FLAG_GAME_MANAGER;
 
-    obj_ptr->currentLayer = LAYER_GUI;
+    obj_ptr->currentLayer = LAYER_GUI_2;
 
     obj_ptr->radius = 0;
     obj_ptr->mass = 0;

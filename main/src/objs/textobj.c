@@ -37,11 +37,16 @@ typedef struct {
 int _TextObj_Init(void* self, float DeltaTime) {
     DATA->visible = 1;
 
+    SetScaleFactor(1);
     // properly set size
-    
+    printf("size is %f, %f\n", THIS->size.x, THIS->size.y);
     Vector2 size = GetScaledSize(THIS->size);
+    printf("scaled size is %f, %f\n", size.x, size.y);
     int width = MeasureText(DATA->data, size.y);
+    printf("text width is %d\n", width);
 
+    // FACE MY WRATH
+    //int i = 1/0;
     size.x = width;
     THIS->size = GetUnscaledSize(size);
 
@@ -61,6 +66,7 @@ int _TextObj_Update(void* self, float DeltaTime) {
 
 int _TextObj_Draw(void* self, float DeltaTime) {
     if (DATA->visible) {
+        // printf("rendering with pos <%f,%f> and size <%f,%f>\n", THIS->position.x, THIS->position.y, THIS->size.x, THIS->size.y);
         Vector2 size = GetScaledSize(THIS->size);
         int width = MeasureText(DATA->data, size.y);
 

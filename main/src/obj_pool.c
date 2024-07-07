@@ -112,6 +112,7 @@ void ProcessAllUpdates(float DeltaTime) {
     for (int i = 0; i < _gameObjPoolSize; i++) {
         GameObj_Base* obj = _gameObjPool[i];
         obj->Update_Func(obj, DeltaTime);
+        SetScaleFactor(1);
     }
 }
 
@@ -128,6 +129,8 @@ void ProcessAllDraws(float DeltaTime) {
 
             if (obj->currentLayer == l)
                 obj->Draw_Func(obj, DeltaTime);
+
+            SetScaleFactor(1);
         }
     }
 }

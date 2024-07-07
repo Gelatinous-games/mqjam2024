@@ -48,7 +48,7 @@ int _DeathManager_Init(void* self, float DeltaTime) {
     DATA->darkRamp = 0;
     DATA->darkRampMult = 0.1;
 
-    DATA->timeToCreateOptions = 1;
+    DATA->timeToCreateOptions = 5;
     DATA->doneCreatedOptions = 0;
 
     AddToPool(obj);

@@ -139,6 +139,8 @@ int main()
     cameraVelocity = Vector2Zero();
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
 
+    SetScaleFactor(1);
+
     // Initialization
     //--------------------------------------------------------------------------------------
     GameObjPoolInit();
