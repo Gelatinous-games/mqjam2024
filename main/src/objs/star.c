@@ -35,7 +35,7 @@
 
 #define STAR_RANDOM_RANGE 4
 
-#define STAR_SPRITE_COUNT 7
+#define STAR_SPRITE_COUNT 9
 
 typedef struct {
     float maxRange;
@@ -45,9 +45,10 @@ typedef struct {
 
 
 // the ID of black hole
-#define BLACK_HOLE_SPRITE_ID 4
+#define BLACK_HOLE_SPRITE_ID_1 4
+#define BLACK_HOLE_SPRITE_ID_2 4
 // d20 dice check for when we roll a black hole for if we should reroll it
-#define BLACK_HOLE_REROLL_DC 11
+#define BLACK_HOLE_REROLL_DC 9
 // how much we amplify the stats for them
 #define BLACK_HOLE_POWER_FACTOR 1.333333f
 
@@ -75,7 +76,10 @@ void _StarObject_Randomize(void* self) {
     STAR_NEARBY_DATA->spriteID = (INT_RAND % STAR_SPRITE_COUNT);
 
     // sometimes reroll on blackhole
-    if(STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID && (INT_RAND % 20) >= BLACK_HOLE_REROLL_DC ) {
+    if(
+        ( STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_1 || STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_2 ) &&
+            ((INT_RAND % 20) >= BLACK_HOLE_REROLL_DC)
+    ) {
         STAR_NEARBY_DATA->spriteID = (INT_RAND % STAR_SPRITE_COUNT);
     }
 
@@ -88,7 +92,9 @@ void _StarObject_Randomize(void* self) {
     STAR_NEARBY_DATA->maxPull = (FLOAT_RAND * FREE_MAX_SPEED * 4) + FREE_MAX_SPEED;
     STAR_NEARBY_DATA->maxRange = (FLOAT_RAND * 8) + 8;
 
-    if(STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID){
+    if(
+        ( STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_1 || STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_2 )
+    ){
         // BLACK HOLE, double them
         STAR_NEARBY_DATA->maxPull = STAR_NEARBY_DATA->maxPull * BLACK_HOLE_POWER_FACTOR;
         STAR_NEARBY_DATA->maxRange = STAR_NEARBY_DATA->maxRange * BLACK_HOLE_POWER_FACTOR;
@@ -126,6 +132,8 @@ int _StarObject_Init(void* self, float DeltaTime) {
         _starSprites[index++] = CreateSprite("resources/stars/S4.png");
         _starSprites[index++] = CreateSprite("resources/stars/S5.png");
         _starSprites[index++] = CreateSprite("resources/stars/S6.png");
+        _starSprites[index++] = CreateSprite("resources/stars/S7.png");
+        _starSprites[index++] = CreateSprite("resources/stars/S8.png");
     }
     _StarObject_Randomize(self);
 

@@ -137,7 +137,7 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
     // ...
     for(int i = 0; i < _WORMHOLE_NUMBER_OF_SPRITES; i++){
         DestroySprite(_Wormhole_spriteList[i]);
-        _Wormhole_spriteList[i] = 0;
+        // _Wormhole_spriteList[i] = 0;
     }
 
     // ...
