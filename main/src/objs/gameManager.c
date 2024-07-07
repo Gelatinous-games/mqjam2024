@@ -34,8 +34,6 @@ typedef struct {
 
 #define DATA ((_GameManager_Data *)(THIS->data_struct))
 
-#define MAX_ASTEROIDS 5
-#define MAX_STARS 2
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {

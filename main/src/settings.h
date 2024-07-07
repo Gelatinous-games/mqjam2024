@@ -108,6 +108,8 @@ static int SoundsStarted = false;
 #define GAME_SPAWN_ASTEROID 0.75
 
 
+#define MAX_ASTEROIDS 5
+#define MAX_STARS 2
 
 
 
