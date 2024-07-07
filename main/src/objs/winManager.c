@@ -6,6 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../sound.h"
 
 
 #ifndef _camera
@@ -53,6 +54,8 @@ int _WinManager_Init(void* self, float DeltaTime) {
 
     DATA->timeToCreateOptions = 2.5;
     DATA->doneCreatedOptions = 0;
+
+    playSoundOnce(WIN_SOUND_ID);
 
     GameObj_Base* obj = CreateTextObj();
     AddToPool(obj);
