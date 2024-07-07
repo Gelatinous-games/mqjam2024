@@ -33,7 +33,7 @@ Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be
 > Each object base has 4 function references which you can overwrite in a dedicated creation function for your object. These functions are for initialization, 
 destruction, frame logic & rendering.
 
-> [CAUTION]
+> [!CAUTION]
 > Make sure to destroy all resources
 
 > [!WARNING]
