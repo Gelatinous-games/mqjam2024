@@ -92,10 +92,13 @@ int _GameManager_Init(void* self, float DeltaTime) {
         /* code */
         BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
         AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
+
+        BACKGROUND_OBJECT_REF = CreateBackgroundSprites(i);
+        AddToPool(BACKGROUND_OBJECT_REF);
     }
     
-    BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
-    AddToPool(BACKGROUND_OBJECT_REF);
+    // BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
+    // AddToPool(BACKGROUND_OBJECT_REF);
     return 0;
 }
 
