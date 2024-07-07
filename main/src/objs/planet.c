@@ -105,6 +105,7 @@ int _Planet_Destroy(void* self, float DeltaTime) {
         DestroySprite(_planetSprites[i]);
     }
     free(_planetSprites);
+    _planetSprites = 0;
 
 
     free(PLANET_DATA);

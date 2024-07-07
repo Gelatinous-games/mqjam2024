@@ -218,6 +218,7 @@ int _HealthBar_Destroy(void* self, float DeltaTime) {
     }
 
     free(HEALTHBAR_GASLEVEL_LIST);
+    HEALTHBAR_GASLEVEL_LIST = 0;
 
     free(HEALTHBAR_DATA);
 
