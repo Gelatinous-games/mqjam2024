@@ -201,12 +201,27 @@ static float getTrackVolume(int soundID){
     return TRACKS[soundID]->scaleOfBaseVolume;
     
 }
-
+static void SoundManager_EnableMenuMusic(){
+    setTrackVolume(BGMUSIC_LOOP_ID,0.0f);
+    setTrackVolume(BGMENUMUSIC_SOUND_ID,1.0f);
+}
+static void SoundManager_EnableGameMusic(){
+    setTrackVolume(BGMUSIC_LOOP_ID,1.0f);
+    setTrackVolume(BGMENUMUSIC_SOUND_ID,0.0f);
+}
 
 static void SoundManagerHandleDeath(){
     // silence any impact sounds
     setTrackVolume(HIT_SOUND_ID,0.0f);
     // max volume scale
+    setTrackVolume(THRUST_START_ID, 0.0f);
+    setTrackVolume(THRUST_LOOP_ID, 0.0f);
+    setTrackVolume(THRUST_END_ID, 5.0f);
+    if (CURRENT_PLAYER_THRUST_STATE != PLAYER_STATE_NOTHRUST)
+    {
+        playSoundOnce(THRUST_END_ID);
+    }
+    
     setTrackVolume(DEATH_SOUND_ID, 1.0f);
     // tell it to play if it isnt, and never played
     if( !(IsSoundPlaying(TRACKS[DEATH_SOUND_ID]->track)) && !PLAYED_DEATH_SOUND_BEFORE ){

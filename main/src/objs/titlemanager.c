@@ -47,6 +47,10 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     // Create any objects we need for the title screen HERE.
     // They should be destroyed in our destroy function.
 
+
+    SoundManager_EnableMenuMusic();
+
+
     DATA->shipSprite = CreateSprite("resources/spaceship_outlined.png");
     cameraPosition = Vector2Zero();
     THIS->size = (Vector2){2, 2};

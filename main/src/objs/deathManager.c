@@ -43,6 +43,8 @@ int _DeathManager_Init(void* self, float DeltaTime) {
     // Create any objects we need for the death screen HERE.
     // They should be destroyed in our destroy function.
 
+    SoundManager_EnableMenuMusic();
+    
     GameObj_Base* obj = CreateTextObj();
 
     DATA->darkRamp = 0;

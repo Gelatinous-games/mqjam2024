@@ -461,10 +461,10 @@ void _PLAYER_HandleDeath(void *self, float DeltaTime){
             break;
         }
 
-            SpawnParticle(
-                Vector2Add(THIS->position, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
-                Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
-                Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
+        SpawnParticle(
+            Vector2Add(THIS->position, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
+            Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
+            Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
     }
 }
 

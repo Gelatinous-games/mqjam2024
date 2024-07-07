@@ -54,11 +54,6 @@ typedef struct {
 
 
 
-int CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
-
-int CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
-
-char playerCanControl = 0;
 
 
 

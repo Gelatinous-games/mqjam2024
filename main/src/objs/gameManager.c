@@ -56,6 +56,10 @@ typedef struct {
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
+
+
+    SoundManager_EnableGameMusic();
+
     playerCanControl = 1;
     PLAYED_DEATH_SOUND_BEFORE = 0;
     setTrackVolume(HIT_SOUND_ID, 1);
