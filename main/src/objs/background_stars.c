@@ -32,10 +32,20 @@
 #define _misc
 #include "../misc.c"
 #endif
+
+
+typedef struct
+{
+    Vector2 position;
+    Color colour;
+} BackgroundStar_Data;
+
+
 typedef struct
 {
     // unsigned int randomSeed;
     int *listOfStarsPosistion; // Pointer to a list of random generated postions.
+    BackgroundStar_Data **BACKGROUNDSTARDATA_POOL;
     int minNumberOfStars;
     int maxNumberOfStars;
     int numberOfStars;
@@ -48,31 +58,28 @@ typedef struct
     // int xVelocity;
 } BackgroundStarField_Data;
 
-typedef struct
-{
-    Vector2 position;
-    Color colour;
-} BackgroundStar_Data;
 
 #define BACKGROUNDSTARFIELD_DATA_LOCALREF ((BackgroundStarField_Data *)(THIS->data_struct))
-BackgroundStar_Data **BACKGROUNDSTARDATA_POOL;
+
 
 GameObj_Base *player;
-BackgroundStar_Data BGstars[100];
+// BackgroundStar_Data BGstars[100];
 int offsetX = 0;
 float minTailYVelocityClamp = 0.5f;//used when setting tail y pos
 
 int _BackgroundStarField_Init(void *self, float DeltaTime)
 {
     // generate the seed
-    SetRandomSeed(GAME_TIME);
+    SetRandomSeed((unsigned int)(GAME_TIME));
     // BACKGROUNDSTARFIELD_DATA_LOCALREF->randomSeed =
     BACKGROUNDSTARFIELD_DATA_LOCALREF->maxNumberOfStars = BACKGROUNDSTARS_MIN_NUMBER_STARS;
     BACKGROUNDSTARFIELD_DATA_LOCALREF->minNumberOfStars = BACKGROUNDSTARS_MAX_NUMBER_STARS;
-    BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars = GetRandomValue(BACKGROUNDSTARFIELD_DATA_LOCALREF->minNumberOfStars, BACKGROUNDSTARFIELD_DATA_LOCALREF->maxNumberOfStars);
+    // BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars = GetRandomValue(BACKGROUNDSTARFIELD_DATA_LOCALREF->minNumberOfStars, BACKGROUNDSTARFIELD_DATA_LOCALREF->maxNumberOfStars);
+    BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars = Lerp(BACKGROUNDSTARFIELD_DATA_LOCALREF->minNumberOfStars, BACKGROUNDSTARFIELD_DATA_LOCALREF->maxNumberOfStars, FLOAT_RAND);
     // get the random sequence for star position
     // index between 0->numberOfStars-1 is the x positions, index between numberOfStars -> numberOfStars*2-1 is the y positions
-    BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion = LoadRandomSequence(BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars * 2, 100, BACKGROUNDSTARFIELD_DATA_LOCALREF->cameraObjectScale * (cameraBounds.x + 1) * 100);
+    BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion = LoadRandomSequence(BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars * 2 +4, 100, BACKGROUNDSTARFIELD_DATA_LOCALREF->cameraObjectScale * (cameraBounds.x + 1) * 100);
+    
     THIS->position = cameraPosition;
     BACKGROUNDSTARFIELD_DATA_LOCALREF->starSize = 0.1f;
     BACKGROUNDSTARFIELD_DATA_LOCALREF->tailLengthScaleX = 0.0f;
@@ -83,11 +90,12 @@ int _BackgroundStarField_Init(void *self, float DeltaTime)
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
 
     // Create the array of stars to hold their posistions.
-    BACKGROUNDSTARDATA_POOL = (BackgroundStar_Data **)malloc(sizeof(BackgroundStar_Data *) * BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars);
+    BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL = (BackgroundStar_Data **)malloc(sizeof(BackgroundStar_Data *) * BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars);
     for (int i = 0; i < BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars; ++i)
     {
-        BACKGROUNDSTARDATA_POOL[i] = malloc(sizeof(BackgroundStar_Data));
-        BACKGROUNDSTARDATA_POOL[i]->colour = BACKGROUNDSTARS_COLOUR; // yellow
+        BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i] = (BackgroundStar_Data *)malloc(sizeof(BackgroundStar_Data));
+        BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position = Vector2Zero(); // zero
+        BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->colour = BACKGROUNDSTARS_COLOUR; // yellow
     }
     return 0;
 }
@@ -109,26 +117,26 @@ int _BackgroundStarField_Update(void *self, float DeltaTime)
     // move the all the stars across the screen
     for (int i = 0; i < BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars; i++)
     {
-        if(!BACKGROUNDSTARDATA_POOL){
+        if(!BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL){
             // ...
             printf("%s\n","why's it spicy");
             continue;
         }
-        if(BACKGROUNDSTARDATA_POOL[i]){
+        if(BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]){
             // ...
-            Vector2 currPosition = BACKGROUNDSTARDATA_POOL[i]->position;
-            printf("BACKGROUNDSTARDATA_POOL[%d]->position { %f, %f } \n", i, currPosition.x, currPosition.y);
+            Vector2 currPosition = BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position;
+            printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d]->position { %f, %f } \n", i, currPosition.x, currPosition.y);
             float currCamScale = BACKGROUNDSTARFIELD_DATA_LOCALREF->cameraObjectScale;
-            printf("BACKGROUNDSTARDATA_POOL[%d]->cameraObjectScale { %f } \n", i, currCamScale);
+            printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d]->cameraObjectScale { %f } \n", i, currCamScale);
             Vector2 scaledVelocity = Vector2Scale(THIS->velocity, DeltaTime * currCamScale);
-            printf("BACKGROUNDSTARDATA_POOL[%d] scaled velocity { %f, %f } \n", i, scaledVelocity.x, scaledVelocity.y);
+            printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] scaled velocity { %f, %f } \n", i, scaledVelocity.x, scaledVelocity.y);
             Vector2 addedVelocity = Vector2Add(currPosition, scaledVelocity);
-            BACKGROUNDSTARDATA_POOL[i]->position.x = addedVelocity.x;
-            BACKGROUNDSTARDATA_POOL[i]->position.y = addedVelocity.y;
-            printf("BACKGROUNDSTARDATA_POOL[%d] NEW POSITION { %f, %f } \n", i, BACKGROUNDSTARDATA_POOL[i]->position.x, BACKGROUNDSTARDATA_POOL[i]->position.y);
+            BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.x = addedVelocity.x;
+            BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.y = addedVelocity.y;
+            printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] NEW POSITION { %f, %f } \n", i, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.x, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.y);
         }
         else {
-            printf("BACKGROUNDSTARDATA_POOL[%d] DOESNT EXIST\n", i);
+            printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] DOESNT EXIST\n", i);
         }
     }
     return 0;
@@ -166,9 +174,9 @@ void _BackgroundStarField_Populate(void *self)
         float yPosition = 0.01 * (float)BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion[j*2+1];
 
         // add the player velocity to the stars. make the stars move
-        Vector2 pos = Vector2Subtract(BACKGROUNDSTARDATA_POOL[j]->position, (Vector2){xPosition, yPosition});
+        Vector2 pos = Vector2Subtract(BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[j]->position, (Vector2){xPosition, yPosition});
 
-        resetStarPostionIfOutOfBounds(self, BACKGROUNDSTARDATA_POOL[j]);
+        resetStarPostionIfOutOfBounds(self, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[j]);
 
         // draw STAR
         //Star head positions
@@ -177,7 +185,7 @@ void _BackgroundStarField_Populate(void *self)
         //Star tail position  
         Vector2 v1 = (Vector2){pos.x + BACKGROUNDSTARFIELD_DATA_LOCALREF->tailMinLength * BACKGROUNDSTARFIELD_DATA_LOCALREF->tailLengthScaleX, pos.y - BACKGROUNDSTARFIELD_DATA_LOCALREF->tailUpDownOffestScale * BACKGROUNDSTARFIELD_DATA_LOCALREF->tailLengthScaleY}; // tail point;
         //draw the STAR
-        RenderTriangleAbsolute(v1, v2, v3, BACKGROUNDSTARDATA_POOL[j]->colour);
+        RenderTriangleAbsolute(v1, v2, v3, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[j]->colour);
     }
 }
 
@@ -194,18 +202,18 @@ int _BackgroundStarField_Destroy(void *self, float DeltaTime)
     // POSSIBLE_SEGFAULT: check for seg ables
     printf(">> unloading positions\n");
     UnloadRandomSequence(BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion);
-    if (BACKGROUNDSTARDATA_POOL) {
-        printf(">> Destroying BACKGROUNDSTARDATA_POOL\n");
+    if (BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL) {
+        printf(">> Destroying BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL\n");
         for (int i = 0; i < BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars; ++i)
         {
-            BackgroundStar_Data* obj = BACKGROUNDSTARDATA_POOL[i];
+            BackgroundStar_Data* obj = BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i];
             if (obj)
                free(obj);
-            BACKGROUNDSTARDATA_POOL[i] = 0;
+            BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i] = 0;
         }
     
-        free(BACKGROUNDSTARDATA_POOL);
-        BACKGROUNDSTARDATA_POOL = 0;
+        free(BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL);
+        BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL = 0;
     }
     free(BACKGROUNDSTARFIELD_DATA_LOCALREF);
 

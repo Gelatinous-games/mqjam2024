@@ -122,9 +122,9 @@ static GameObj_Base *SHIELD_OBJECT_REF;
 static GameObj_Base *PLAYER_OBJECT_REF;
 
 
-const static int NUMBER_OF_BACKGROUNDSTARS_LAYERS = 3;
-static GameObj_Base **BACKGROUNDSTARS_EFFECT_REF_LIST;
-static GameObj_Base **BACKGROUND_OBJECT_REF_LIST;
+const static int NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS = 3;
+static GameObj_Base **BACKGROUNDSTARFIELD_EFFECT_REF_LIST;
+static GameObj_Base **BACKGROUNDSPRITE_OBJECT_REF_LIST;
 
 
 
@@ -133,7 +133,7 @@ static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *WORMHOLE_OBJECT_REF;
 static GameObj_Base *PLANET_OBJECT_REF;
-static GameObj_Base *STAR_OBJECT_REF;
+// static GameObj_Base *STAR_OBJECT_REF;
 
 
 unsigned long long currMillis();
@@ -155,7 +155,7 @@ Vector2 GetRandomUnitVector();
 #define INT_RAND (int)(rand())
 #define FLOAT_RAND ((float)(rand()) / (float)RAND_MAX)
 #define CHAR_RAND ((char)(rand() & 0xff))
-#define GAME_TIME GetTime
+#define GAME_TIME GetTime()
 #endif
 
 

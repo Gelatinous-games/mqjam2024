@@ -156,7 +156,7 @@ int _BackgroundSprites_Draw(void *self, float DeltaTime)
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
     {
         // printf("drawing %d\n",i);
-        Vector2 currSpritePosition = BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position;
+        // Vector2 currSpritePosition = BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position;
 
         // determine if we should index into our list
         // or if it was the star brush we rolled

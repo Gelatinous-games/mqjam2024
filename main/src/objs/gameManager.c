@@ -65,19 +65,24 @@ int _GameManager_Init(void* self, float DeltaTime) {
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
 
+    printf("number of starfield layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
      // Background Object
-    BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    BACKGROUND_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
+    BACKGROUNDSTARFIELD_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+    BACKGROUNDSPRITE_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS; i++)
     {
         /* code */
         // Background Stars 3 layers
-        BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
-        AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
+        printf("creating BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] on layer %d\n", i, 1+i);
+        BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
+        printf("adding BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] to pool\n", i);
+        AddToPool(BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i]);
 
+        printf("creating BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] on layer %d\n", i, 1+i);
         // Background sprites 3 layers, Small/Medium/Large
-        BACKGROUND_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
-        AddToPool(BACKGROUND_OBJECT_REF_LIST[i]);
+        BACKGROUNDSPRITE_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
+        printf("adding BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] to pool\n", i);
+        AddToPool(BACKGROUNDSPRITE_OBJECT_REF_LIST[i]);
     }
     return 0;
 }
@@ -128,8 +133,8 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
         obj->awaitDestroy = 1;
     }
 
-    free(BACKGROUNDSTARS_EFFECT_REF_LIST);
-    free(BACKGROUND_OBJECT_REF_LIST);
+    free(BACKGROUNDSTARFIELD_EFFECT_REF_LIST);
+    free(BACKGROUNDSPRITE_OBJECT_REF_LIST);
     free(DATA);
 
     // ONLY ONCE DELETED can we add an instance of the manager for the next scene!

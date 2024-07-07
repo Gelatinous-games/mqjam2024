@@ -49,17 +49,17 @@ Sprite** _starSprites;
 
 void _StarObject_Randomize(void* self) {
     Vector2 originPos;
-    Vector2 originVel;
+    // Vector2 originVel;
     GameObj_Base* player;
     if (!GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player)) {
         // if no player found, default to camera pos.
         // 0/0; // hollistic debugging.
         originPos = cameraPosition;
-        originVel = Vector2Zero();
+        // originVel = Vector2Zero();
     }
     else {
         originPos = player->position;
-        originVel = player->velocity;
+        // originVel = player->velocity;
     }
 
 

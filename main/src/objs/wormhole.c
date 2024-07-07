@@ -59,25 +59,25 @@ int _Wormhole_Update(void *self, float DeltaTime)
 {
 
     // we can cast our data struct to the right data like so:
-    Wormhole_Data *data = THIS->data_struct;
+    // Wormhole_Data *data = THIS->data_struct;
 
     // // dont let the player past the wormhole
     // if (PLAYER_OBJECT_REF->position.x > THIS->position.x) {
     //     PLAYER_OBJECT_REF->position.x = THIS->position.x;
     // }
 
-    // An example of searching for objects with neutral flag.
-    for (int i = 0; i != -1;)
-    {
-        GameObj_Base *obj;
-        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
+    // // An example of searching for objects with neutral flag.
+    // for (int i = 0; i != -1;)
+    // {
+    //     GameObj_Base *obj;
+    //     i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
 
-        // Check if obj is not null
-        if (!obj || i == -1)
-            break;
+    //     // Check if obj is not null
+    //     if (!obj || i == -1)
+    //         break;
 
-        // Do an operation with the result...
-    }
+    //     // Do an operation with the result...
+    // }
 
     return 0;
 }
@@ -85,9 +85,9 @@ int _Wormhole_Update(void *self, float DeltaTime)
 int _Wormhole_Draw(void *self, float DeltaTime)
 {
     // ibid
-    Wormhole_Data *data = THIS->data_struct;
+    // Wormhole_Data *data = THIS->data_struct;
 
-    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(WORMHOLE_DATA->sprite, THIS->position, THIS->size, 0, WHITE);
 
     return 0;
 }
@@ -98,9 +98,9 @@ int _Wormhole_Destroy(void *self, float DeltaTime)
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    Wormhole_Data *data = THIS->data_struct;
-    free(data->sprite);
-    free(data);
+    // Wormhole_Data *data = THIS->data_struct;
+    free(WORMHOLE_DATA->sprite);
+    free(WORMHOLE_DATA);
 
     return 0;
 }

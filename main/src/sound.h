@@ -38,15 +38,15 @@ static float MASTER_VOLUME = 0.5f;
 
 static int PLAYED_DEATH_SOUND_BEFORE = 0;
 
-static void setAllTracksVolume(float volume){
-    MASTER_VOLUME = volume;
-    for (int i = 0; i < TRACK_COUNT; i++)
-    {
-        TRACKS[i]->scaleOfBaseVolume = volume;
-    }
+// static void setAllTracksVolume(float volume){
+//     MASTER_VOLUME = volume;
+//     for (int i = 0; i < TRACK_COUNT; i++)
+//     {
+//         TRACKS[i]->scaleOfBaseVolume = volume;
+//     }
     
-    SetMasterVolume(volume);
-}
+//     SetMasterVolume(volume);
+// }
 
 static void scaleAllTracksVolume(float scale) {
     MASTER_VOLUME = MASTER_VOLUME * scale;
@@ -181,11 +181,11 @@ static void setTrackVolume(int soundID, float volume){
     SetSoundVolume(TRACKS[soundID]->track, (TRACKS[soundID]->baseVolume)*(TRACKS[soundID]->scaleOfBaseVolume));
     
 }
-static float getTrackVolume(int soundID){
+// static float getTrackVolume(int soundID){
     
-    return TRACKS[soundID]->scaleOfBaseVolume;
+//     return TRACKS[soundID]->scaleOfBaseVolume;
     
-}
+// }
 
 
 static void PlayDeathSound(){
