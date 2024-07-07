@@ -68,7 +68,7 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     BACKGROUNDSTARS_DATA->minStars = 10;
     BACKGROUNDSTARS_DATA->numStars = GetRandomValue(BACKGROUNDSTARS_DATA->minStars, BACKGROUNDSTARS_DATA->maxStars);
     // get the random sequence for star position
-    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100,  BACKGROUNDSTARS_DATA->ObScale * (cameraBounds.x + 1) * 100);
+    BACKGROUNDSTARS_DATA->listRandomSequence = LoadRandomSequence(BACKGROUNDSTARS_DATA->numStars * 2, 100, BACKGROUNDSTARS_DATA->ObScale * (cameraBounds.x + 1) * 100);
     THIS->position = cameraPosition;
     BACKGROUNDSTARS_DATA->starSize = 0.1f;
     BACKGROUNDSTARS_DATA->tailLength = 30;
@@ -76,22 +76,22 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     // BACKGROUNDSTARS_DATA->ObScale = scaleF;
 
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
-   //Create the array of stars to hole their posistions. 
+                                                             // Create the array of stars to hole their posistions.
     BGSTAR_POOL = (BGStar_Data **)malloc(sizeof(BGStar_Data *) * BACKGROUNDSTARS_DATA->numStars);
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i)
     {
         BGSTAR_POOL[i] = malloc(sizeof(BGStar_Data));
-        BGSTAR_POOL[i]->colour = CLITERAL(Color){253,249,200,100};//yellow
+        BGSTAR_POOL[i]->colour = CLITERAL(Color){253, 249, 200, 100}; // yellow
     }
     return 0;
 }
 
 int _BackgroundStars_Update(void *self, float DeltaTime)
 {
-    //get the player's velocity
+    // get the player's velocity
     THIS->velocity = (Vector2){-1.0f * (PLAYER_OBJECT_REF->velocity.x), -0.5f * (PLAYER_OBJECT_REF->velocity.y)};
 
-    //move the stars across the screen
+    // move the stars across the screen
     for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; i++)
     {
         BGSTAR_POOL[i]->position = Vector2Add(BGSTAR_POOL[i]->position, Vector2Scale(THIS->velocity, DeltaTime * BACKGROUNDSTARS_DATA->ObScale));
@@ -101,8 +101,9 @@ int _BackgroundStars_Update(void *self, float DeltaTime)
     return 0;
 }
 
-void _BackgroundStars_Populate(void *self){
-// BackgroundStars_Data *data = THIS->data_struct;
+void _BackgroundStars_Populate(void *self)
+{
+    // BackgroundStars_Data *data = THIS->data_struct;
     scaleFactor = (Vector2){BACKGROUNDSTARS_DATA->ObScale, BACKGROUNDSTARS_DATA->ObScale};
     // get the tail lenth with player velocity. ma
     int tailLength = player->velocity.x;
@@ -111,7 +112,7 @@ void _BackgroundStars_Populate(void *self){
 
     for (int j = 0; j < BACKGROUNDSTARS_DATA->numStars; ++j) // populate the screen with stars at random posistion
     {
-        //set star's random seeded posistions
+        // set star's random seeded posistions
         float xVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[j]; // add the tail
         float yVal = 0.01 * (float)BACKGROUNDSTARS_DATA->listRandomSequence[BACKGROUNDSTARS_DATA->numStars + j];
 
@@ -147,11 +148,18 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
     // free our data struct here. free anything contained.
     // free(BACKGROUNDSTARS_DATA->sprite);
     UnloadRandomSequence(BACKGROUNDSTARS_DATA->listRandomSequence);
-    for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i)
+    if (BGSTAR_POOL)
     {
-        free(BGSTAR_POOL[i]);
+        for (int i = 0; i < BACKGROUNDSTARS_DATA->numStars; ++i)
+        {
+            BGStar_Data *obj = BGSTAR_POOL[i];
+            if (obj)
+                free(BGSTAR_POOL[i]);
+        }
+        free(BGSTAR_POOL);
+        BGSTAR_POOL = 0;
     }
-    free(BGSTAR_POOL);
+
     free(BACKGROUNDSTARS_DATA);
 
     return 0;
@@ -167,7 +175,7 @@ GameObj_Base *CreateBackgroundStars(enum LAYER_ID layer, float objectScale)
     // ==== setup the data scruct data
     obj_ptr->data_struct = malloc(sizeof(BackgroundStars_Data));
 
-    BackgroundStars_Data* tmp = obj_ptr->data_struct;
+    BackgroundStars_Data *tmp = obj_ptr->data_struct;
     tmp->ObScale = objectScale;
 
     // ============================================================

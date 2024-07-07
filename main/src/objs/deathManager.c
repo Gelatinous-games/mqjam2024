@@ -108,7 +108,6 @@ int _DeathManager_Draw(void* self, float DeltaTime) {
 
 int _DeathManager_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the death screen.
-
     free(DATA);
     return 0;
 }

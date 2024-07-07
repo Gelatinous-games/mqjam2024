@@ -47,6 +47,10 @@ typedef struct {
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
+    
+    PLAYED_DEATH_SOUND_BEFORE = 0;
+    setTrackVolume(HIT_SOUND_ID, 1);
+
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
     DATA->spawnDistance = GAME_SPAWN_DIST;
@@ -59,6 +63,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     DATA->makeTitleScreen = 0;
 
     PLAYER_OBJECT_REF = CreatePlayer();
+    
     AddToPool(PLAYER_OBJECT_REF);
 
     // Shield object
@@ -143,19 +148,21 @@ int _GameManager_Draw(void* self, float DeltaTime) {
 }
 
 int _GameManager_Destroy(void* self, float DeltaTime) {
+    printf("DESTROYING SELF\n");
+
     GameObj_Base* obj;
 
     // search for and delete all player, asteroid, star, wormhole, background stars, etc.
     for (int sIDX = 0; sIDX != -1; ) {
         sIDX = GetObjectWithFlagsAny(
-            FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND | FLAG_MANAGER,
+            FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND | FLAG_MANAGER | FLAG_GUI,
             sIDX,
             &obj
         );
 
         if (sIDX == -1 || !obj) break;
 
-        if (!obj->isCreated || obj->awaitDestroy) continue;
+        if (obj->awaitDestroy) continue;
 
         obj->awaitDestroy = 1;
     }

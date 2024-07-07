@@ -7,7 +7,7 @@
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->deltaTimeSinceLastImpact=0.0f;
 
-
+    cameraPosition = Vector2Zero();
     PLAYER_DATA->hullHealth = MAXIMUM_HULL; // start max
     PLAYER_DATA->hullRegenerationRate = HULL_REGEN_BASE_RATE;
 
@@ -23,6 +23,9 @@ int _Player_Init(void* self, float DeltaTime) {
     cameraVelocity.x = CAMERA_COAST_SPEED;
 
     PLAYER_DATA->sprite = CreateSprite("resources/spaceship_outlined.png");
+
+    CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
+    CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
     return 0;
 }
 
@@ -59,6 +62,10 @@ int _Player_Draw(void* self, float DeltaTime) {
     if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
         RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
+
+    char dt_buff[128];
+    gcvt(THIS->position.x, 10, dt_buff);
+    DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
     return 0;
 }
 
