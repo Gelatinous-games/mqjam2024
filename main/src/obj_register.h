@@ -71,7 +71,7 @@ enum PLAYER_LIFE_STATUS {
 
 GameObj_Base* CreateAsteroid();
 GameObj_Base* CreateBackgroundStars(enum LAYER_ID layer, float objectScale);
-GameObj_Base* CreateBackgroundSprites();
+GameObj_Base* CreateBackgroundSprites(enum LAYER_ID layer);
 GameObj_Base* CreateExampleObject();
 GameObj_Base* CreatePlayer();
 GameObj_Base* CreateParticleObject();
