@@ -21,7 +21,7 @@
 
 #ifndef _textobj
     #define _textobj
-    #include "src/objs/textobj.c"
+    #include "textobj.c"
 #endif
 
 #include "../obj_register.h"
@@ -51,7 +51,7 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     SoundManager_EnableMenuMusic();
 
 
-    DATA->shipSprite = CreateSprite("resources/spaceship_outlined.png");
+    DATA->shipSprite = CreateSprite(SPACESHIP_SPRITE_PATH);
     cameraPosition = Vector2Zero();
     THIS->size = (Vector2){2, 2};
 

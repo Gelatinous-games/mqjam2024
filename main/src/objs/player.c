@@ -21,8 +21,8 @@ int _Player_Init(void* self, float DeltaTime) {
     setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
-
-    PLAYER_DATA->sprite = CreateSprite("resources/spaceship_outlined.png");
+    
+    PLAYER_DATA->sprite = CreateSprite(SPACESHIP_SPRITE_PATH);
 
     CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
     CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
@@ -476,7 +476,7 @@ void _PLAYER_HandleDeath(void *self, float DeltaTime){
 // returns 0 when dead
 //  non zero otherwise, which is treated as true
 int IsPlayerAlive(){
-    return CURRENT_PLAYER_LIFE_STATE;
+    return (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD);
 }
 
 // remove it from existence

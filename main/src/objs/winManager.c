@@ -20,12 +20,12 @@
 
 #ifndef _textobj
     #define _textobj
-    #include "src/objs/textobj.c"
+    #include "textobj.c"
 #endif
 
 #ifndef _gm
     #define _gm
-    #include "src/objs/gameManager.c"
+    #include "gameManager.c"
 #endif
 
 #include "../obj_register.h"

@@ -20,7 +20,7 @@
 
 #ifndef _textobj
     #define _textobj
-    #include "src/objs/textobj.c"
+    #include "textobj.c"
 #endif
 
 #include "../obj_register.h"

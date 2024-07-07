@@ -15,10 +15,10 @@
 // ------------------------------------------------------------
 
 GameObj_Base* CreateShieldObject() {
-    printf("%s\n","SHIELD CREATE");
+    // printf("%s\n","SHIELD CREATE");
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
-    printf("%s\n",">> creating shield object");
+    // printf("%s\n",">> creating shield object");
 
     obj_ptr->Init_Func = &_ShieldObject_Init;
     obj_ptr->Update_Func = &_ShieldObject_Update;
@@ -61,7 +61,7 @@ GameObj_Base* CreateShieldObject() {
 int _ShieldObject_Destroy(void* self, float DeltaTime) {
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
-    printf("%s\n",">> SHIELD DESTROY");
+    // printf("%s\n",">> SHIELD DESTROY");
 
     // delete the list
     free(SHIELD_DATA->particleDataList);
@@ -152,7 +152,7 @@ void _ShieldObject_updateShieldHealth(void *self, float DeltaTime){
         // if we're needing to regen shields
         (SHIELD_DATA->shieldHealth) += (SHIELD_DATA->shieldRegenerationRate)*DeltaTime;
     }
-    else if(!SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED){
+    else if(!SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED && _ShieldObject_GetPlayerShieldPercentage() >= 1.0f && IsPlayerAlive()){
         // playing it
         SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = true;
         playSoundOnce(SHIELD_REGEN_SOUND_ID);

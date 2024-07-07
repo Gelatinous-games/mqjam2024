@@ -32,7 +32,7 @@
 
 #ifndef _gm
     #define _gm
-    #include "src/objs/gameManager.c"
+    #include "gameManager.c"
 #endif
 
 #include "../settings.h"

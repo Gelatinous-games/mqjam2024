@@ -40,7 +40,7 @@ enum IMPACT_TYPE {
 // reset this to 0 whenever you take shield damage 
 int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
 
-
+#define SPACESHIP_SPRITE_PATH "resources/spaceship_outlined_v2.png"
 
 #define CAMERA_COAST_SPEED 3
 
