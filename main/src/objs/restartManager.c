@@ -34,10 +34,8 @@ typedef struct {
 int _RestartManager_Init(void* self, float DeltaTime) {
     // Create any objects we need for the death screen HERE.
     // They should be destroyed in our destroy function.
-
-    // prepare death stuff
-    _DeathMenu_Init(); // incase we die
-
+    printf("%s\n","RESTARTING THE GAME");
+    THIS->awaitDestroy = 1;
 
     return 0;
 }
@@ -46,23 +44,18 @@ int _RestartManager_Update(void* self, float DeltaTime) {
     // Perform some logic to determine if we should progress to the game state.
     // If we're progressing to the game state, we should flag this object to be destroyed.
 
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DEATH MENU UPDATE");
-    _DeathMenu_Update(self, DeltaTime);
 
     return 0;
 }
 
 int _RestartManager_Draw(void* self, float DeltaTime) {
 
-    _DeathMenu_Draw();
 
     return 0;
 }
 
 int _RestartManager_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the death screen.
-
-    _DeathMenu_Cleanup();
 
     free(DATA);
 

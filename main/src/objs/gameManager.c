@@ -32,6 +32,13 @@
 #include "../obj_register.h"
 #include "../settings.h"
 
+
+
+#ifndef _deathmenu
+#define _deathmenu
+#include "src/deathmenu.c"
+#endif
+
 // #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
 
 typedef struct {
@@ -113,6 +120,12 @@ int _GameManager_Init(void* self, float DeltaTime) {
         AddToPool(BACKGROUNDSPRITE_OBJECT_REF_LIST[i]);
         printf("finished initialising sprite layer %d\n", i);
     }
+
+
+
+    // prepare death stuff
+    _DeathMenu_Init(); // incase we die
+
     printf("%s\n", "finished game manager init");
     return 0;
 }
@@ -143,17 +156,28 @@ int _GameManager_Update(void* self, float DeltaTime) {
         }
     }
 
-    if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD) THIS->awaitDestroy = 1;
+    // if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD) THIS->awaitDestroy = 1;
+    
+    if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD){
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DEATH MENU UPDATE");
+        _DeathMenu_Update(self, DeltaTime);
+    }
+    
     return 0;
 }
 
 int _GameManager_Draw(void* self, float DeltaTime) {
     printf("%s\n", "game manager draw call");
+    if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD){
+
+        _DeathMenu_Draw();
+    }
     return 0;
 }
 
 int _GameManager_Destroy(void* self, float DeltaTime) {
     GameObj_Base* obj;
+    
 
     // search for and delete all player, asteroid, star, wormhole, background stars, etc.
     for (int sIDX = 0; sIDX != -1; ) {
@@ -182,6 +206,8 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     free(DATA);
 
 
+    _DeathMenu_Cleanup();
+    
     // make restart manager
     AddToPool(CreateRestartManager());
 
