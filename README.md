@@ -98,3 +98,18 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 * explosion / trail / impact / debris / forcefield
 * just an object for manipulating particles specific to the scenario
 * strategy pattern kinda vibe so we can just add the effect to anything and reuse
+
+
+## Big If True
+
+> ![IMPORTANT]
+> worriables
+
+### Things to worry about
+
+- [x] scream
+- [ ] need to standardise the creating stars/sprites for background
+- [ ] need to mess with star movement vectors so they look normal
+- [ ] double player? how?
+- [ ] destroy things and rebuild when die?
+- [ ] ...
