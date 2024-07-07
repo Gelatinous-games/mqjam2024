@@ -15,6 +15,9 @@ Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be
 
 * itch page is [this page](https://refreshingcucumber.itch.io/light-shift)
 
+---
+---
+
 ## Developers:
 
 > [!TIP]
@@ -24,6 +27,7 @@ Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be
 > If you encounter problems contact Harris.
 
 
+---
 
 ### Important notes:
 
@@ -42,13 +46,35 @@ destruction, frame logic & rendering.
 > [!TIP]
 > This sprite object can be passed to the variants of RenderSprite to draw it at any position. This supports rotations.
 
+---
+
+### Building
+
+* either use the `Makefile` or the `CMakeLists.txt`
+
+#### Unix users - CMAKE
 
 > [!TIP]
-> UNIX users need to open `${workspaceFolder}/main` in terminal and use: 
+> need to open `${workspaceFolder}/main` in terminal then copy paste this in: 
 ```bash
 cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 ```
 
+#### Windows users - CMAKE
+
+> [!WARNING]
+> idk if it'll work tho
+
+> [!TIP]
+> need to open `${workspaceFolder}/main` in terminal then copy paste this in: 
+```bash
+cmake -DBUILD_SHARED_LIBS=ON -B build
+cmake --build build
+./build/gamer
+```
+
+---
+---
 
 ## Planning things
 
@@ -62,6 +88,8 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 
 * looks like `.mp3` exists
     * [here is example code](https://www.raylib.com/examples/audio/loader.html?name=audio_music_stream)
+
+---
 
 ### Features/workables
 
@@ -99,11 +127,15 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 * just an object for manipulating particles specific to the scenario
 * strategy pattern kinda vibe so we can just add the effect to anything and reuse
 
+---
+---
 
 ## CURRENT WORKINGS
 
 > [!NOTE]
 > this is where aurora is keeping tabs on sunday workings
+
+---
 
 ### Things to worry about
 
@@ -113,3 +145,6 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 - [ ] double player? how?
 - [ ] destroy things and rebuild when die?
 - [ ] ...
+
+
+---
