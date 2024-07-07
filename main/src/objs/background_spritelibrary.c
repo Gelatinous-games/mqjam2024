@@ -80,8 +80,6 @@ BackgroundSprite_SpriteData *getSpriteListInCurrentLayer(void *self);
 
 void prepareBackgroundSprites()
 {
-    printf("%s\n","creating background sprite library");
-
     // malloc the data
     int index = 0;
 
@@ -144,17 +142,10 @@ void prepareBackgroundSprites()
     backgroundSpriteList_Layer2[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/brushes/brush_medium_flare_01.png"), BG_SPRITETYPE_TINTABLE_MEDIUM, LAYER_BACKGROUND_STARSCAPE_2};
     // large 1
     backgroundSpriteList_Layer2[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/brushes/brush_large_flare_01.png"), BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2};
-
-
-
-    printf("%s\n","finished creating background sprite library");
-
 }
 
 void destroyBackgroundSprites()
 {
-    printf("%s\n","destroying background sprite library");
-
     // LAYER 0
     for (int i = 0; i < BACKGROUND_SPRITE_COUNT_LAYER0; i++)
     {
@@ -178,8 +169,6 @@ void destroyBackgroundSprites()
     }
     free(backgroundSpriteList_Layer2);
     backgroundSpriteList_Layer2 = 0;
-
-    printf("%s\n","finished destroying sprite library");
 }
 
 

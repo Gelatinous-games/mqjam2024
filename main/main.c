@@ -105,8 +105,6 @@
 #include "src/objs/titlemanager.c"
 #include "src/objs/restartManager.c"
 
-// #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
-
 // let C know this exists
 
 
@@ -115,20 +113,14 @@ void _MAIN_DestroyGlobalGameEnvironment();
 
 static void _MAIN_DrawGlobalGameEnvironment(void); // Update and draw one frame
 
-
 static void _MAIN_PrepareMainMenu();
-
 
 static void prepareSounds();
 static void cleanupSounds();
 
 
-
-
-
 int main()
 {
-
     _MAIN_InitialiseGlobalGameEnvironment();
 
 #ifndef PLATFORM_WEB
@@ -150,42 +142,25 @@ int main()
 // Update and draw game frame
 static void _MAIN_DrawGlobalGameEnvironment(void)
 {
-
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## _MAIN_DrawGlobalGameEnvironment() ### START ###################");
-    // grab it
     float DeltaTime = GetFrameTime();
 
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: TRY RENDER");
     if (!SoundsStarted)
     {
         startSounds();
         SoundsStarted = true;
     }
-    // ...
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: SOUND UPDATE");
     soundUpdate();
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: ALL UPDATE");
     ProcessAllUpdates(DeltaTime);
 
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: UPDATE CAM");
     UpdateCamera3D();
     BeginDrawing();
 
-    // -------------------
-
     ClearBackground(BLACK);
 
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS DRAWS");
     ProcessAllDraws(DeltaTime);
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DRAW TIMER");
-    drawTimer();
 
-    // -------------------
-
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: END DRAW");
     EndDrawing();
 
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS ADD/DESTROY");
     ProcessFreshAdd();
     ProcessAllDestroys();
 
@@ -201,9 +176,6 @@ static void _MAIN_PrepareMainMenu()
 
 
 void _MAIN_InitialiseGlobalGameEnvironment(){
-
-    gettimeofday(&timerStart, NULL);
-
     SetExitKey(KEY_F4); // Lets not make it *too* easy to leave lol
 
     cameraScreenQuarter.x = WINDOW_WIDTH / 2;

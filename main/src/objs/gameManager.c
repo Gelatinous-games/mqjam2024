@@ -53,7 +53,7 @@ typedef struct {
     float deathTimeout;
     float spawnDistance;
 
-    char madeDeathManager;
+    char madeRestartManager;
 
     char makeTitleScreen;
 } _GameManager_Data;
@@ -61,14 +61,12 @@ typedef struct {
 
 #define DATA ((_GameManager_Data *)(THIS->data_struct))
 
-
-
-
 void HandleDebuggingKillPlayerCheck(float DeltaTime);
 
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
+    gettimeofday(&timerStart, NULL);
     
     PLAYED_DEATH_SOUND_BEFORE = 0;
     setTrackVolume(HIT_SOUND_ID, 1);
@@ -82,7 +80,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     DATA->starCount = 2;
     DATA->asteroidCount = 1;
 
-    DATA->madeDeathManager = 0;
+    DATA->madeRestartManager = 0;
 
     DATA->makeTitleScreen = 0;
 
@@ -106,40 +104,24 @@ int _GameManager_Init(void* self, float DeltaTime) {
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
 
-    
-
-
-    // DEBUG_SPAMMER_PRINTF_PREFIX printf("number of starfield layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
-     // Background Object
+    // background stars
     BACKGROUNDSTARFIELD_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
     BACKGROUNDSPRITE_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
 
-    printf("star field layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
     for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS; i++)
     {
-        /* code */
-        // Background Stars 3 layers
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("creating BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] on layer %d\n", i, 1+i);
         BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] to pool\n", i);
         AddToPool(BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i]);
-        
-        printf("finished initialising star layer %d\n", i);
 
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("creating BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] on layer %d\n", i, 1+i);
         // Background sprites 3 layers, Small/Medium/Large
         BACKGROUNDSPRITE_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
-        // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] to pool\n", i);
         AddToPool(BACKGROUNDSPRITE_OBJECT_REF_LIST[i]);
-        printf("finished initialising sprite layer %d\n", i);
     }
 
 
 
     // prepare death stuff
     _DeathMenu_Init(); // incase we die
-
-    printf("%s\n", "finished game manager init");
     return 0;
 }
 
@@ -158,12 +140,10 @@ int _GameManager_Update(void* self, float DeltaTime) {
     if (DATA->spawnDistance < 0) {
         DATA->spawnDistance = GAME_SPAWN_DIST;
         if (FLOAT_RAND < GAME_SPAWN_ASTEROID && DATA->asteroidCount < MAX_ASTEROIDS) {
-            // DEBUG_SPAMMER_PRINTF_PREFIX printf("SPAWNING ASTEROID!\n");
             AddToPool(CreateAsteroid());
             DATA->asteroidCount++;
         }
         else if (DATA->starCount < MAX_ASTEROIDS) {
-            // DEBUG_SPAMMER_PRINTF_PREFIX printf("SPAWNING STAR!\n");
             AddToPool(CreateStarObject());
             DATA->starCount++;
         }
@@ -171,9 +151,9 @@ int _GameManager_Update(void* self, float DeltaTime) {
 
     Player_Data* pData = (Player_Data*) obj->data_struct;
     
-    if (!IsPlayerAlive() && !DATA->madeDeathManager) {
-        AddToPool(CreateDeathManager());
-        DATA->madeDeathManager = 1;
+    if (!IsPlayerAlive() && !DATA->madeRestartManager) {
+        AddToPool(CreateRestartManager());
+        DATA->madeRestartManager = 1;
     }
 
     if (!IsPlayerAlive()) {
