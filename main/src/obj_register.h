@@ -14,7 +14,8 @@ enum OBJECT_FLAG {
     FLAG_WORMHOLE = 256,
     FLAG_MANAGER = 512,
     FLAG_GAME_MANAGER = 1024,
-    FLAG_GUI = 2048
+    FLAG_GUI = 2048,
+    FLAG_SHIELD = 4096
 };
 
 enum LAYER_ID {
@@ -50,13 +51,6 @@ enum PLAYER_STATE {
     PLAYER_STATE_THRUSTING = 3
 };
 
-enum BACKGROUND_SPRITE_TYPE {
-    // ...
-    BG_SPRITETYPE_ARTWORK           = 0,
-    BG_SPRITETYPE_TINTABLE_SMALL    = 1,
-    BG_SPRITETYPE_TINTABLE_MEDIUM   = 2,
-    BG_SPRITETYPE_TINTABLE_LARGE    = 3
-};
 
 enum PLAYER_LIFE_STATUS {
     PLAYER_LIFE_STATUS_ISDEAD = 0,
@@ -71,7 +65,7 @@ enum PLAYER_LIFE_STATUS {
 
 GameObj_Base* CreateAsteroid();
 GameObj_Base* CreateBackgroundStars(enum LAYER_ID layer, float objectScale);
-GameObj_Base* CreateBackgroundSprites();
+GameObj_Base* CreateBackgroundSprites(enum LAYER_ID layer);
 GameObj_Base* CreateExampleObject();
 GameObj_Base* CreatePlayer();
 GameObj_Base* CreateParticleObject();

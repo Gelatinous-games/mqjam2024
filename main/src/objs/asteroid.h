@@ -1,3 +1,4 @@
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -134,7 +135,7 @@ void _Asteroid_Randomize(void *self) {
 
     THIS->velocity.x = originVel.x; 
 
-    printf("SPAWNED ASTEROID AT %f, %f (origin %f, %f)\n", THIS->position.x, THIS->position.y, originPos.x, originPos.y);
+    // printf("SPAWNED ASTEROID AT %f, %f (origin %f, %f)\n", THIS->position.x, THIS->position.y, originPos.x, originPos.y);
 }
 
 int _Asteroid_Init(void* self, float DeltaTime) {

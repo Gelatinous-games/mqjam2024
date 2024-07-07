@@ -15,7 +15,6 @@
     #include "../camera.c"
 #endif
 
-
 #define OBJECT_POOL_CAPACITY 256
 
 GameObj_Base** _gameObjPool;
@@ -111,23 +110,24 @@ int GetObjectWithFlagsAny(long unsigned int flags, int sIDX, GameObj_Base** reto
 void ProcessAllUpdates(float DeltaTime) {
     for (int i = 0; i < _gameObjPoolSize; i++) {
         GameObj_Base* obj = _gameObjPool[i];
-        obj->Update_Func(obj, DeltaTime);
+        if(obj) {
+            obj->Update_Func(obj, DeltaTime);
+        }
     }
 }
 
 /// @brief Processes the draw function on all objects that are not waiting to be initialized.
 /// @param DeltaTime 
 void ProcessAllDraws(float DeltaTime) {
-
     for (int l = 0; l < LAYER_BOOKEND; l++) {
-
         for (int i = 0; i < _gameObjPoolSize; i++) {
-
             scaleFactor = Vector2One();
             GameObj_Base* obj = _gameObjPool[i];
 
-            if (obj->currentLayer == l)
-                obj->Draw_Func(obj, DeltaTime);
+            if (obj->currentLayer == l){
+                
+               obj->Draw_Func(obj, DeltaTime);
+            }
         }
     }
 }
@@ -150,8 +150,16 @@ void ProcessAllDestroys() {
             _gameObjPoolSize -= 1; // decrement the number of objects in the pool by 1 as the one at the end is nulled.
             i -=1; // and since we've just bubbled the last down, decrease i so we can redo that step.
 
+            // if (obj->flags & FLAG_MANAGER)
+            // {
+            //     /* code */
+            // }
             obj->Destroy_Func(obj, 0);
             free(obj);
+            obj = 0;
+            
         }
     }
 }
+
+// #undef DEBUG_SPAMMER_PRINTF_PREFIX

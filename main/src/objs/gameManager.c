@@ -6,6 +6,17 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../sound.h"
+
+
+#ifndef _background_starfield
+#define _background_starfield
+#include "background_starfield.c"
+#endif
+#ifndef _background_sprites
+#define _background_sprites
+#include "background_sprites.c"
+#endif
 
 
 #ifndef _camera
@@ -28,6 +39,13 @@
 
 
 
+#ifndef _deathmenu
+#define _deathmenu
+#include "src/deathmenu.c"
+#endif
+
+// #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
+
 typedef struct {
     int asteroidCount;
     int starCount;
@@ -40,10 +58,14 @@ typedef struct {
     char makeTitleScreen;
 } _GameManager_Data;
 
+
 #define DATA ((_GameManager_Data *)(THIS->data_struct))
 
-#define MAX_ASTEROIDS 5
-#define MAX_STARS 2
+
+
+
+void HandleDebuggingKillPlayerCheck(float DeltaTime);
+
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
@@ -57,7 +79,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     // How far the player travels before it gets harder
     DATA->spawnDistance = GAME_SPAWN_DIST;
 
-    DATA->starCount = 0;
+    DATA->starCount = 2;
     DATA->asteroidCount = 1;
 
     DATA->madeDeathManager = 0;
@@ -84,23 +106,47 @@ int _GameManager_Init(void* self, float DeltaTime) {
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
 
-    // Background Object
-    //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
-    BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
-    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
+    
+
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("number of starfield layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+     // Background Object
+    BACKGROUNDSTARFIELD_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+    BACKGROUNDSPRITE_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+
+    printf("star field layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+    for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS; i++)
     {
         /* code */
-        BACKGROUNDSTARS_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
-        AddToPool(BACKGROUNDSTARS_EFFECT_REF_LIST[i]);
+        // Background Stars 3 layers
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("creating BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] on layer %d\n", i, 1+i);
+        BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] to pool\n", i);
+        AddToPool(BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i]);
+        
+        printf("finished initialising star layer %d\n", i);
+
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("creating BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] on layer %d\n", i, 1+i);
+        // Background sprites 3 layers, Small/Medium/Large
+        BACKGROUNDSPRITE_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] to pool\n", i);
+        AddToPool(BACKGROUNDSPRITE_OBJECT_REF_LIST[i]);
+        printf("finished initialising sprite layer %d\n", i);
     }
-    
-    BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
-    AddToPool(BACKGROUND_OBJECT_REF);
+
+
+
+    // prepare death stuff
+    _DeathMenu_Init(); // incase we die
+
+    printf("%s\n", "finished game manager init");
     return 0;
 }
 
 int _GameManager_Update(void* self, float DeltaTime) {
     // Perform some logic to check if the scene should end - if so, prepare for deletion on myself.
+
+    HandleDebuggingKillPlayerCheck(DeltaTime);
 
     GameObj_Base* obj;
     GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &obj);
@@ -112,12 +158,12 @@ int _GameManager_Update(void* self, float DeltaTime) {
     if (DATA->spawnDistance < 0) {
         DATA->spawnDistance = GAME_SPAWN_DIST;
         if (FLOAT_RAND < GAME_SPAWN_ASTEROID && DATA->asteroidCount < MAX_ASTEROIDS) {
-            printf("SPAWNING ASTEROID!\n");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("SPAWNING ASTEROID!\n");
             AddToPool(CreateAsteroid());
             DATA->asteroidCount++;
         }
         else if (DATA->starCount < MAX_ASTEROIDS) {
-            printf("SPAWNING STAR!\n");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("SPAWNING STAR!\n");
             AddToPool(CreateStarObject());
             DATA->starCount++;
         }
@@ -155,6 +201,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     printf("DESTROYING SELF\n");
 
     GameObj_Base* obj;
+    
 
     // search for and delete all player, asteroid, star, wormhole, background stars, etc.
     for (int sIDX = 0; sIDX != -1; ) {
@@ -170,9 +217,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
 
         obj->awaitDestroy = 1;
     }
-
-    free(BACKGROUNDSTARS_EFFECT_REF_LIST);
-
+    
     if (DATA->makeTitleScreen) {
         AddToPool(CreateTitleManager());
     }
@@ -185,6 +230,8 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
 }
 
 GameObj_Base* CreateGameManager() {
+
+
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
     obj_ptr->Init_Func = &_GameManager_Init;
@@ -210,7 +257,21 @@ GameObj_Base* CreateGameManager() {
     obj_ptr->velocity = Vector2Zero();
     obj_ptr->size = Vector2Zero();
     
+    
+
+
+
     return obj_ptr;
 }
 
 #undef DATA
+
+// #undef DEBUG_SPAMMER_PRINTF_PREFIX
+
+
+void HandleDebuggingKillPlayerCheck(float DeltaTime){
+    // kill player for debugging
+    if(IsKeyDown(KEY_K)){
+        PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,9001,18002);
+    }
+}

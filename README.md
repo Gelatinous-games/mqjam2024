@@ -15,25 +15,66 @@ Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be
 
 * itch page is [this page](https://refreshingcucumber.itch.io/light-shift)
 
+---
+---
+
 ## Developers:
 
-The code you should worry about is creating objects. The data structure of an object can be found under `/main/src/base.h`, and an example on how to create a unique object is under `main/src/objs/Object_Example.h`.
-If you encounter problems contact Harris.
+> [!TIP]
+> The code you should worry about is creating objects. The data structure of an object can be found under `/main/src/base.h`, and an example on how to create a unique object is under `main/src/objs/Object_Example.h`.
+
+> [!NOTE]
+> If you encounter problems contact Harris.
+
+
+---
 
 ### Important notes:
-As mentioned above, the bulk of editable code is expanding on `base.h`. An example is found under `Object_Example.c`, which is a tester object I've been using.
-Each object base has 4 function references which you can overwrite in a dedicated creation function for your object. These functions are for initialization, 
-destruction, frame logic & rendering. Make sure to destroy all resources.
 
-A little wrapper for sprites is found under sprite.c, with the CreateSprite function. Make sure to destroy this sprite once your object is destroyed.
-This sprite object can be passed to the variants of RenderSprite to draw it at any position. This supports rotations.
+> [!IMPORTANT]
+> As mentioned above, the bulk of editable code is expanding on `base.h`. An example is found under `Object_Example.c`, which is a tester object I've been using.
+> 
+> Each object base has 4 function references which you can overwrite in a dedicated creation function for your object. These functions are for initialization, 
+destruction, frame logic & rendering.
 
+> [!CAUTION]
+> Make sure to destroy all resources
 
-* UNIX uses:
+> [!WARNING]
+> A little wrapper for sprites is found under sprite.c, with the CreateSprite function. Make sure to destroy this sprite once your object is destroyed.
+
+> [!TIP]
+> This sprite object can be passed to the variants of RenderSprite to draw it at any position. This supports rotations.
+
+---
+
+### Building
+
+* either use the `Makefile` or the `CMakeLists.txt`
+
+#### Unix users - CMAKE
+
+> [!TIP]
+> need to open `${workspaceFolder}/main` in terminal then copy paste this in: 
 ```bash
 cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 ```
 
+#### Windows users - CMAKE
+
+> [!WARNING]
+> idk if it'll work tho
+
+> [!TIP]
+> need to open `${workspaceFolder}/main` in terminal then copy paste this in: 
+```bash
+cmake -DBUILD_SHARED_LIBS=ON -B build
+cmake --build build
+./build/gamer
+```
+
+---
+---
 
 ## Planning things
 
@@ -48,18 +89,9 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 * looks like `.mp3` exists
     * [here is example code](https://www.raylib.com/examples/audio/loader.html?name=audio_music_stream)
 
+---
+
 ### Features/workables
-
-#### === Scene manager ===
-
-* some way to handle the state of the game/which scene we're on
-* is it main menu? is it game over? is it playing?
-    * can enum though
-* should then only draw game when is playing state
-* raylib/raygui has ui stuff for buttons, we should use this for menus
-    * then we can make cool themes
-    * check out the examples on the raylib webpage
-    * raygui should be built into raylib but idk
 
 #### === Planet/Wormhole approaching ===
 
@@ -71,10 +103,6 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 
 #### === Health ===
 
-* or we just make a shield handler
-* health needs seperation into
-    * hull health
-    * shield health
 * need a health manager
 * health manager can say states?
 
@@ -98,3 +126,31 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 * explosion / trail / impact / debris / forcefield
 * just an object for manipulating particles specific to the scenario
 * strategy pattern kinda vibe so we can just add the effect to anything and reuse
+
+---
+---
+
+## CURRENT WORKINGS
+
+> [!NOTE]
+> this is where aurora is keeping tabs on sunday workings
+
+---
+
+### Things to worry about
+
+- [x] scream
+- [x] need to standardise the creating stars/sprites for background
+- [ ] need to mess with star movement vectors so they look normal
+- [x] double player? how?
+- [x] destroy things and rebuild when die?
+- [x] need to change deathmanager destroy function to create new game manager
+- [x] may need to fix up the ASTEROID_REF_LIST free in main.c
+- [x] restartManager.c renamed
+- [ ] make the win menu
+- [ ] death menu overlay
+- [ ] ...
+- [ ] ...
+
+
+---

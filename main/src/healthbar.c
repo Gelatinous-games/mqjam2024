@@ -108,15 +108,11 @@ int _HealthBar_Init(void* self, float DeltaTime) {
 }
 
 int _HealthBar_Update(void* self, float DeltaTime) {
-    
-
 
     // TOO LOW
     if(GetPlayerHullPercentage() <= 0.0f){ 
         // dont draw
         HEALTHBAR_DATA->currentHealthBarIndex = -1;
-        // also handle death
-        PlayDeathSound();
     }
     // TOO FAR
     else if(GetPlayerHullPercentage() >= 1.0f){ 
@@ -237,7 +233,7 @@ GameObj_Base* CreateHealthBar() {
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_BACKGROUND;
+    obj_ptr->flags = FLAG_SHIELD;
 
     obj_ptr->currentLayer = LAYER_GUI;
 

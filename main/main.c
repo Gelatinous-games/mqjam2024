@@ -1,23 +1,17 @@
-/*******************************************************************************************
+/**
  *
- *   raylib [core] example - Basic 3d example
  *
- *   Welcome to raylib!
+ *      DA BIG BAD MAIN FILE
  *
- *   To compile example, just press F5.
- *   Note that compiled executable is placed in the same folder as .c file
+ *          ONLY BADDIES USE THIS FILE FOR MAJOR CODING
  *
- *   You can find all basic examples on C:\raylib\raylib\examples folder or
- *   raylib official webpage: www.raylib.com
+ *         why are you still reading this
  *
- *   Enjoy using raylib. :)
  *
- *   This example has been created using raylib 1.0 (www.raylib.com)
- *   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
  *
- *   Copyright (c) 2013-2023 Ramon Santamaria (@raysan5)
  *
- ********************************************************************************************/
+ *
+ */
 
 // what da henk
 #define invoken(a, b) a->b(a->self)
@@ -38,15 +32,22 @@
 #include "src/settings.h"
 #include "src/sound.h"
 
-
 #include "src/base.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
 
+#ifndef _background_spritelibrary
+#define _background_spritelibrary
+#include "src/objs/background_spritelibrary.c"
+#endif
 
 #ifndef _mainmenu
 #define _mainmenu
-#include "mainmenu.c"
+#include "src/mainmenu.c"
+#endif
+#ifndef _deathmenu
+#define _deathmenu
+#include "src/deathmenu.c"
 #endif
 
 #ifndef _player
@@ -95,14 +96,6 @@
 #include "src/objs/planet.c"
 #endif
 
-#ifndef _background_stars
-#define _background_star
-#include "src/objs/background_stars.c"
-#endif
-#ifndef _background
-#define _background
-#include "src/objs/background.c"
-#endif
 #ifndef _healthbar
 #define _healthbar
 #include "src/healthbar.c"
@@ -110,23 +103,105 @@
 
 #include "src/objs/gameManager.c"
 #include "src/objs/titlemanager.c"
-#include "src/objs/deathManager.c"
+#include "src/objs/restartManager.c"
 
-
-
-static void UpdateDrawFrame(void); // Update and draw one frame
+// #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
 
 // let C know this exists
-static void generateObjects();
+
+
+void _MAIN_InitialiseGlobalGameEnvironment();
+void _MAIN_DestroyGlobalGameEnvironment();
+
+static void _MAIN_DrawGlobalGameEnvironment(void); // Update and draw one frame
+
+
+static void _MAIN_PrepareMainMenu();
+
+
 static void prepareSounds();
 static void cleanupSounds();
 
-static int GameShouldRender(){
-    return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
-}
+
+
+
 
 int main()
 {
+
+    _MAIN_InitialiseGlobalGameEnvironment();
+
+#ifndef PLATFORM_WEB
+    SetTargetFPS(FRAMERATE);     // Set our game to run at 60 frames-per-second
+    while (!WindowShouldClose()) // Detect window close button or ESC key
+    {
+        _MAIN_DrawGlobalGameEnvironment();
+    }
+#else
+    // printf("%s\n",">> main() :: emscripten");
+    emscripten_set_main_loop(_MAIN_DrawGlobalGameEnvironment, FRAMERATE, 1);
+#endif
+
+    _MAIN_DestroyGlobalGameEnvironment();
+
+    return 0;
+}
+
+// Update and draw game frame
+static void _MAIN_DrawGlobalGameEnvironment(void)
+{
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## _MAIN_DrawGlobalGameEnvironment() ### START ###################");
+    // grab it
+    float DeltaTime = GetFrameTime();
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: TRY RENDER");
+    if (!SoundsStarted)
+    {
+        startSounds();
+        SoundsStarted = true;
+    }
+    // ...
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: SOUND UPDATE");
+    soundUpdate();
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: ALL UPDATE");
+    ProcessAllUpdates(DeltaTime);
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: UPDATE CAM");
+    UpdateCamera3D();
+    BeginDrawing();
+
+    // -------------------
+
+    ClearBackground(BLACK);
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS DRAWS");
+    ProcessAllDraws(DeltaTime);
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DRAW TIMER");
+    drawTimer();
+
+    // -------------------
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: END DRAW");
+    EndDrawing();
+
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS ADD/DESTROY");
+    ProcessFreshAdd();
+    ProcessAllDestroys();
+
+
+}
+
+/// @brief prepares all objects for initial main menu.
+static void _MAIN_PrepareMainMenu()
+{
+    AddToPool( CreateTitleManager() );
+    CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
+}
+
+
+void _MAIN_InitialiseGlobalGameEnvironment(){
+
     gettimeofday(&timerStart, NULL);
 
     SetExitKey(KEY_F4); // Lets not make it *too* easy to leave lol
@@ -139,41 +214,41 @@ int main()
     cameraVelocity = Vector2Zero();
     cameraUnitSize = Vector2Divide(cameraScreenQuarter, cameraBounds);
 
-    // Initialization
+    // OpenGL initialisation
     //--------------------------------------------------------------------------------------
     GameObjPoolInit();
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
+    
+
+    // loads our sprites ready for use
+    prepareBackgroundSprites();
+
+    // Particle handler, so it's available during the main menu
+    AddToPool(CreateParticleObject());
 
     prepareSounds();
-    //setAllTracksVolume(0.5f);
+
+
+    _MAIN_PrepareMainMenu();
+
     scaleAllTracksVolume(0.5f);
-    startSounds();
-
-    _MainMenu_Init();
-
-    generateObjects();
 
     ProcessFreshAdd();
-
-#ifndef PLATFORM_WEB
-    SetTargetFPS(FRAMERATE);     // Set our game to run at 60 frames-per-second
-    while (!WindowShouldClose()) // Detect window close button or ESC key
-    {
-        UpdateDrawFrame();
-    }
-#else
-    // printf("%s\n",">> main() :: emscripten");
-    emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
-#endif
+}
 
 
-    _MainMenu_Cleanup();
+
+void _MAIN_DestroyGlobalGameEnvironment(){
+    // ...
 
     cleanupSounds();
 
-    // De-Initialization
+    destroyBackgroundSprites();
+
+
+    // OpenGL De-Initialization
     //--------------------------------------------------------------------------------------
     CloseAudioDevice(); // Close audio device
     CloseWindow();      // Close window and OpenGL context
@@ -181,47 +256,12 @@ int main()
 
     GameObjPoolDestroy();
 
-    free(ASTEROID_REF_LIST);
-
-    return 0;
 }
 
-// Update and draw game frame
-static void UpdateDrawFrame(void)
-{
-    // grab it
-    float DeltaTime = GetFrameTime();
-    // check for render
-    if(GameShouldRender()){
-        ProcessAllUpdates(DeltaTime);
-        soundUpdate();
 
-        UpdateCamera3D();
-        BeginDrawing();
-        ClearBackground(BLACK);
-        ProcessAllDraws(DeltaTime);
-        EndDrawing();
 
-        ProcessFreshAdd();
-        ProcessAllDestroys();
-    }
-    // handle menus
-    else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
-            _MainMenu_Update(DeltaTime);
-            _MainMenu_Draw();
-        }
-    }
-}
 
-/// @brief Generates all objects for initial gamestate.
-static void generateObjects()
-{
 
-    // Particle handler.
-    AddToPool(CreateParticleObject());
+// #undef DEBUG_SPAMMER_PRINTF_PREFIX
 
-    AddToPool(CreateTitleManager());
 
-    // AddToPool(CreateExampleObject());
-}

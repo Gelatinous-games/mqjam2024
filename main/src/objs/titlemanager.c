@@ -6,6 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../mainmenu.h"
 
 
 #ifndef _camera
@@ -33,6 +34,9 @@ typedef struct {
 int _TitleManager_Init(void* self, float DeltaTime) {
     // Create any objects we need for the title screen HERE.
     // They should be destroyed in our destroy function.
+
+    _MainMenu_Init();
+
     return 0;
 }
 
@@ -40,19 +44,32 @@ int _TitleManager_Update(void* self, float DeltaTime) {
     // Perform some logic to determine if we should progress to the game state.
     // If we're progressing to the game state, we should flag this object to be destroyed.
 
-    THIS->awaitDestroy = 1; // Do this to move to next state
+    _MainMenu_Update(self, DeltaTime);
+
+
     return 0;
 }
 
 int _TitleManager_Draw(void* self, float DeltaTime) {
+    // TODO: move the main menu drawing here
+
+    _MainMenu_Draw();
+
+
     return 0;
 }
 
 int _TitleManager_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the title screen.
 
+    _MainMenu_Cleanup();
+
+
     free(DATA);
-    AddToPool(CreateGameManager());
+
+    // create it
+    AddToPool( CreateGameManager() );
+
     return 0;
 }
 
