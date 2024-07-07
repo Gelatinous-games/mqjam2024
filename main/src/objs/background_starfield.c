@@ -33,7 +33,7 @@
 #include "../misc.c"
 #endif
 
-#define DEBUG_SPAMMER_PRINTF_PREFIX if(true)
+// #define DEBUG_SPAMMER_PRINTF_PREFIX if(true)
 
 typedef struct
 {
@@ -106,40 +106,40 @@ int _BackgroundStarField_Init(void *self, float DeltaTime)
 int _BackgroundStarField_Update(void *self, float DeltaTime)
 {
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("delta time: %f\n", DeltaTime);
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("delta time: %f\n", DeltaTime);
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n", "background stars update");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n", "background stars update");
     // get the player's velocity
     THIS->velocity = (Vector2){-1.0f * (PLAYER_OBJECT_REF->velocity.x), -0.5f * (PLAYER_OBJECT_REF->velocity.y)};
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n", "velocity access done");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n", "velocity access done");
 
 
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%d number of stars\n", BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars);
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%d number of stars\n", BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars);
     // move the all the stars across the screen
     for (int i = 0; i < BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars; i++)
     {
         if(!BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL){
             // ...
-            DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","why's it spicy");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","why's it spicy");
             continue;
         }
         if(BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]){
             // ...
             Vector2 currPosition = BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position;
-            DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d]->position { %f, %f } \n", i, currPosition.x, currPosition.y);
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d]->position { %f, %f } \n", i, currPosition.x, currPosition.y);
             float currCamScale = BACKGROUNDSTARFIELD_DATA_LOCALREF->cameraObjectScale;
-            DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d]->cameraObjectScale { %f } \n", i, currCamScale);
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d]->cameraObjectScale { %f } \n", i, currCamScale);
             Vector2 scaledVelocity = Vector2Scale(THIS->velocity, DeltaTime * currCamScale);
-            DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] scaled velocity { %f, %f } \n", i, scaledVelocity.x, scaledVelocity.y);
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] scaled velocity { %f, %f } \n", i, scaledVelocity.x, scaledVelocity.y);
             Vector2 addedVelocity = Vector2Add(currPosition, scaledVelocity);
             BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.x = addedVelocity.x;
             BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.y = addedVelocity.y;
-            DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] NEW POSITION { %f, %f } \n", i, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.x, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.y);
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] NEW POSITION { %f, %f } \n", i, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.x, BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i]->position.y);
         }
         else {
-            DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] DOESNT EXIST\n", i);
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[%d] DOESNT EXIST\n", i);
         }
     }
     return 0;
@@ -205,10 +205,10 @@ int _BackgroundStarField_Destroy(void *self, float DeltaTime)
 {
     // free our data struct here. free anything contained.
     // POSSIBLE_SEGFAULT: check for seg ables
-    DEBUG_SPAMMER_PRINTF_PREFIX printf(">> unloading positions\n");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf(">> unloading positions\n");
     UnloadRandomSequence(BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion);
     if (BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL) {
-        DEBUG_SPAMMER_PRINTF_PREFIX printf(">> Destroying BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL\n");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf(">> Destroying BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL\n");
         for (int i = 0; i < BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars; ++i)
         {
             BackgroundStar_Data* obj = BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL[i];
@@ -266,4 +266,4 @@ GameObj_Base *CreateBackgroundStars(enum LAYER_ID layer, float objectScale)
 }
 
 
-#undef DEBUG_SPAMMER_PRINTF_PREFIX
+// #undef DEBUG_SPAMMER_PRINTF_PREFIX

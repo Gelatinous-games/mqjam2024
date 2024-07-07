@@ -140,12 +140,16 @@ cmake --build build
 ### Things to worry about
 
 - [x] scream
-- [ ] need to standardise the creating stars/sprites for background
+- [x] need to standardise the creating stars/sprites for background
 - [ ] need to mess with star movement vectors so they look normal
-- [ ] double player? how?
-- [ ] destroy things and rebuild when die?
-- [ ] need to change deathmanager destroy function to create new game manager
-- [ ] may need to fix up the ASTEROID_REF_LIST free in main.c
+- [x] double player? how?
+- [x] destroy things and rebuild when die?
+- [x] need to change deathmanager destroy function to create new game manager
+- [x] may need to fix up the ASTEROID_REF_LIST free in main.c
+- [x] restartManager.c renamed
+- [ ] make the win menu
+- [ ] death menu overlay
+- [ ] ...
 - [ ] ...
 
 

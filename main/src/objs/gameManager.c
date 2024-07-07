@@ -182,8 +182,8 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     free(DATA);
 
 
-    // make death manager
-    AddToPool(CreateDeathManager());
+    // make restart manager
+    AddToPool(CreateRestartManager());
 
 
     return 0;

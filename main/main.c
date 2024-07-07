@@ -98,9 +98,9 @@
 
 #include "src/objs/gameManager.c"
 #include "src/objs/titlemanager.c"
-#include "src/objs/deathManager.c"
+#include "src/objs/restartManager.c"
 
-#define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
+// #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
 
 // let C know this exists
 
@@ -146,23 +146,23 @@ int main()
 static void _MAIN_DrawGlobalGameEnvironment(void)
 {
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## _MAIN_DrawGlobalGameEnvironment() ### START ###################");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## _MAIN_DrawGlobalGameEnvironment() ### START ###################");
     // grab it
     float DeltaTime = GetFrameTime();
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: TRY RENDER");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: TRY RENDER");
     if (!SoundsStarted)
     {
         startSounds();
         SoundsStarted = true;
     }
     // ...
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: SOUND UPDATE");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: SOUND UPDATE");
     soundUpdate();
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: ALL UPDATE");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: ALL UPDATE");
     ProcessAllUpdates(DeltaTime);
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: UPDATE CAM");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: UPDATE CAM");
     UpdateCamera3D();
     BeginDrawing();
 
@@ -170,17 +170,17 @@ static void _MAIN_DrawGlobalGameEnvironment(void)
 
     ClearBackground(BLACK);
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS DRAWS");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS DRAWS");
     ProcessAllDraws(DeltaTime);
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DRAW TIMER");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DRAW TIMER");
     drawTimer();
 
     // -------------------
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: END DRAW");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: END DRAW");
     EndDrawing();
 
-    DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS ADD/DESTROY");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: PROCESS ADD/DESTROY");
     ProcessFreshAdd();
     ProcessAllDestroys();
 
@@ -257,6 +257,6 @@ void _MAIN_DestroyGlobalGameEnvironment(){
 
 
 
-#undef DEBUG_SPAMMER_PRINTF_PREFIX
+// #undef DEBUG_SPAMMER_PRINTF_PREFIX
 
 

@@ -71,4 +71,4 @@ GameObj_Base* CreateStarObject();
 GameObj_Base* CreateWormhole();
 GameObj_Base* CreateGameManager();
 GameObj_Base* CreateTitleManager();
-GameObj_Base* CreateDeathManager();
+GameObj_Base* CreateRestartManager();

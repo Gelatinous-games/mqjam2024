@@ -26,12 +26,12 @@
 
 typedef struct {
     int temp;
-} _DeathManager_Data;
+} _RestartManager_Data;
 
-#define DATA ((_DeathManager_Data *)(THIS->data_struct))
+#define DATA ((_RestartManager_Data *)(THIS->data_struct))
 
 // Create everything needed for a scene
-int _DeathManager_Init(void* self, float DeltaTime) {
+int _RestartManager_Init(void* self, float DeltaTime) {
     // Create any objects we need for the death screen HERE.
     // They should be destroyed in our destroy function.
 
@@ -42,7 +42,7 @@ int _DeathManager_Init(void* self, float DeltaTime) {
     return 0;
 }
 
-int _DeathManager_Update(void* self, float DeltaTime) {
+int _RestartManager_Update(void* self, float DeltaTime) {
     // Perform some logic to determine if we should progress to the game state.
     // If we're progressing to the game state, we should flag this object to be destroyed.
 
@@ -52,14 +52,14 @@ int _DeathManager_Update(void* self, float DeltaTime) {
     return 0;
 }
 
-int _DeathManager_Draw(void* self, float DeltaTime) {
+int _RestartManager_Draw(void* self, float DeltaTime) {
 
     _DeathMenu_Draw();
 
     return 0;
 }
 
-int _DeathManager_Destroy(void* self, float DeltaTime) {
+int _RestartManager_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the death screen.
 
     _DeathMenu_Cleanup();
@@ -72,15 +72,15 @@ int _DeathManager_Destroy(void* self, float DeltaTime) {
     return 0;
 }
 
-GameObj_Base* CreateDeathManager() {
+GameObj_Base* CreateRestartManager() {
     GameObj_Base* obj_ptr = (GameObj_Base *)malloc(sizeof(GameObj_Base));
 
-    obj_ptr->Init_Func = &_DeathManager_Init;
-    obj_ptr->Update_Func = &_DeathManager_Update;
-    obj_ptr->Draw_Func = &_DeathManager_Draw;
-    obj_ptr->Destroy_Func = &_DeathManager_Destroy;
+    obj_ptr->Init_Func = &_RestartManager_Init;
+    obj_ptr->Update_Func = &_RestartManager_Update;
+    obj_ptr->Draw_Func = &_RestartManager_Draw;
+    obj_ptr->Destroy_Func = &_RestartManager_Destroy;
 
-    obj_ptr->data_struct = malloc(sizeof(_DeathManager_Data));
+    obj_ptr->data_struct = malloc(sizeof(_RestartManager_Data));
 
     obj_ptr->awaitDestroy = 0;
 
