@@ -46,7 +46,7 @@ typedef struct {
 
 #define PLANET_DATA ((Planet_DataStruct *)(THIS->data_struct))
 
-#define PLANET_SPRITE_COUNT 2
+#define PLANET_SPRITE_COUNT 4
 
 Sprite** _planetSprites;
 
@@ -54,9 +54,13 @@ int _Planet_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
     if(!_planetSprites){
+        printf("%s\n","loading planets");
         _planetSprites = (Sprite **)malloc(PLANET_SPRITE_COUNT * sizeof(Sprite*));
-        _planetSprites[0] = CreateSprite("resources/planets/p0.png");
-        _planetSprites[1] = CreateSprite("resources/planets/p1.png");
+        int index = 0;
+        _planetSprites[0] = CreateSprite("resources/planets/P0.png");
+        _planetSprites[1] = CreateSprite("resources/planets/P1.png");
+        _planetSprites[2] = CreateSprite("resources/planets/P2.png");
+        _planetSprites[3] = CreateSprite("resources/planets/P3.png");
     }
 
 
@@ -65,7 +69,8 @@ int _Planet_Init(void* self, float DeltaTime) {
 
     
     // choose randome sprite
-    PLANET_DATA->spriteID = (abs((int)FLOAT_RAND)%PLANET_SPRITE_COUNT);
+    PLANET_DATA->spriteID = (INT_RAND%PLANET_SPRITE_COUNT);
+    printf("using planet %d\n",PLANET_DATA->spriteID);
     if (TO_WORMHOLE)
         THIS->position.x = PLANET_DATA->distanceFromStart;
     else

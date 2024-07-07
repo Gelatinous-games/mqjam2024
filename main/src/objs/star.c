@@ -43,7 +43,7 @@ typedef struct {
     int spriteID;
 } _Star_Data;
 
-#define STAR_DATA ((_Star_Data *)(THIS->data_struct))
+#define STAR_NEARBY_DATA ((_Star_Data *)(THIS->data_struct))
 
 Sprite** _starSprites;
 
@@ -64,16 +64,16 @@ void _StarObject_Randomize(void* self) {
 
 
     // sprite
-    STAR_DATA->spriteID = (int)(FLOAT_RAND * STAR_SPRITE_COUNT);
-    if (STAR_DATA->spriteID == STAR_SPRITE_COUNT) STAR_DATA->spriteID = STAR_SPRITE_COUNT-1;
+    STAR_NEARBY_DATA->spriteID = (int)(FLOAT_RAND * STAR_SPRITE_COUNT);
+    if (STAR_NEARBY_DATA->spriteID == STAR_SPRITE_COUNT) STAR_NEARBY_DATA->spriteID = STAR_SPRITE_COUNT-1;
 
     THIS->position.x = (STAR_RANDOM_RANGE * FLOAT_RAND * cameraBounds.x) + ( 2 * cameraBounds.x); 
     THIS->position.x += originPos.x;
 
     THIS->position.y = ((FLOAT_RAND) * cameraBounds.y * 2) - cameraBounds.y;
 
-    STAR_DATA->maxPull = (FLOAT_RAND * FREE_MAX_SPEED * 4) + FREE_MAX_SPEED;
-    STAR_DATA->maxRange = (FLOAT_RAND * 8) + 8;
+    STAR_NEARBY_DATA->maxPull = (FLOAT_RAND * FREE_MAX_SPEED * 4) + FREE_MAX_SPEED;
+    STAR_NEARBY_DATA->maxRange = (FLOAT_RAND * 8) + 8;
 
     // printf("Placed star at %f (elected origin at %f)\n", THIS->position.x, originPos.x);
     
@@ -113,7 +113,7 @@ int _StarObject_Init(void* self, float DeltaTime) {
 int _StarObject_Update(void* self, float DeltaTime) {
     // stars dont move but for now, if it is too far behind player / far enough ahead, kill it and restart.
 
-    if (THIS->position.x + (2*cameraBounds.x) + STAR_DATA->maxRange < cameraPosition.x) {
+    if (THIS->position.x + (2*cameraBounds.x) + STAR_NEARBY_DATA->maxRange < cameraPosition.x) {
         // printf("Re-randomizing star (pos %f and cam %f)\n", THIS->position.x, cameraPosition.x);
         _StarObject_Randomize(self);
     }
@@ -126,27 +126,27 @@ int _StarObject_Draw(void* self, float DeltaTime) {
     // todo: red/blueshift rendering.
     
     // doesnt work
-    // RenderCircleGradientAbsolute( THIS->position, STAR_DATA->maxRange, (Color) {255, 0, 0, 255 }, (Color) {0, 0, 255, 255 } );
+    // RenderCircleGradientAbsolute( THIS->position, STAR_NEARBY_DATA->maxRange, (Color) {255, 0, 0, 255 }, (Color) {0, 0, 255, 255 } );
 
     // // render effective radius
-    // RenderCircleRelative(THIS->position, STAR_DATA->maxRange, (Color) { 255, 127, 0, 100 });
+    // RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange, (Color) { 255, 127, 0, 100 });
     // // RenderCircleRelative(THIS->position, THIS->radius, (Color) { 255, 127, 0, 127 });
     int additiveAlpha = 15;
     int shadeValue = 100;
     Color additiveColor = (Color) { shadeValue, shadeValue, shadeValue, additiveAlpha };
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*1.0f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.9f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.8f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.7f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.6f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.5f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.4f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.3f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_DATA->maxRange*0.2f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*1.0f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.9f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.8f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.7f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.6f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.5f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.4f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.3f, additiveColor);
+    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.2f, additiveColor);
     
 
     RenderSpriteRelative(
-        _starSprites[STAR_DATA->spriteID],
+        _starSprites[STAR_NEARBY_DATA->spriteID],
         THIS->position,
         THIS->size,
         0,
@@ -157,7 +157,7 @@ int _StarObject_Draw(void* self, float DeltaTime) {
 }
 
 int _StarObject_Destroy(void* self, float DeltaTime) {
-    free(STAR_DATA);
+    free(STAR_NEARBY_DATA);
     return 0;
 }
 
@@ -188,3 +188,6 @@ GameObj_Base* CreateStarObject() {
     obj_ptr->size = (Vector2) { 2, 2 };
     return obj_ptr;
 }
+
+
+#undef STAR_NEARBY_DATA
