@@ -307,6 +307,7 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
             DestroySprite(backgroundSpriteList_Layer0[i].sprite);
         }
         free(backgroundSpriteList_Layer0);
+        backgroundSpriteList_Layer0 = 0;
         break;
     case LAYER_BACKGROUND_STARSCAPE_1:
         // LAYER 1
@@ -315,6 +316,7 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
             DestroySprite(backgroundSpriteList_Layer1[i].sprite);
         }
         free(backgroundSpriteList_Layer1);
+        backgroundSpriteList_Layer1 = 0;
         break;
 
     case LAYER_BACKGROUND_STARSCAPE_2:
@@ -324,6 +326,7 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
             DestroySprite(backgroundSpriteList_Layer2[i].sprite);
         }
         free(backgroundSpriteList_Layer2);
+        backgroundSpriteList_Layer2 = 0;
         break;
     }
 }
@@ -347,6 +350,7 @@ void destroyBackgroundGenerationData(void *self, float DeltaTime)
 {
     // object reference array
     free(BACKGROUND_DATA->backgroundGeneratedObjects);
+    BACKGROUND_DATA->backgroundGeneratedObjects = 0;
 }
 
 int getBackgroundSpriteCount(void *self)
