@@ -128,8 +128,8 @@ static void prepareSounds(){
     TRACKS[THRUST_START_ID]->baseVolume    = 1.0f;
     TRACKS[DEATH_SOUND_ID]->baseVolume     = 1.0f;
     TRACKS[BUTTON_SOUND_ID]->baseVolume     = 1.0f;
-    TRACKS[SHIELD_HIT_SOUND_ID]->baseVolume     = 1.0f;
-    TRACKS[SHIELD_REGEN_SOUND_ID]->baseVolume     = 1.0f;
+    TRACKS[SHIELD_HIT_SOUND_ID]->baseVolume     = 0.5f;
+    TRACKS[SHIELD_REGEN_SOUND_ID]->baseVolume     = 0.5f;
     TRACKS[UI_HOVER_SOUND_ID]->baseVolume     = 1.0f;
     TRACKS[WIN_SOUND_ID]->baseVolume     = 1.0f;
 
