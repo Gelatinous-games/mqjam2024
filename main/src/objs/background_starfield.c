@@ -63,7 +63,6 @@ typedef struct
 #define BACKGROUNDSTARFIELD_DATA_LOCALREF ((BackgroundStarField_Data *)(THIS->data_struct))
 
 
-GameObj_Base *player;
 // BackgroundStar_Data BGstars[100];
 int offsetX = 0;
 float minTailYVelocityClamp = 0.5f;//used when setting tail y pos
@@ -88,7 +87,7 @@ int _BackgroundStarField_Init(void *self, float DeltaTime)
     BACKGROUNDSTARFIELD_DATA_LOCALREF->tailMinLength = 1.0;
     BACKGROUNDSTARFIELD_DATA_LOCALREF->tailUpDownOffestScale = 1;
 
-    GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
+    // GetObjectWithFlagsExact(FLAG_PLAYER_OBJECT, 0, &player); // getting the player.
 
     // Create the array of stars to hold their posistions.
     BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL = (BackgroundStar_Data **)malloc(sizeof(BackgroundStar_Data *) * BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars);
@@ -145,11 +144,11 @@ int _BackgroundStarField_Update(void *self, float DeltaTime)
 
 void setCurrentTailLengthScale(void *self)
 {
-    int tailLength = player->velocity.x;
+    int tailLength = PLAYER_OBJECT_REF->velocity.x;
     tailLength = tailLength == 0 ? 1 : tailLength;
     tailLength = tailLength < 0 ? -1 * tailLength : tailLength;
     BACKGROUNDSTARFIELD_DATA_LOCALREF->tailLengthScaleX = tailLength;
-    BACKGROUNDSTARFIELD_DATA_LOCALREF->tailLengthScaleY = (player->velocity.y==0)?minTailYVelocityClamp:player->velocity.y;
+    BACKGROUNDSTARFIELD_DATA_LOCALREF->tailLengthScaleY = (PLAYER_OBJECT_REF->velocity.y==0)? minTailYVelocityClamp: PLAYER_OBJECT_REF->velocity.y;
 }
 
 void resetStarPostionIfOutOfBounds(void *self, BackgroundStar_Data* star){
@@ -216,7 +215,8 @@ int _BackgroundStarField_Destroy(void *self, float DeltaTime)
         free(BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL);
         BACKGROUNDSTARFIELD_DATA_LOCALREF->BACKGROUNDSTARDATA_POOL = 0;
     }
-    free(BACKGROUNDSTARFIELD_DATA_LOCALREF);
+    free( ((GameObj_Base *)self)->data_struct );
+    ((GameObj_Base *)self)->data_struct = 0;
 
     return 0;
 }

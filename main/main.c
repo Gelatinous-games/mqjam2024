@@ -86,14 +86,6 @@
 #include "src/objs/planet.c"
 #endif
 
-#ifndef _background_stars
-#define _background_star
-#include "src/objs/background_stars.c"
-#endif
-#ifndef _background
-#define _background
-#include "src/objs/background.c"
-#endif
 #ifndef _healthbar
 #define _healthbar
 #include "src/healthbar.c"

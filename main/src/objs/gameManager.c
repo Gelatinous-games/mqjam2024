@@ -9,6 +9,16 @@
 #include "../sound.h"
 
 
+#ifndef _background_starfield
+#define _background_starfield
+#include "background_starfield.c"
+#endif
+#ifndef _background_sprites
+#define _background_sprites
+#include "background_sprites.c"
+#endif
+
+
 #ifndef _camera
     #define _camera
     #include "../camera.c"
@@ -72,6 +82,11 @@ int _GameManager_Init(void* self, float DeltaTime) {
     // Planet Object
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
+
+    
+    // loads our sprites ready for use
+    prepareBackgroundSprites();
+
 
     // DEBUG_SPAMMER_PRINTF_PREFIX printf("number of starfield layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
      // Background Object
@@ -147,6 +162,9 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
 
     free(BACKGROUNDSTARFIELD_EFFECT_REF_LIST);
     free(BACKGROUNDSPRITE_OBJECT_REF_LIST);
+
+
+    destroyBackgroundSprites();
 
 
     free(DATA);
