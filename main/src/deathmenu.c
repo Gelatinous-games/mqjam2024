@@ -67,7 +67,7 @@ int _DeathMenu_Init(){
     return 0;
 }
 
-int _DeathMenu_Update(float DeltaTime){
+int _DeathMenu_Update(void *deathManagerRef, float DeltaTime){
 
     // ************************************************************************************
     // ************************************************************************************
@@ -78,7 +78,7 @@ int _DeathMenu_Update(float DeltaTime){
         ( MouseOverRectangle(restartButtonBoundsBG) && IsMouseButtonDown(MOUSE_BUTTON_LEFT) )
     ){
         // kill death manager
-        __DEATHMANAGER_REF->awaitDestroy = 1;
+        ((GameObj_Base *)deathManagerRef)->awaitDestroy = 1;
     }
 
     // ************************************************************************************

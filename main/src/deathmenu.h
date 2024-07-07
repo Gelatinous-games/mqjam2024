@@ -34,8 +34,7 @@ Color ButtonColorBG;
 Color ButtonColorHover;
 
 int _DeathMenu_Init();
-int _DeathMenu_Update(float DeltaTime);
+int _DeathMenu_Update(void *deathManagerRef, float DeltaTime);
 int _DeathMenu_Draw();
 int _DeathMenu_Cleanup();
 
-void _DeathMenu_ScheduleRestartGame();

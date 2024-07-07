@@ -34,7 +34,7 @@ typedef struct {
 int _DeathManager_Init(void* self, float DeltaTime) {
     // Create any objects we need for the death screen HERE.
     // They should be destroyed in our destroy function.
-    __GAMEMANAGER_REF = 0;
+
     // prepare death stuff
     _DeathMenu_Init(); // incase we die
 
@@ -47,7 +47,7 @@ int _DeathManager_Update(void* self, float DeltaTime) {
     // If we're progressing to the game state, we should flag this object to be destroyed.
 
     // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> _MAIN_DrawGlobalGameEnvironment() :: DEATH MENU UPDATE");
-    _DeathMenu_Update(DeltaTime);
+    _DeathMenu_Update(self, DeltaTime);
 
     return 0;
 }
@@ -67,8 +67,7 @@ int _DeathManager_Destroy(void* self, float DeltaTime) {
     free(DATA);
 
     // re-create the game manager now
-    __GAMEMANAGER_REF = CreateGameManager();
-    AddToPool( __GAMEMANAGER_REF );
+    AddToPool( CreateGameManager() );
 
     return 0;
 }

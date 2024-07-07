@@ -190,8 +190,7 @@ static void _MAIN_DrawGlobalGameEnvironment(void)
 /// @brief prepares all objects for initial main menu.
 static void _MAIN_PrepareMainMenu()
 {
-    __TITLEMANAGER_REF = CreateTitleManager();
-    AddToPool( __TITLEMANAGER_REF );
+    AddToPool( CreateTitleManager() );
     CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
 }
 

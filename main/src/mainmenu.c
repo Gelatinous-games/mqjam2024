@@ -48,7 +48,7 @@ int _MainMenu_Init(){
     return 0;
 }
 
-int _MainMenu_Update(float DeltaTime){
+int _MainMenu_Update(void *titleManagerRef, float DeltaTime){
 
     // ************************************************************************************
     // ************************************************************************************
@@ -59,7 +59,7 @@ int _MainMenu_Update(float DeltaTime){
         ( MouseOverRectangle(startButtonBoundsBG) && IsMouseButtonDown(MOUSE_BUTTON_LEFT) )
     ){
         // _MainMenu_ScheduleGameStart();
-        __TITLEMANAGER_REF->awaitDestroy = 1;
+        ((GameObj_Base *)titleManagerRef)->awaitDestroy = 1;
 
     }
 

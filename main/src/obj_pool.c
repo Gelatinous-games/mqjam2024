@@ -135,21 +135,24 @@ void ProcessAllDraws(float DeltaTime) {
     DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n", "ProcessAllDraws() called");
     printf("layers to draw: %d\n",LAYER_BOOKEND);
     for (int l = 0; l < LAYER_BOOKEND; l++) {
-        printf("drawing layer %d\n",l);
-        printf("objs to draw: %d\n",_gameObjPoolSize);
+        printf("========= DRAW LAYER %d ========= <START>\n",l);
+        printf("==> OBJ COUNT: %d\n", _gameObjPoolSize);
         for (int i = 0; i < _gameObjPoolSize; i++) {
-            printf("drawing obj %d\n",i);
-
+            printf(">> --- obj[%d] draw --- START\n",i);
             scaleFactor = Vector2One();
             GameObj_Base* obj = _gameObjPool[i];
+            printf( "obj layer : %d\n", obj->currentLayer);
 
             if (obj->currentLayer == l){
                 
-                printf("obj flag %lu\n", obj->flags);
+                printf("> FLAG: %lu\n", obj->flags);
                 obj->Draw_Func(obj, DeltaTime);
             }
+            printf(">> --- obj[%d] draw --- END\n",i);
         }
+        printf("========= DRAW LAYER %d ========= <DONE>\n",l);
     }
+    printf("%s\n","FINISHED PROCESS ALL DRAWS");
 }
 
 /// @brief Searches for any gameobjects seeking to be destroyed and obliterates them. Call after freshAdd so that there are no pendings.
@@ -170,9 +173,14 @@ void ProcessAllDestroys() {
             _gameObjPoolSize -= 1; // decrement the number of objects in the pool by 1 as the one at the end is nulled.
             i -=1; // and since we've just bubbled the last down, decrease i so we can redo that step.
 
+            // if (obj->flags & FLAG_MANAGER)
+            // {
+            //     /* code */
+            // }
             obj->Destroy_Func(obj, 0);
             free(obj);
             obj = 0;
+            
         }
     }
 }
