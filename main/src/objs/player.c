@@ -419,7 +419,7 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
 
         float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
 
-        if(percentageNotAbsorbedByShields != 1.0f){
+        if(CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISSHIELDED){
             SoundManagerHandleImpact(HULL_IMPACT);
         }
         else {
