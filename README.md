@@ -102,8 +102,8 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 
 ## Big If True
 
-> ![IMPORTANT]
-> worriables
+> [!IMPORTANT]
+> worriables list
 
 ### Things to worry about
 
