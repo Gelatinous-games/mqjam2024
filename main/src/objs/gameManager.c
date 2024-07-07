@@ -255,6 +255,11 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
         obj->awaitDestroy = 1;
     }
 
+    WORMHOLE_OBJECT_REF = 0;
+    PLANET_OBJECT_REF = 0;
+    STAR_OBJECT_REF = 0;
+    
+
     free(BACKGROUNDSTARS_EFFECT_REF_LIST);
 
     if (DATA->makeTitleScreen) {

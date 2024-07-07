@@ -57,11 +57,11 @@ int _Planet_Init(void* self, float DeltaTime) {
         printf("%s\n","loading planets");
         _planetSprites = (Sprite **)malloc(PLANET_SPRITE_COUNT * sizeof(Sprite*));
         int planetSpriteIndex = 0;
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P0.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P1.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P2.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P3.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P4.png");
+        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P0_updoot.png");
+        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P1_updoot.png");
+        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P2_updoot.png");
+        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P3_updoot.png");
+        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P4_updoot.png");
     }
 
 
