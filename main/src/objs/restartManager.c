@@ -7,6 +7,7 @@
 
 #include "../base.h"
 #include "../deathmenu.h"
+// #include "../settings.h"
 
 
 #ifndef _camera
@@ -55,7 +56,18 @@ int _RestartManager_Draw(void* self, float DeltaTime) {
 }
 
 int _RestartManager_Destroy(void* self, float DeltaTime) {
-    // Destroy any objects we're using for the death screen.
+    // reset the settings
+
+    
+
+
+    PLAYED_DEATH_SOUND_BEFORE = false;
+
+
+
+    CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
+
+
 
     free(DATA);
 

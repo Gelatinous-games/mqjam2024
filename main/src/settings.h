@@ -26,12 +26,10 @@ enum GAME_SCENE_STATE {
     GAME_SCENE_STATE_DEAD = 2
 };
 
-// // skip till it's implemented
-// static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
 static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_MAINMENU;
-static int NEXT_FRAME_GAME_STARTS = false;
 
 
+static int PLAYED_DEATH_SOUND_BEFORE = false;
 
 
 #define CAMERA_COAST_SPEED 3
