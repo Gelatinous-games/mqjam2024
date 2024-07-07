@@ -1,17 +1,17 @@
 /**
- * 
- * 
+ *
+ *
  *      DA BIG BAD MAIN FILE
- *          
+ *
  *          ONLY BADDIES USE THIS FILE FOR MAJOR CODING
- * 
+ *
  *         why are you still reading this
- * 
- * 
- * 
- * 
- * 
-*/
+ *
+ *
+ *
+ *
+ *
+ */
 
 // what da henk
 #define invoken(a, b) a->b(a->self)
@@ -32,11 +32,9 @@
 #include "src/settings.h"
 #include "src/sound.h"
 
-
 #include "src/base.h"
 #include "src/obj_register.h"
 #include "src/objs/asteroid.h"
-
 
 #ifndef _mainmenu
 #define _mainmenu
@@ -105,11 +103,6 @@
 #include "src/objs/titlemanager.c"
 #include "src/objs/deathManager.c"
 
-
-
-
-
-
 static void UpdateDrawFrame(void); // Update and draw one frame
 
 // let C know this exists
@@ -118,7 +111,8 @@ static void prepareSounds();
 static void cleanupSounds();
 void HandleDebuggingKillPlayerCheck(float DeltaTime);
 
-static int GameShouldRender(){
+static int GameShouldRender()
+{
     return (CURRENT_GAME_SCENE_STATE != GAME_SCENE_STATE_MAINMENU);
 }
 
@@ -148,10 +142,8 @@ int main()
 
     generateObjects();
 
-
     prepareSounds();
     scaleAllTracksVolume(0.5f);
-
 
     ProcessFreshAdd();
 
@@ -165,7 +157,6 @@ int main()
     // printf("%s\n",">> main() :: emscripten");
     emscripten_set_main_loop(UpdateDrawFrame, FRAMERATE, 1);
 #endif
-
 
     _MainMenu_Cleanup();
     _DeathMenu_Cleanup();
@@ -191,11 +182,13 @@ static void UpdateDrawFrame(void)
     // grab it
     float DeltaTime = GetFrameTime();
 
-    HandleDebuggingKillPlayerCheck(DeltaTime);
-    
+    // HandleDebuggingKillPlayerCheck(DeltaTime);
+
     // check for render
-    if(GameShouldRender()){
-        if(!SoundsStarted){
+    if (GameShouldRender())
+    {
+        if (!SoundsStarted)
+        {
             startSounds();
             SoundsStarted = true;
         }
@@ -205,45 +198,49 @@ static void UpdateDrawFrame(void)
         _DeathMenu_Update(DeltaTime);
     }
     // handle menus
-    else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
+    else
+    {
+        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
+        {
             _MainMenu_Update(DeltaTime);
         }
     }
-
 
     UpdateCamera3D();
     BeginDrawing();
     ClearBackground(BLACK);
 
     // check for render
-    if(GameShouldRender()){
+    if (GameShouldRender())
+    {
         ProcessAllDraws(DeltaTime);
         drawTimer();
         // when dead scene
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD){
+        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD)
+        {
             // draw death menu over the top
             _DeathMenu_Draw();
         }
     }
     // handle menus
-    else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
+    else
+    {
+        if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
+        {
             _MainMenu_Draw();
         }
     }
 
-        
     EndDrawing();
 
     ProcessFreshAdd();
     ProcessAllDestroys();
 
+    if (NEXT_FRAME_GAME_STARTS)
+    {
 
-
-    if(NEXT_FRAME_GAME_STARTS){
-        
-        if( __GAMEMANAGER_INITIALISED_BEFORE ){
+        if (__GAMEMANAGER_INITIALISED_BEFORE)
+        {
             // __GAMEMANAGER_REF = CreateGameManager();
             // AddToPool(__GAMEMANAGER_REF);
             // aaaa
@@ -251,7 +248,6 @@ static void UpdateDrawFrame(void)
 
         CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
         NEXT_FRAME_GAME_STARTS = 0;
-
     }
 }
 

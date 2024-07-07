@@ -172,21 +172,17 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
         Vector2 impartSelf, impartAsteroid;
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartAsteroid)) {
-            // ... collision sound
-            // TODO: hit sound only if not death sound
-            playSoundOnce(HIT_SOUND_ID);
 
             Vector2 midPoint = Vector2Scale(Vector2Add(THIS->position, extobj->position), 0.5);
             THIS->velocity = Vector2Add(THIS->velocity, impartSelf);
             extobj->velocity = Vector2Add(extobj->velocity, impartAsteroid);
 
-            if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
+            if (PLAYER_DATA->deltaTimeSinceLastImpact < PLAYER_DAMAGE_IMMUNITY_TIMEOUT) {
                 continue;
             }
 
             // get the damage rate and apply
             PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
-
             // ... collision sound
             playSoundOnce(HIT_SOUND_ID);
             // create a spark effect or something
@@ -417,10 +413,10 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
     // TODO: shake the health bar
 
     // reset the time since counter
-    if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
+    if (PLAYER_DATA->deltaTimeSinceLastImpact < PLAYER_DAMAGE_IMMUNITY_TIMEOUT) {
         return;
     }
-    PLAYER_DATA->deltaTimeSinceLastImpact = PLAYER_DAMAGE_IMMUNITY_TIMEOUT; // set to the timout
+    PLAYER_DATA->deltaTimeSinceLastImpact = 0; // set to the timout
 
     float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
     PLAYER_DATA->hullHealth -= hullRate * percentageNotAbsorbedByShields;
