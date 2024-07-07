@@ -95,6 +95,8 @@ int _BackgroundStarField_Init(void *self, float DeltaTime)
 int _BackgroundStarField_Update(void *self, float DeltaTime)
 {
 
+    printf("delta time: %f\n", DeltaTime);
+
     printf("%s\n", "background stars update");
     // get the player's velocity
     THIS->velocity = (Vector2){-1.0f * (PLAYER_OBJECT_REF->velocity.x), -0.5f * (PLAYER_OBJECT_REF->velocity.y)};
@@ -102,12 +104,32 @@ int _BackgroundStarField_Update(void *self, float DeltaTime)
     printf("%s\n", "velocity access done");
 
 
+
     printf("%d number of stars\n", BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars);
     // move the all the stars across the screen
     for (int i = 0; i < BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars; i++)
     {
-        printf("BACKGROUNDSTARDATA_POOL[%d]\n", i);
-        BACKGROUNDSTARDATA_POOL[i]->position = Vector2Add(BACKGROUNDSTARDATA_POOL[i]->position, Vector2Scale(THIS->velocity, DeltaTime * BACKGROUNDSTARFIELD_DATA_LOCALREF->cameraObjectScale));
+        if(!BACKGROUNDSTARDATA_POOL){
+            // ...
+            printf("%s\n","why's it spicy");
+            continue;
+        }
+        if(BACKGROUNDSTARDATA_POOL[i]){
+            // ...
+            Vector2 currPosition = BACKGROUNDSTARDATA_POOL[i]->position;
+            printf("BACKGROUNDSTARDATA_POOL[%d]->position { %f, %f } \n", i, currPosition.x, currPosition.y);
+            float currCamScale = BACKGROUNDSTARFIELD_DATA_LOCALREF->cameraObjectScale;
+            printf("BACKGROUNDSTARDATA_POOL[%d]->cameraObjectScale { %f } \n", i, currCamScale);
+            Vector2 scaledVelocity = Vector2Scale(THIS->velocity, DeltaTime * currCamScale);
+            printf("BACKGROUNDSTARDATA_POOL[%d] scaled velocity { %f, %f } \n", i, scaledVelocity.x, scaledVelocity.y);
+            Vector2 addedVelocity = Vector2Add(currPosition, scaledVelocity);
+            BACKGROUNDSTARDATA_POOL[i]->position.x = addedVelocity.x;
+            BACKGROUNDSTARDATA_POOL[i]->position.y = addedVelocity.y;
+            printf("BACKGROUNDSTARDATA_POOL[%d] NEW POSITION { %f, %f } \n", i, BACKGROUNDSTARDATA_POOL[i]->position.x, BACKGROUNDSTARDATA_POOL[i]->position.y);
+        }
+        else {
+            printf("BACKGROUNDSTARDATA_POOL[%d] DOESNT EXIST\n", i);
+        }
     }
     return 0;
 }
@@ -140,8 +162,8 @@ void _BackgroundStarField_Populate(void *self)
     for (int j = 0; j < BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars; ++j) // populate the screen with stars at random posistion
     {
         // set star's random seeded posistions. 0.01 * postion is due to the list of stars position is a 3 digit number. I want it to be 0.00f, the seed only generate in integer.
-        float xPosition = 0.01 * (float)BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion[j]; // add the tail
-        float yPosition = 0.01 * (float)BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion[BACKGROUNDSTARFIELD_DATA_LOCALREF->numberOfStars + j];
+        float xPosition = 0.01 * (float)BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion[j*2]; // add the tail
+        float yPosition = 0.01 * (float)BACKGROUNDSTARFIELD_DATA_LOCALREF->listOfStarsPosistion[j*2+1];
 
         // add the player velocity to the stars. make the stars move
         Vector2 pos = Vector2Subtract(BACKGROUNDSTARDATA_POOL[j]->position, (Vector2){xPosition, yPosition});
