@@ -35,7 +35,7 @@
 
 #define STAR_RANDOM_RANGE 4
 
-#define STAR_SPRITE_COUNT 5
+#define STAR_SPRITE_COUNT 6
 
 typedef struct {
     float maxRange;
@@ -118,12 +118,13 @@ Vector2 GetAccelerationToSink(GameObj_Base* star, GameObj_Base* obj) {
 int _StarObject_Init(void* self, float DeltaTime) {
     if (!_starSprites) {
         _starSprites = malloc(sizeof(Sprite*) * STAR_SPRITE_COUNT);
-
-        _starSprites[0] = CreateSprite("resources/stars/S0.png");
-        _starSprites[1] = CreateSprite("resources/stars/S1.png");
-        _starSprites[2] = CreateSprite("resources/stars/S2.png");
-        _starSprites[3] = CreateSprite("resources/stars/S3.png");
-        _starSprites[4] = CreateSprite("resources/stars/S4.png");
+        int index = 0;
+        _starSprites[index++] = CreateSprite("resources/stars/S0.png");
+        _starSprites[index++] = CreateSprite("resources/stars/S1.png");
+        _starSprites[index++] = CreateSprite("resources/stars/S2.png");
+        _starSprites[index++] = CreateSprite("resources/stars/S3.png");
+        _starSprites[index++] = CreateSprite("resources/stars/S4.png");
+        _starSprites[index++] = CreateSprite("resources/stars/S5.png");
     }
     _StarObject_Randomize(self);
 
