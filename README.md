@@ -98,3 +98,23 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 * explosion / trail / impact / debris / forcefield
 * just an object for manipulating particles specific to the scenario
 * strategy pattern kinda vibe so we can just add the effect to anything and reuse
+
+
+## web building
+
+* get emscripten
+
+* needed to install ninja via brew
+actually using:
+```bash
+cmake -S . -B build -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=<fullpath_to_emsdk>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+```
+* aurora uses:
+```bash
+cmake -S . -B build -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=/Users/auroragriffith/emscripten_pain/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+```
+
+then:
+```bash
+cmake --build build
+```

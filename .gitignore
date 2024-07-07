@@ -2,4 +2,5 @@
 */.DS_Store
 **/.DS_Store
 main/build
+main/build-web
 main/main.exe
