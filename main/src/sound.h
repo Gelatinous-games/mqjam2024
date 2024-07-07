@@ -32,6 +32,11 @@ enum TRACK_INDEX_ID {
     THRUST_END_ID,
     THRUST_START_ID,
     DEATH_SOUND_ID,
+    BUTTON_SOUND_ID,
+    SHIELD_HIT_SOUND_ID,
+    SHIELD_REGEN_SOUND_ID,
+    UI_HOVER_SOUND_ID,
+    WIN_SOUND_ID,
     
 
 
@@ -78,6 +83,11 @@ static void prepareSounds(){
     TRACKS[THRUST_END_ID]      = (Sound_Track *)malloc(sizeof(Sound_Track));
     TRACKS[THRUST_START_ID]    = (Sound_Track *)malloc(sizeof(Sound_Track));
     TRACKS[DEATH_SOUND_ID]     = (Sound_Track *)malloc(sizeof(Sound_Track));
+    TRACKS[BUTTON_SOUND_ID]     = (Sound_Track *)malloc(sizeof(Sound_Track));
+    TRACKS[SHIELD_HIT_SOUND_ID]     = (Sound_Track *)malloc(sizeof(Sound_Track));
+    TRACKS[SHIELD_REGEN_SOUND_ID]     = (Sound_Track *)malloc(sizeof(Sound_Track));
+    TRACKS[UI_HOVER_SOUND_ID]     = (Sound_Track *)malloc(sizeof(Sound_Track));
+    TRACKS[WIN_SOUND_ID]     = (Sound_Track *)malloc(sizeof(Sound_Track));
 
     // paths
     TRACKS[BGMUSIC_LOOP_ID]->path    = "resources/SFX/MQGameJam_Music_loop.wav";
@@ -88,6 +98,11 @@ static void prepareSounds(){
     TRACKS[THRUST_END_ID]->path      = "resources/SFX/Thrust_end.wav";
     TRACKS[THRUST_START_ID]->path    = "resources/SFX/Thrust_start.wav";
     TRACKS[DEATH_SOUND_ID]->path     = "resources/SFX/Death.wav";
+    TRACKS[BUTTON_SOUND_ID]->path     = "resources/SFX/ButtonSelect.wav";
+    TRACKS[SHIELD_HIT_SOUND_ID]->path     = "resources/SFX/ShieldHit.wav";
+    TRACKS[SHIELD_REGEN_SOUND_ID]->path     = "resources/SFX/ShieldRegen.wav";
+    TRACKS[UI_HOVER_SOUND_ID]->path     = "resources/SFX/UI_hover.wav";
+    TRACKS[WIN_SOUND_ID]->path     = "resources/SFX/Win.wav";
 
     // looping
     TRACKS[BGMUSIC_LOOP_ID]->loopingTrack    = 1;
@@ -98,6 +113,11 @@ static void prepareSounds(){
     TRACKS[THRUST_END_ID]->loopingTrack      = 0;
     TRACKS[THRUST_START_ID]->loopingTrack    = 0;
     TRACKS[DEATH_SOUND_ID]->loopingTrack     = 0;
+    TRACKS[BUTTON_SOUND_ID]->loopingTrack     = 0;
+    TRACKS[SHIELD_HIT_SOUND_ID]->loopingTrack     = 0;
+    TRACKS[SHIELD_REGEN_SOUND_ID]->loopingTrack     = 0;
+    TRACKS[UI_HOVER_SOUND_ID]->loopingTrack     = 0;
+    TRACKS[WIN_SOUND_ID]->loopingTrack     = 0;
     // volumes
     TRACKS[BGMUSIC_LOOP_ID]->baseVolume    = 0.7f;
     TRACKS[BGMENUMUSIC_SOUND_ID]->baseVolume = 0.6f;
@@ -107,6 +127,11 @@ static void prepareSounds(){
     TRACKS[THRUST_END_ID]->baseVolume      = 1.0f;
     TRACKS[THRUST_START_ID]->baseVolume    = 1.0f;
     TRACKS[DEATH_SOUND_ID]->baseVolume     = 1.0f;
+    TRACKS[BUTTON_SOUND_ID]->baseVolume     = 1.0f;
+    TRACKS[SHIELD_HIT_SOUND_ID]->baseVolume     = 1.0f;
+    TRACKS[SHIELD_REGEN_SOUND_ID]->baseVolume     = 1.0f;
+    TRACKS[UI_HOVER_SOUND_ID]->baseVolume     = 1.0f;
+    TRACKS[WIN_SOUND_ID]->baseVolume     = 1.0f;
 
     TRACKS[BGMUSIC_LOOP_ID]->scaleOfBaseVolume    = 1.0f;
     TRACKS[BGMENUMUSIC_SOUND_ID]->scaleOfBaseVolume = 0.0f;
@@ -116,6 +141,11 @@ static void prepareSounds(){
     TRACKS[THRUST_END_ID]->scaleOfBaseVolume      = 0.0f;
     TRACKS[THRUST_START_ID]->scaleOfBaseVolume    = 0.0f;
     TRACKS[DEATH_SOUND_ID]->scaleOfBaseVolume     = 0.0f;
+    TRACKS[BUTTON_SOUND_ID]->scaleOfBaseVolume     = 0.0f;
+    TRACKS[SHIELD_HIT_SOUND_ID]->scaleOfBaseVolume     = 0.0f;
+    TRACKS[SHIELD_REGEN_SOUND_ID]->scaleOfBaseVolume     = 0.0f;
+    TRACKS[UI_HOVER_SOUND_ID]->scaleOfBaseVolume     = 0.0f;
+    TRACKS[WIN_SOUND_ID]->scaleOfBaseVolume     = 0.0f;
 
     // load
     TRACKS[BGMUSIC_LOOP_ID]->track     = LoadSound(TRACKS[BGMUSIC_LOOP_ID]->path);     // Load WAV audio file
@@ -126,6 +156,11 @@ static void prepareSounds(){
     TRACKS[THRUST_END_ID]->track       = LoadSound(TRACKS[THRUST_END_ID]->path);       // Load WAV audio file
     TRACKS[THRUST_START_ID]->track     = LoadSound(TRACKS[THRUST_START_ID]->path);     // Load WAV audio file
     TRACKS[DEATH_SOUND_ID]->track      = LoadSound(TRACKS[DEATH_SOUND_ID]->path);      // Load WAV audio file
+    TRACKS[BUTTON_SOUND_ID]->track      = LoadSound(TRACKS[BUTTON_SOUND_ID]->path);      // Load WAV audio file
+    TRACKS[SHIELD_HIT_SOUND_ID]->track      = LoadSound(TRACKS[SHIELD_HIT_SOUND_ID]->path);      // Load WAV audio file
+    TRACKS[SHIELD_REGEN_SOUND_ID]->track      = LoadSound(TRACKS[SHIELD_REGEN_SOUND_ID]->path);      // Load WAV audio file
+    TRACKS[UI_HOVER_SOUND_ID]->track      = LoadSound(TRACKS[UI_HOVER_SOUND_ID]->path);      // Load WAV audio file
+    TRACKS[WIN_SOUND_ID]->track      = LoadSound(TRACKS[WIN_SOUND_ID]->path);      // Load WAV audio file
 }
 
 static void startSounds(){
@@ -169,6 +204,11 @@ static void cleanupSounds(){
     UnloadSound(TRACKS[THRUST_END_ID]->track);       // Unload sound data
     UnloadSound(TRACKS[THRUST_START_ID]->track);     // Unload sound data
     UnloadSound(TRACKS[DEATH_SOUND_ID]->track);      // Unload sound data
+    UnloadSound(TRACKS[BUTTON_SOUND_ID]->track);      // Unload sound data
+    UnloadSound(TRACKS[SHIELD_HIT_SOUND_ID]->track);      // Unload sound data
+    UnloadSound(TRACKS[SHIELD_REGEN_SOUND_ID]->track);      // Unload sound data
+    UnloadSound(TRACKS[UI_HOVER_SOUND_ID]->track);      // Unload sound data
+    UnloadSound(TRACKS[WIN_SOUND_ID]->track);      // Unload sound data
 
     // deinit
     free(TRACKS[BGMUSIC_LOOP_ID]);
@@ -179,6 +219,11 @@ static void cleanupSounds(){
     free(TRACKS[THRUST_END_ID]);
     free(TRACKS[THRUST_START_ID]);
     free(TRACKS[DEATH_SOUND_ID]);
+    free(TRACKS[BUTTON_SOUND_ID]);
+    free(TRACKS[SHIELD_HIT_SOUND_ID]);
+    free(TRACKS[SHIELD_REGEN_SOUND_ID]);
+    free(TRACKS[UI_HOVER_SOUND_ID]);
+    free(TRACKS[WIN_SOUND_ID]);
 
 
     free(TRACKS);
