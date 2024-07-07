@@ -33,6 +33,9 @@
 #include "../misc.c"
 #endif
 
+
+#define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
+
 enum SPRITE_LAYER
 {
     SMALL = 0,
@@ -124,7 +127,7 @@ int _BackgroundSprites_Init(void *self, float DeltaTime)
 int _BackgroundSprites_Update(void *self, float DeltaTime)
 {
     
-    printf("%s\n", "background sprites update");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n", "background sprites update");
     // parallax
     THIS->position.x = -0.1f * (cameraPosition.x);
     THIS->position.y = -0.1f * (cameraPosition.y);
@@ -476,3 +479,6 @@ BackgroundSprite_SpriteData *getSpriteListInCurrentLayer(void *self)
         return backgroundSpriteList_Layer0;
     }
 }
+
+
+#undef DEBUG_SPAMMER_PRINTF_PREFIX

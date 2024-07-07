@@ -14,7 +14,8 @@
     #define _camera
     #include "../camera.c"
 #endif
-
+// #define SLASH_THING /
+#define DEBUG_SPAMMER_PRINTF_PREFIX if(0)
 
 #define OBJECT_POOL_CAPACITY 256
 
@@ -106,32 +107,32 @@ int GetObjectWithFlagsAny(long unsigned int flags, int sIDX, GameObj_Base** reto
 /// @brief Processes the update function on all objects that are not waiting to be initialized.
 /// @param DeltaTime 
 void ProcessAllUpdates(float DeltaTime) {
-    printf("ProcessAllUpdates(%f){\n",DeltaTime);
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("ProcessAllUpdates(%f){\n",DeltaTime);
     if(_gameObjPool){
-        printf("%s not null\n", "_gameObjPool");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s not null\n", "_gameObjPool");
     }
     else{
-        printf("%s IS NULL!!!\n", "_gameObjPool");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s IS NULL!!!\n", "_gameObjPool");
     }
-    printf("%d pool size\n", _gameObjPoolSize);
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%d pool size\n", _gameObjPoolSize);
     for (int i = 0; i < _gameObjPoolSize; i++) {
-        printf("_gameObjPool[%d]\n",i);
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("_gameObjPool[%d]\n",i);
         GameObj_Base* obj = _gameObjPool[i];
         if(obj) {
-            printf("%s",".");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s",".");
             obj->Update_Func(obj, DeltaTime);
         }
         else {
-            printf("%s","!");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s","!");
         }
     }
-    printf("%s\n","}");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","}");
 }
 
 /// @brief Processes the draw function on all objects that are not waiting to be initialized.
 /// @param DeltaTime 
 void ProcessAllDraws(float DeltaTime) {
-    printf("%s\n", "ProcessAllDraws() called");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n", "ProcessAllDraws() called");
     for (int l = 0; l < LAYER_BOOKEND; l++) {
 
         for (int i = 0; i < _gameObjPoolSize; i++) {
@@ -168,3 +169,5 @@ void ProcessAllDestroys() {
         }
     }
 }
+
+#undef DEBUG_SPAMMER_PRINTF_PREFIX

@@ -21,7 +21,7 @@
 #include "../obj_register.h"
 #include "../settings.h"
 
-
+// #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
 
 typedef struct {
     int asteroidCount;
@@ -65,7 +65,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     PLANET_OBJECT_REF = CreatePlanet();
     AddToPool(PLANET_OBJECT_REF);
 
-    printf("number of starfield layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("number of starfield layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
      // Background Object
     BACKGROUNDSTARFIELD_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
     BACKGROUNDSPRITE_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
@@ -73,15 +73,15 @@ int _GameManager_Init(void* self, float DeltaTime) {
     {
         /* code */
         // Background Stars 3 layers
-        printf("creating BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] on layer %d\n", i, 1+i);
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("creating BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] on layer %d\n", i, 1+i);
         BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
-        printf("adding BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] to pool\n", i);
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] to pool\n", i);
         AddToPool(BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i]);
 
-        printf("creating BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] on layer %d\n", i, 1+i);
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("creating BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] on layer %d\n", i, 1+i);
         // Background sprites 3 layers, Small/Medium/Large
         BACKGROUNDSPRITE_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
-        printf("adding BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] to pool\n", i);
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] to pool\n", i);
         AddToPool(BACKGROUNDSPRITE_OBJECT_REF_LIST[i]);
     }
     return 0;
@@ -100,12 +100,12 @@ int _GameManager_Update(void* self, float DeltaTime) {
     if (DATA->spawnDistance < 0) {
         DATA->spawnDistance = GAME_SPAWN_DIST;
         if (FLOAT_RAND < GAME_SPAWN_ASTEROID && DATA->asteroidCount < MAX_ASTEROIDS) {
-            printf("SPAWNING ASTEROID!\n");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("SPAWNING ASTEROID!\n");
             AddToPool(CreateAsteroid());
             DATA->asteroidCount++;
         }
         else if (DATA->starCount < MAX_ASTEROIDS) {
-            printf("SPAWNING STAR!\n");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("SPAWNING STAR!\n");
             AddToPool(CreateStarObject());
             DATA->starCount++;
         }
@@ -172,3 +172,5 @@ GameObj_Base* CreateGameManager() {
 }
 
 #undef DATA
+
+// #undef DEBUG_SPAMMER_PRINTF_PREFIX

@@ -103,7 +103,7 @@
 #include "src/objs/titlemanager.c"
 #include "src/objs/deathManager.c"
 
-#define DEBUG_DRAW_PRINTF_PREFIX if(true) 
+// #define DEBUG_SPAMMER_PRINTF_PREFIX if(true) 
 
 
 static void UpdateDrawFrame(void); // Update and draw one frame
@@ -187,7 +187,7 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
-    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### START ###################");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### START ###################");
     // grab it
     float DeltaTime = GetFrameTime();
 
@@ -196,18 +196,18 @@ static void UpdateDrawFrame(void)
     // check for render
     if (GameShouldRender())
     {
-        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: TRY RENDER");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: TRY RENDER");
         if (!SoundsStarted)
         {
             startSounds();
             SoundsStarted = true;
         }
         // ...
-        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: SOUND UPDATE");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: SOUND UPDATE");
         soundUpdate();
-        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: ALL UPDATE");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: ALL UPDATE");
         ProcessAllUpdates(DeltaTime);
-        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU UPDATE");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU UPDATE");
         _DeathMenu_Update(DeltaTime);
     }
     // handle menus
@@ -215,12 +215,12 @@ static void UpdateDrawFrame(void)
     {
         if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
         {
-            DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU UPDATE");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU UPDATE");
             _MainMenu_Update(DeltaTime);
         }
     }
 
-    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: UPDATE CAM");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: UPDATE CAM");
     UpdateCamera3D();
     BeginDrawing();
     ClearBackground(BLACK);
@@ -228,14 +228,14 @@ static void UpdateDrawFrame(void)
     // check for render
     if (GameShouldRender())
     {
-        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS DRAWS");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS DRAWS");
         ProcessAllDraws(DeltaTime);
-        DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DRAW TIMER");
+        // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DRAW TIMER");
         drawTimer();
         // when dead scene
         if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD)
         {
-            DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU DRAW");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: DEATH MENU DRAW");
             // draw death menu over the top
             _DeathMenu_Draw();
         }
@@ -245,20 +245,20 @@ static void UpdateDrawFrame(void)
     {
         if (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU)
         {
-            DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU DRAW");
+            // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: MAIN MENU DRAW");
             _MainMenu_Draw();
         }
     }
 
-    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: END DRAW");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: END DRAW");
     EndDrawing();
 
-    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS ADD/DESTROY");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","---->> UpdateDrawFrame() :: PROCESS ADD/DESTROY");
     ProcessFreshAdd();
     ProcessAllDestroys();
 
     if (NEXT_FRAME_GAME_STARTS) StartGame();
-    DEBUG_DRAW_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### END #####################");
+    // DEBUG_SPAMMER_PRINTF_PREFIX printf("%s\n","################## UpdateDrawFrame() ### END #####################");
 }
 
 /// @brief Generates all objects for initial gamestate.
@@ -298,4 +298,4 @@ void StartGame(){
 
 
 
-#undef DEBUG_DRAW_PRINTF_PREFIX
+// #undef DEBUG_SPAMMER_PRINTF_PREFIX
