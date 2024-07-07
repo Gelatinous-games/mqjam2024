@@ -111,7 +111,7 @@ cmake -S . -B build -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=<fullpath_to
 ```
 * aurora uses:
 ```bash
-cmake -S . -B build -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=/Users/auroragriffith/emscripten_pain/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+cmake -S . -B build -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=/Users/auroragriffith/emscripten_pain/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" -DCMAKE_BUILD_TYPE=Release
 ```
 
 then:

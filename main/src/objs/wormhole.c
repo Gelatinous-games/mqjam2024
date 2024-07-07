@@ -36,13 +36,19 @@
 #endif
 
 typedef struct {
-    Sprite* sprite;
+    int spriteID;
     float distanceFromStart;
     float rotate;
     char active;
+    float deltaTimeSinceLastReroll;
 } Wormhole_Data;
 
 #define WORMHOLE_DATA ((Wormhole_Data *)(THIS->data_struct))
+
+Sprite **_Wormhole_spriteList;
+
+#define _WORMHOLE_NUMBER_OF_SPRITES 3
+#define _WORMHOLE_TIME_BETWEEN_REROLLS 0.6f
 
 int _Wormhole_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
@@ -50,8 +56,18 @@ int _Wormhole_Init(void* self, float DeltaTime) {
 
     THIS->data_struct = malloc(sizeof(Wormhole_Data));
 
+    WORMHOLE_DATA->deltaTimeSinceLastReroll = 0.0f;
+    if(!_Wormhole_spriteList){
+        // ...
+        _Wormhole_spriteList = (Sprite **)malloc(sizeof(Sprite *) * _WORMHOLE_NUMBER_OF_SPRITES);
+        _Wormhole_spriteList[0] = CreateSprite("resources/wormhole/w1.png");
+        _Wormhole_spriteList[1] = CreateSprite("resources/wormhole/w2.png");
+        _Wormhole_spriteList[3] = CreateSprite("resources/wormhole/w3.png");
+
+        WORMHOLE_DATA->spriteID = INT_RAND % _WORMHOLE_NUMBER_OF_SPRITES;
+    }
+
     WORMHOLE_DATA->distanceFromStart = WORMHOLE_TRAVEL_DISTANCE;
-    WORMHOLE_DATA->sprite = CreateSprite("resources/wormhole/w1.png");
 
     // default to active
     WORMHOLE_DATA->active = 1;
@@ -77,10 +93,14 @@ int _Wormhole_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
     Wormhole_Data* data = THIS->data_struct;
 
-    // // dont let the player past the wormhole
-    // if (PLAYER_OBJECT_REF->position.x > THIS->position.x) {
-    //     PLAYER_OBJECT_REF->position.x = THIS->position.x;
-    // }
+    WORMHOLE_DATA->deltaTimeSinceLastReroll += DeltaTime;
+
+
+
+    // if(WORMHOLE_DATA->deltaTimeSinceLastReroll >= _WORMHOLE_TIME_BETWEEN_REROLLS) WORMHOLE_DATA->spriteID = INT_RAND % _WORMHOLE_NUMBER_OF_SPRITES;
+
+
+
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {
@@ -100,7 +120,7 @@ int _Wormhole_Draw(void* self, float DeltaTime) {
     // ibid
     Wormhole_Data* data = THIS->data_struct;
 
-    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, WORMHOLE_DATA->rotate, WHITE);
+    RenderSpriteRelative(_Wormhole_spriteList[WORMHOLE_DATA->spriteID], THIS->position, THIS->size, WORMHOLE_DATA->rotate, WHITE);
 
     // RenderColliderRelative(THIS->position, THIS->radius);
 
@@ -113,7 +133,19 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
 
     // free our data struct here. free anything contained.
     Wormhole_Data* data = THIS->data_struct;
-    free(data->sprite);
+
+    // ...
+    for(int i = 0; i < _WORMHOLE_NUMBER_OF_SPRITES; i++){
+        DestroySprite(_Wormhole_spriteList[i]);
+        _Wormhole_spriteList[i] = 0;
+    }
+
+    // ...
+    free(_Wormhole_spriteList);
+    _Wormhole_spriteList = 0;
+    
+    
+
     free(data);
 
     return 0;
