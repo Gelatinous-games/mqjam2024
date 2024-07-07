@@ -112,6 +112,7 @@ int _BackgroundSprites_Update(void *self, float DeltaTime)
 
 int _BackgroundSprites_Draw(void *self, float DeltaTime)
 {
+    printf("%s\n", "bg sprites draw call");
 
     setScaleFactorToLayer(self);
     for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
@@ -132,6 +133,8 @@ int _BackgroundSprites_Draw(void *self, float DeltaTime)
             BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_rotation,
             BACKGROUND_DATA->backgroundGeneratedObjects[i].spriteTint);
     }
+
+    printf("%s\n", "finished bg sprites draw call");
 
     return 0;
 }

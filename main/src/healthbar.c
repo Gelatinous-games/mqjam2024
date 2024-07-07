@@ -232,7 +232,7 @@ GameObj_Base* CreateHealthBar() {
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_BACKGROUND;
+    obj_ptr->flags = FLAG_SHIELD;
 
     obj_ptr->currentLayer = LAYER_GUI;
 

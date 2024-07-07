@@ -34,7 +34,7 @@ typedef struct {
 int _DeathManager_Init(void* self, float DeltaTime) {
     // Create any objects we need for the death screen HERE.
     // They should be destroyed in our destroy function.
-
+    __GAMEMANAGER_REF = 0;
     // prepare death stuff
     _DeathMenu_Init(); // incase we die
 

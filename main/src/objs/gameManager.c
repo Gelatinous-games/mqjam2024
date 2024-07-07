@@ -56,6 +56,10 @@ int _GameManager_Init(void* self, float DeltaTime) {
     // set the scene 
     CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
 
+    __DEATHMANAGER_REF = 0;
+    
+    // the ones that were destroyed:
+    // FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND | FLAG_SHIELD
 
     DATA->deathTimeout = 5;
     // How far the player travels before it gets harder
@@ -84,14 +88,14 @@ int _GameManager_Init(void* self, float DeltaTime) {
     AddToPool(PLANET_OBJECT_REF);
 
     
-    // loads our sprites ready for use
-    prepareBackgroundSprites();
 
 
     // DEBUG_SPAMMER_PRINTF_PREFIX printf("number of starfield layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
      // Background Object
     BACKGROUNDSTARFIELD_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
     BACKGROUNDSPRITE_OBJECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
+
+    printf("star field layers: %d\n", NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS);
     for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARFIELD_LAYERS; i++)
     {
         /* code */
@@ -100,13 +104,17 @@ int _GameManager_Init(void* self, float DeltaTime) {
         BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i] = CreateBackgroundStars(i, 1+i);
         // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSTARFIELD_EFFECT_REF_LIST[%d] to pool\n", i);
         AddToPool(BACKGROUNDSTARFIELD_EFFECT_REF_LIST[i]);
+        
+        printf("finished initialising star layer %d\n", i);
 
         // DEBUG_SPAMMER_PRINTF_PREFIX printf("creating BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] on layer %d\n", i, 1+i);
         // Background sprites 3 layers, Small/Medium/Large
         BACKGROUNDSPRITE_OBJECT_REF_LIST[i] = CreateBackgroundSprites(i);
         // DEBUG_SPAMMER_PRINTF_PREFIX printf("adding BACKGROUNDSPRITE_OBJECT_REF_LIST[%d] to pool\n", i);
         AddToPool(BACKGROUNDSPRITE_OBJECT_REF_LIST[i]);
+        printf("finished initialising sprite layer %d\n", i);
     }
+    printf("%s\n", "finished game manager init");
     return 0;
 }
 
@@ -139,6 +147,7 @@ int _GameManager_Update(void* self, float DeltaTime) {
 }
 
 int _GameManager_Draw(void* self, float DeltaTime) {
+    printf("%s\n", "game manager draw call");
     return 0;
 }
 
@@ -148,7 +157,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     // search for and delete all player, asteroid, star, wormhole, background stars, etc.
     for (int sIDX = 0; sIDX != -1; ) {
         sIDX = GetObjectWithFlagsAny(
-            FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND,
+            FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND | FLAG_SHIELD,
             sIDX,
             &obj
         );
@@ -161,10 +170,9 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
 
 
     free(BACKGROUNDSTARFIELD_EFFECT_REF_LIST);
+    BACKGROUNDSTARFIELD_EFFECT_REF_LIST = 0;
     free(BACKGROUNDSPRITE_OBJECT_REF_LIST);
-
-
-    destroyBackgroundSprites();
+    BACKGROUNDSPRITE_OBJECT_REF_LIST = 0;
 
 
     free(DATA);

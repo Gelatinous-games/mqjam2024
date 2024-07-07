@@ -43,7 +43,10 @@ GameObj_Base* CreateShieldObject() {
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
+
+    // destroyed:
+    // FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND | FLAG_SHIELD,
+    obj_ptr->flags = FLAG_SHIELD;
 
     obj_ptr->currentLayer = LAYER_GUI;
 
@@ -115,7 +118,7 @@ int _ShieldObject_Update(void* self, float DeltaTime) {
 
 int _ShieldObject_Draw(void* self, float DeltaTime) {
     // ibid
-
+    printf("%s\n", "shield draw call");
     // RenderSpriteRelative(SHIELD_DATA->sprite, THIS->position, THIS->size, sin(SHIELD_DATA->a)*90, WHITE);
     //RenderSquareRelative(THIS->position, THIS->size, 0, WHITE);
 

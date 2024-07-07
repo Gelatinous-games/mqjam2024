@@ -55,9 +55,11 @@ int _Player_Update(void* self, float DeltaTime) {
 
 
 int _Player_Draw(void* self, float DeltaTime) {
+    printf("%s\n", "player draw call");
     if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
         RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
+    printf("%s\n", "finished player draw call");
     return 0;
 }
 
