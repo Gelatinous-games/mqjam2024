@@ -108,9 +108,13 @@
 #include "src/healthbar.c"
 #endif
 
-#include "src/objs/gameManager.c"
+#ifndef _gm
+    #define _gm
+    #include "src/objs/gameManager.c"
+#endif
 #include "src/objs/titlemanager.c"
 #include "src/objs/deathManager.c"
+#include "src/objs/winManager.c"
 
 
 
@@ -144,7 +148,7 @@ int main()
     // Initialization
     //--------------------------------------------------------------------------------------
     GameObjPoolInit();
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "mqjam2024");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LIGHTSHIFT");
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
 

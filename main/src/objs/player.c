@@ -2,7 +2,7 @@
 
 // for just in this file
 #define PLAYER_DATA ((Player_Data *)(THIS->data_struct))
-#define DEBUG_ON
+// #define DEBUG_ON
 
 int _Player_Init(void* self, float DeltaTime) {
     PLAYER_DATA->deltaTimeSinceLastImpact=0.0f;
@@ -36,7 +36,7 @@ int _Player_Update(void* self, float DeltaTime) {
     // ================
     updateThrustingSoundState(self, DeltaTime);
     
-    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) return 0;
+    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD || !playerCanControl) return 0;
 
     handlePlayerMovement(self, DeltaTime);
 
@@ -55,6 +55,8 @@ int _Player_Update(void* self, float DeltaTime) {
             PLAYER_DATA->hullHealth = -1;
     #endif
 
+    //
+
     return 0;
 }
 
@@ -63,9 +65,11 @@ int _Player_Draw(void* self, float DeltaTime) {
         RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
 
-    char dt_buff[128];
-    gcvt(THIS->position.x, 10, dt_buff);
-    DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
+    #ifdef DEBUG_ON
+        char dt_buff[128];
+        gcvt(THIS->position.x, 10, dt_buff);
+        DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
+    #endif
     return 0;
 }
 

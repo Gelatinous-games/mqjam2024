@@ -82,3 +82,5 @@ GameObj_Base* CreateGameManager();
 GameObj_Base* CreateTitleManager();
 GameObj_Base* CreateDeathManager();
 GameObj_Base* CreateTextObj();
+GameObj_Base* CreateWinManager();
+GameObj_Base* CreateHealthBar();

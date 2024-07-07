@@ -177,6 +177,7 @@ int _TitleManager_Destroy(void* self, float DeltaTime) {
     DestroySprite(DATA->asteroidSprite);
     free(DATA);
 
+    TO_WORMHOLE = 1;
     AddToPool(CreateGameManager());
     return 0;
 }

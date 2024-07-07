@@ -30,9 +30,16 @@
     #include "../sprite.c"
 #endif
 
+#ifndef _gm
+    #define _gm
+    #include "src/objs/gameManager.c"
+#endif
+
 typedef struct {
     Sprite* sprite;
     float distanceFromStart;
+    float rotate;
+    char active;
 } Wormhole_Data;
 
 #define WORMHOLE_DATA ((Wormhole_Data *)(THIS->data_struct))
@@ -46,17 +53,27 @@ int _Wormhole_Init(void* self, float DeltaTime) {
     WORMHOLE_DATA->distanceFromStart = WORMHOLE_TRAVEL_DISTANCE;
     WORMHOLE_DATA->sprite = CreateSprite("resources/wormhole/w1.png");
 
-    THIS->position.x = WORMHOLE_DATA->distanceFromStart;
-    THIS->position.y = 0.5f;
+    // default to active
+    WORMHOLE_DATA->active = 1;
+    WORMHOLE_DATA->rotate = 0;
 
-    THIS->size.x = 5.0f;
-    THIS->size.y = 5.0f;
+    if (TO_WORMHOLE)
+        THIS->position.x = WORMHOLE_DATA->distanceFromStart;
+    else 
+        THIS->position.x = -cameraBounds.x;
+
+    THIS->position.y = 0;
+
+    THIS->size.x = 10;
+    THIS->size.y = 10;
+
+    THIS->radius = cameraBounds.y;
 
     return 0;
 }
 
 int _Wormhole_Update(void* self, float DeltaTime) {
-    
+    WORMHOLE_DATA->rotate -= DeltaTime * 16;
     // we can cast our data struct to the right data like so:
     Wormhole_Data* data = THIS->data_struct;
 
@@ -83,7 +100,9 @@ int _Wormhole_Draw(void* self, float DeltaTime) {
     // ibid
     Wormhole_Data* data = THIS->data_struct;
 
-    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, WORMHOLE_DATA->rotate, WHITE);
+
+    // RenderColliderRelative(THIS->position, THIS->radius);
 
     return 0;
 }
@@ -122,6 +141,6 @@ GameObj_Base* CreateWormhole() {
     // initialize vectors.
     obj_ptr->position = Vector2Zero();
     obj_ptr->velocity = Vector2Zero();
-    obj_ptr->size = Vector2One();
+    obj_ptr->size = (Vector2) { 3, 3 } ;
     return obj_ptr;
 }

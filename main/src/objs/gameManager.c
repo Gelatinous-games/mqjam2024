@@ -26,6 +26,9 @@
 #include "../obj_register.h"
 #include "../settings.h"
 
+char doTick;
+
+char TO_WORMHOLE = 0;
 
 
 typedef struct {
@@ -36,6 +39,7 @@ typedef struct {
     float spawnDistance;
 
     char madeDeathManager;
+    char madeWinManager;
 
     char makeTitleScreen;
 
@@ -52,7 +56,7 @@ typedef struct {
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
-    
+    playerCanControl = 1;
     PLAYED_DEATH_SOUND_BEFORE = 0;
     setTrackVolume(HIT_SOUND_ID, 1);
     ClearParticles();
@@ -71,6 +75,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     DATA->asteroidCount = 0;
 
     DATA->madeDeathManager = 0;
+    DATA->madeWinManager = 0;
 
     DATA->makeTitleScreen = 0;
 
@@ -132,18 +137,22 @@ int _GameManager_Update(void* self, float DeltaTime) {
 
     if (DATA->spawnDistance < 0) {
         DATA->spawnDistance = GAME_SPAWN_DIST;
-        if (FLOAT_RAND < GAME_SPAWN_ASTEROID && DATA->asteroidCount < MAX_ASTEROIDS) {
+        if (!TO_WORMHOLE) {
+            DATA->spawnDistance = GAME_SPAWN_DIST / 2;
+        }
+        int capMult = TO_WORMHOLE ? 1 : 2;
+        if (FLOAT_RAND < GAME_SPAWN_ASTEROID && DATA->asteroidCount < MAX_ASTEROIDS * capMult) {
             AddToPool(CreateAsteroid());
             DATA->asteroidCount++;
         }
-        else if (DATA->starCount < MAX_ASTEROIDS) {
+        else if (DATA->starCount < MAX_ASTEROIDS *capMult) {
             AddToPool(CreateStarObject());
             DATA->starCount++;
         }
     }
 
     Player_Data* pData = (Player_Data*) obj->data_struct;
-    
+    // player death stuff
     if (!IsPlayerAlive() && !DATA->madeDeathManager) {
         AddToPool(CreateDeathManager());
         DATA->madeDeathManager = 1;
@@ -159,6 +168,44 @@ int _GameManager_Update(void* self, float DeltaTime) {
             THIS->awaitDestroy = 1;
         }
         else if (IsKeyPressed(KEY_E)) {
+            TO_WORMHOLE = 1;
+            DATA->makeTitleScreen = 1;
+            THIS->awaitDestroy = 1;
+        }
+    }
+    
+    Vector2 a, b;
+    // if the player collides with wormhole
+    if (TO_WORMHOLE && GetCollided(PLAYER_OBJECT_REF, WORMHOLE_OBJECT_REF, &a, &b)) {
+        playerCanControl = 0;
+        // printf("<%f, %f> to <%f, %f>\n", PLAYER_OBJECT_REF->position.x, PLAYER_OBJECT_REF->position.y, WORMHOLE_OBJECT_REF->position.x, WORMHOLE_OBJECT_REF->position.y);
+        DATA->DoLoadOut = 1;
+    }
+    else if (!TO_WORMHOLE && GetCollided(PLAYER_OBJECT_REF, PLANET_OBJECT_REF, &a, &b)) {
+        playerCanControl = 0;
+        DATA->DoLoadOut = 1;
+    }
+
+    if (DATA->DoLoadOut) {
+        DATA->loadSphereRadius += DeltaTime;
+        if (DATA->loadSphereRadius >= 1) {
+            DATA->loadSphereRadius = 1;
+            if (!DATA->madeWinManager) {
+                DATA->madeWinManager = 1;
+                AddToPool(CreateWinManager());
+            }
+        }
+    }
+    
+    if (DATA->madeWinManager) {
+        if (IsKeyPressed(KEY_R)) {
+            // restart, create fresh gamemanager.
+            TO_WORMHOLE = 1-TO_WORMHOLE;
+            DATA->makeTitleScreen = 0;
+            THIS->awaitDestroy = 1;
+        }
+        else if (IsKeyPressed(KEY_E)) {
+            TO_WORMHOLE = 1;
             DATA->makeTitleScreen = 1;
             THIS->awaitDestroy = 1;
         }
@@ -170,7 +217,15 @@ int _GameManager_Draw(void* self, float DeltaTime) {
     drawTimer();
 
     if (DATA->DoLoadIn) {
-        RenderCircleRelative(THIS->position, DATA->loadSphereRadius * cameraBounds.x * 1.1, BLACK);
+        RenderCircleRelative(THIS->position, DATA->loadSphereRadius * cameraBounds.x * 2, BLACK);
+    }
+    if (DATA->DoLoadOut) {
+        if (TO_WORMHOLE) {
+            RenderCircleRelative(THIS->position, DATA->loadSphereRadius * cameraBounds.x * 2, DARKPURPLE);
+        }
+        else {
+            RenderCircleRelative(THIS->position, DATA->loadSphereRadius * cameraBounds.x * 2, GRAY);
+        }
     }
     return 0;
 }

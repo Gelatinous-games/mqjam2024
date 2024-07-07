@@ -30,9 +30,18 @@
     #include "../sprite.c"
 #endif
 
+#ifndef _gm
+    #define _gm
+    #include "src/objs/gameManager.c"
+#endif
+
+#include "../settings.h"
+
 typedef struct {
     int spriteID;
     float distanceFromStart;
+
+    float rotate;
 } Planet_DataStruct;
 
 #define PLANET_DATA ((Planet_DataStruct *)(THIS->data_struct))
@@ -54,15 +63,22 @@ int _Planet_Init(void* self, float DeltaTime) {
 
     THIS->data_struct = malloc(sizeof(Planet_DataStruct));
 
-    PLANET_DATA->distanceFromStart = -1;
+    
     // choose randome sprite
     PLANET_DATA->spriteID = (abs((int)FLOAT_RAND)%PLANET_SPRITE_COUNT);
+    if (TO_WORMHOLE)
+        THIS->position.x = PLANET_DATA->distanceFromStart;
+    else
+        THIS->position.x = WORMHOLE_TRAVEL_DISTANCE;
+    THIS->position.y = 0;
+    PLANET_DATA->distanceFromStart = THIS->position.x;
 
-    THIS->position.x = PLANET_DATA->distanceFromStart;
-    THIS->position.y = 0.5f;
+    PLANET_DATA->rotate = 0;
 
-    THIS->size.x = 5.0f;
-    THIS->size.y = 5.0f;
+    THIS->size.x = 12;
+    THIS->size.y = 12;
+
+    THIS->radius = cameraBounds.y;
 
     return 0;
 }
@@ -74,16 +90,7 @@ int _Planet_Update(void* self, float DeltaTime) {
     //     PLAYER_OBJECT_REF->position.x = THIS->position.x;
     // }
 
-    // An example of searching for objects with neutral flag.
-    for (int i = 0; i != -1; ) {
-        GameObj_Base* obj;
-        i = GetObjectWithFlagsAny(FLAG_NEUTRAL_OBJECT, i, &obj);
-
-        // Check if obj is not null
-        if (!obj || i == -1) break;
-
-        // Do an operation with the result...
-    }
+    PLANET_DATA->rotate += DeltaTime *2;
 
     return 0;
 }
@@ -91,7 +98,7 @@ int _Planet_Update(void* self, float DeltaTime) {
 int _Planet_Draw(void* self, float DeltaTime) {
     // ibid
 
-    RenderSpriteRelative(_planetSprites[PLANET_DATA->spriteID], THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(_planetSprites[PLANET_DATA->spriteID], THIS->position, THIS->size, PLANET_DATA->rotate, WHITE);
 
     return 0;
 }
