@@ -14,6 +14,13 @@ const static int WINDOW_WIDTH = 1366;
 const static int WINDOW_HEIGHT = 768;
 
 
+char doTick;
+
+char TO_WORMHOLE = 0;
+
+
+
+
 enum GAME_SCENE_STATE {
     GAME_SCENE_STATE_MAINMENU = 0,
     GAME_SCENE_STATE_INGAME = 1

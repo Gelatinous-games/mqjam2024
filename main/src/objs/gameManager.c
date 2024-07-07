@@ -26,9 +26,6 @@
 #include "../obj_register.h"
 #include "../settings.h"
 
-char doTick;
-
-char TO_WORMHOLE = 0;
 
 
 typedef struct {
