@@ -44,7 +44,7 @@ int _TitleManager_Update(void* self, float DeltaTime) {
     // Perform some logic to determine if we should progress to the game state.
     // If we're progressing to the game state, we should flag this object to be destroyed.
 
-    _MainMenu_Update(DeltaTime);
+    _MainMenu_Update(self, DeltaTime);
 
 
     return 0;
@@ -68,10 +68,7 @@ int _TitleManager_Destroy(void* self, float DeltaTime) {
     free(DATA);
 
     // create it
-    __GAMEMANAGER_REF = CreateGameManager();
-
-    // add for init
-    AddToPool( __GAMEMANAGER_REF );
+    AddToPool( CreateGameManager() );
 
     return 0;
 }

@@ -30,6 +30,6 @@ Color ButtonColorBG;
 Color ButtonColorHover;
 
 int _MainMenu_Init();
-int _MainMenu_Update(float DeltaTime);
+int _MainMenu_Update(void *titleManagerRef, float DeltaTime);
 int _MainMenu_Draw();
 int _MainMenu_Cleanup();

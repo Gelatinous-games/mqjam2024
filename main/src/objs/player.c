@@ -454,8 +454,6 @@ void HandlePlayerDeath(float DeltaTime){
 
     _ShieldObject_handlePlayerDeath((void *)SHIELD_OBJECT_REF, DeltaTime);
 
-    // try kill game
-    __GAMEMANAGER_REF->awaitDestroy = 1;
 }
 
 void UndeadEffects(void *self, float DeltaTime){

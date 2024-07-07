@@ -56,7 +56,6 @@ int _GameManager_Init(void* self, float DeltaTime) {
     // set the scene 
     CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
 
-    __DEATHMANAGER_REF = 0;
     
     // the ones that were destroyed:
     // FLAG_ASTEROID | FLAG_PLAYER_OBJECT | FLAG_GRAVITY_WELL | FLAG_WORMHOLE | FLAG_BACKGROUND | FLAG_SHIELD
@@ -143,6 +142,8 @@ int _GameManager_Update(void* self, float DeltaTime) {
             DATA->starCount++;
         }
     }
+
+    if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_DEAD) THIS->awaitDestroy = 1;
     return 0;
 }
 
@@ -167,7 +168,10 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
         obj->awaitDestroy = 1;
     }
 
-
+    PLANET_OBJECT_REF = 0;
+    PLAYER_OBJECT_REF = 0;
+    SHIELD_OBJECT_REF = 0;
+    WORMHOLE_OBJECT_REF = 0;
 
     free(BACKGROUNDSTARFIELD_EFFECT_REF_LIST);
     BACKGROUNDSTARFIELD_EFFECT_REF_LIST = 0;
@@ -179,8 +183,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
 
 
     // make death manager
-    __DEATHMANAGER_REF = CreateDeathManager();
-    AddToPool(__DEATHMANAGER_REF);
+    AddToPool(CreateDeathManager());
 
 
     return 0;
