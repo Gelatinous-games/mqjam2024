@@ -46,7 +46,7 @@ typedef struct {
 
 #define PLANET_DATA ((Planet_DataStruct *)(THIS->data_struct))
 
-#define PLANET_SPRITE_COUNT 4
+#define PLANET_SPRITE_COUNT 5
 
 Sprite** _planetSprites;
 
@@ -57,10 +57,11 @@ int _Planet_Init(void* self, float DeltaTime) {
         printf("%s\n","loading planets");
         _planetSprites = (Sprite **)malloc(PLANET_SPRITE_COUNT * sizeof(Sprite*));
         int index = 0;
-        _planetSprites[0] = CreateSprite("resources/planets/P0.png");
-        _planetSprites[1] = CreateSprite("resources/planets/P1.png");
-        _planetSprites[2] = CreateSprite("resources/planets/P2.png");
-        _planetSprites[3] = CreateSprite("resources/planets/P3.png");
+        _planetSprites[index++] = CreateSprite("resources/planets/P0.png");
+        _planetSprites[index++] = CreateSprite("resources/planets/P1.png");
+        _planetSprites[index++] = CreateSprite("resources/planets/P2.png");
+        _planetSprites[index++] = CreateSprite("resources/planets/P3.png");
+        _planetSprites[index++] = CreateSprite("resources/planets/P4.png");
     }
 
 
