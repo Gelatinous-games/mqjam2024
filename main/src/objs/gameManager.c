@@ -229,6 +229,6 @@ GameObj_Base* CreateGameManager() {
 void HandleDebuggingKillPlayerCheck(float DeltaTime){
     // kill player for debugging
     if(IsKeyDown(KEY_K)){
-        PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,100,100);
+        PlayerTakeDamage(PLAYER_OBJECT_REF,DeltaTime,9001,18002);
     }
 }
