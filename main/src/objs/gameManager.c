@@ -112,6 +112,9 @@ int _GameManager_Init(void* self, float DeltaTime) {
         BACKGROUND_OBJECT_REF = CreateBackgroundSprites(i);
         AddToPool(BACKGROUND_OBJECT_REF);
     }
+
+
+
     
     // BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
     // AddToPool(BACKGROUND_OBJECT_REF);
@@ -268,6 +271,8 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     else {
         AddToPool(CreateGameManager());
     }
+
+
     free(DATA);
 
     return 0;

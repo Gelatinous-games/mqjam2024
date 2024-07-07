@@ -94,6 +94,8 @@ int _TitleManager_Init(void* self, float DeltaTime) {
 
     setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
+
+
     return 0;
 }
 
@@ -156,6 +158,7 @@ int _TitleManager_Draw(void* self, float DeltaTime) {
     if (DATA->doLoadGame) {
         RenderCircleAbsolute(Vector2Zero(), DATA->sphereRadius * cameraBounds.x * 1.1, (Color) { 0, 0, 0, 255});
     }
+
     return 0;
 }
 

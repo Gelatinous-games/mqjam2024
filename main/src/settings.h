@@ -106,6 +106,15 @@ int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
 #define GAME_SPAWN_ASTEROID 0.6
 
 
+
+
+
+
+
+
+
+
+
 int CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
 
 int CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
@@ -182,3 +191,14 @@ Vector2 GetRandomUnitVector(){
     float angle = FLOAT_RAND*360.0;
     return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
 }
+
+
+
+
+
+
+
+// THESE ARE DANGEROUS AND LIVE WIRES, DONT TOUCH
+
+int TEXTURE_FIX_HACK_IN_PROGRESS = false;
+int TEXTURE_FIX_HACK_COMPLETE = false;

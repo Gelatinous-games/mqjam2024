@@ -129,6 +129,9 @@ static int GameShouldRender(){
     return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
 }
 
+static void performTextureFixHack();
+
+
 int main()
 {
     gettimeofday(&timerStart, NULL);
@@ -195,6 +198,9 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
+    // fix our textures
+    if(!TEXTURE_FIX_HACK_COMPLETE) performTextureFixHack();
+
     // grab it
     float DeltaTime = GetFrameTime();
     // check for render
@@ -230,4 +236,121 @@ static void generateObjects()
     AddToPool(CreateTitleManager());
 
     // AddToPool(CreateExampleObject());
+}
+
+// this hack is ducttape to fix the sprite issue. fite mi it works
+static void performTextureFixHack(){
+
+
+    float DeltaTime = 0.0f;
+
+    // =========================================
+    // =========================================
+    // ======= DRAW AS TITLE SCREEN
+    //  == first frame where it dies immediately?
+    
+    // grab it
+    DeltaTime = GetFrameTime();
+    // check for render
+    if(GameShouldRender()){
+        ProcessAllUpdates(DeltaTime);
+        soundUpdate();
+
+        UpdateCamera3D();
+        BeginDrawing();
+        ClearBackground(BLACK);
+        ProcessAllDraws(DeltaTime);
+        EndDrawing();
+
+        ProcessFreshAdd();
+        ProcessAllDestroys();
+    }
+    // handle menus
+    else {
+        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
+            _MainMenu_Update(DeltaTime);
+            _MainMenu_Draw();
+        }
+    }
+
+    // =========================================
+    // =========================================
+    // ======= DRAW AS TITLE SCREEN
+    // SHOULDVE DELETED BUT JUST MAKE SURE
+    
+    // grab it
+    DeltaTime = GetFrameTime();
+    // check for render
+    if(GameShouldRender()){
+        ProcessAllUpdates(DeltaTime);
+        soundUpdate();
+
+        UpdateCamera3D();
+        BeginDrawing();
+        ClearBackground(BLACK);
+        ProcessAllDraws(DeltaTime);
+        EndDrawing();
+
+        ProcessFreshAdd();
+        ProcessAllDestroys();
+    }
+    // =========================================
+    // =========================================
+    // ======= DRAW AS GAME? SCREEN
+    // SHOULDVE DELETED BUT JUST MAKE SURE
+    
+
+    // grab it
+    DeltaTime = GetFrameTime();
+    // check for render
+    if(GameShouldRender()){
+        ProcessAllUpdates(DeltaTime);
+        soundUpdate();
+
+        UpdateCamera3D();
+        BeginDrawing();
+        ClearBackground(BLACK);
+        ProcessAllDraws(DeltaTime);
+        EndDrawing();
+
+        ProcessFreshAdd();
+        ProcessAllDestroys();
+    }
+    // =========================================
+    // =========================================
+    // ======= DRAW AS TITLE? SCREEN
+    // SHOULDVE CHANGED BACK TO TITLE SCREEN
+    
+    // grab it
+    DeltaTime = GetFrameTime();
+    // check for render
+    if(GameShouldRender()){
+        ProcessAllUpdates(DeltaTime);
+        soundUpdate();
+
+        UpdateCamera3D();
+        BeginDrawing();
+        ClearBackground(BLACK);
+        ProcessAllDraws(DeltaTime);
+        EndDrawing();
+
+        ProcessFreshAdd();
+        ProcessAllDestroys();
+    }
+    // handle menus
+    else {
+        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
+            _MainMenu_Update(DeltaTime);
+            _MainMenu_Draw();
+        }
+    }
+
+
+
+
+
+
+
+
+
 }
