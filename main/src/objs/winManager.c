@@ -55,7 +55,6 @@ int _WinManager_Init(void* self, float DeltaTime) {
     DATA->timeToCreateOptions = 2.5;
     DATA->doneCreatedOptions = 0;
 
-    playSoundOnce(WIN_SOUND_ID);
 
     GameObj_Base* obj = CreateTextObj();
     AddToPool(obj);
@@ -63,8 +62,11 @@ int _WinManager_Init(void* self, float DeltaTime) {
     _TextObj_Data* textData = (_TextObj_Data*) obj->data_struct;
     if (TO_WORMHOLE)
         textData->data = "You made it...";
-    else
+    else {
         textData->data = "You made it!";
+        playSoundOnce(WIN_SOUND_ID);
+        // ..
+    }
     textData->doTextFlash = 0;
     textData->textFlash = 0;
     textData->doWidthSubtr = 1;

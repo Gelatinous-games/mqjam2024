@@ -133,6 +133,7 @@ int _TitleManager_Update(void* self, float DeltaTime) {
 
     if (!DATA->doLoadGame) {
         if (IsKeyPressed(KEY_SPACE)) {
+            playSoundOnce(BUTTON_SOUND_ID);
             DATA->doLoadGame = 1;
         }
     }

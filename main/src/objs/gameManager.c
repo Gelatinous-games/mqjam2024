@@ -164,11 +164,13 @@ int _GameManager_Update(void* self, float DeltaTime) {
     if (!IsPlayerAlive()) {
         // observe for R or E commands and destroy/create appropriate scene
         if (IsKeyPressed(KEY_R)) {
+            playSoundOnce(BUTTON_SOUND_ID);
             // restart, create fresh gamemanager.
             DATA->makeTitleScreen = 0;
             THIS->awaitDestroy = 1;
         }
         else if (IsKeyPressed(KEY_E)) {
+            playSoundOnce(BUTTON_SOUND_ID);
             TO_WORMHOLE = 1;
             DATA->makeTitleScreen = 1;
             THIS->awaitDestroy = 1;
@@ -200,12 +202,14 @@ int _GameManager_Update(void* self, float DeltaTime) {
     
     if (DATA->madeWinManager) {
         if (IsKeyPressed(KEY_R)) {
+            playSoundOnce(BUTTON_SOUND_ID);
             // restart, create fresh gamemanager.
             TO_WORMHOLE = 1-TO_WORMHOLE;
             DATA->makeTitleScreen = 0;
             THIS->awaitDestroy = 1;
         }
         else if (IsKeyPressed(KEY_E)) {
+            playSoundOnce(BUTTON_SOUND_ID);
             TO_WORMHOLE = 1;
             DATA->makeTitleScreen = 1;
             THIS->awaitDestroy = 1;
