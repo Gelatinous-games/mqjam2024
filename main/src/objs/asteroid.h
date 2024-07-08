@@ -252,8 +252,8 @@ int _Asteroid_Destroy(void* self, float DeltaTime) {
     asteroidsUsing = 0;
     if (!asteroidsUsing && _asteroidSprites) {
         for (int i = 0; i < 4; i++) {
-            Sprite* tmp = _asteroidSprites[i];
-            DestroySprite(tmp);
+            DestroySprite(_asteroidSprites[i]);
+            _asteroidSprites[i] = 0;
         }
         free(_asteroidSprites);
         _asteroidSprites = 0;

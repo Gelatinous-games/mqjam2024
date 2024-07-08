@@ -75,8 +75,10 @@ int _Player_Draw(void* self, float DeltaTime) {
 
 int _Player_Destroy(void* self, float DeltaTime) {
     DestroySprite(PLAYER_DATA->sprite);
+    PLAYER_DATA->sprite = 0;
     free(PLAYER_DATA);
-
+    THIS->data_struct = 0;
+    
     return 0;
 }
 

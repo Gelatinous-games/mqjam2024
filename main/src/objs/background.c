@@ -182,6 +182,7 @@ int _BackgroundSprites_Destroy(void *self, float DeltaTime)
 
     // the data sstruct
     free(THIS->data_struct);
+    THIS->data_struct = 0;
 
     return 0;
 }
@@ -236,13 +237,13 @@ void prepareBackgroundSprites(void *self, float DeltaTime)
 
         backgroundSpriteList_Layer0 = (BackgroundSprite_SpriteData *)malloc(BACKGROUND_SPRITE_COUNT_LAYER0 * sizeof(BackgroundSprite_SpriteData));
         // artwork 9
-        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_01.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
-        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_02.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
-        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_03.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
+        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_01_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
+        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_02_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
+        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_03_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_04.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
-        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_05.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
-        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_06.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_2};
-        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_07.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
+        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_05_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
+        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_06_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_2};
+        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_07_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_08.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_09.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
 
@@ -305,6 +306,7 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
         for (int i = 0; i < BACKGROUND_SPRITE_COUNT_LAYER0; i++)
         {
             DestroySprite(backgroundSpriteList_Layer0[i].sprite);
+            backgroundSpriteList_Layer0[i].sprite = 0;
         }
         free(backgroundSpriteList_Layer0);
         backgroundSpriteList_Layer0 = 0;
@@ -314,6 +316,7 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
         for (int i = 0; i < BACKGROUND_SPRITE_COUNT_LAYER1; i++)
         {
             DestroySprite(backgroundSpriteList_Layer1[i].sprite);
+            backgroundSpriteList_Layer1[i].sprite = 0;
         }
         free(backgroundSpriteList_Layer1);
         backgroundSpriteList_Layer1 = 0;
@@ -324,6 +327,7 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
         for (int i = 0; i < BACKGROUND_SPRITE_COUNT_LAYER2; i++)
         {
             DestroySprite(backgroundSpriteList_Layer2[i].sprite);
+            backgroundSpriteList_Layer2[i].sprite = 0;
         }
         free(backgroundSpriteList_Layer2);
         backgroundSpriteList_Layer2 = 0;

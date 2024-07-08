@@ -116,6 +116,7 @@ int _Planet_Destroy(void* self, float DeltaTime) {
     // free our data struct here. free anything contained.
     for(int i = 0; i < PLANET_SPRITE_COUNT; i++){
         DestroySprite(_planetSprites[i]);
+        _planetSprites[i] = 0;
     }
     free(_planetSprites);
     _planetSprites = 0;

@@ -182,8 +182,11 @@ int _TitleManager_Destroy(void* self, float DeltaTime) {
     }
 
     DestroySprite(DATA->shipSprite);
+    DATA->shipSprite = 0;
     DestroySprite(DATA->asteroidSprite);
+    DATA->asteroidSprite = 0;
     free(DATA);
+    THIS->data_struct = 0;
 
     TO_WORMHOLE = 1;
     AddToPool(CreateGameManager());

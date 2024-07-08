@@ -162,15 +162,19 @@ int _BackgroundStars_Destroy(void *self, float DeltaTime)
     {
         for (int i = 0; i < BACKGROUNDSTARFIELD_DATA->numStars; ++i)
         {
-            BGStar_Data *obj = BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i];
-            if (obj)
+            if ((BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i])){
+                // ...
                 free(BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i]);
+                BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i] = 0;
+            }
+
         }
         free(BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL);
         BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL = 0;
     }
 
     free(BACKGROUNDSTARFIELD_DATA);
+    THIS->data_struct = 0;
 
     return 0;
 }

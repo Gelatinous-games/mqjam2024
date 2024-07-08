@@ -132,12 +132,12 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    Wormhole_Data* data = THIS->data_struct;
+    // Wormhole_Data* data = THIS->data_struct;
 
     // ...
     for(int i = 0; i < _WORMHOLE_NUMBER_OF_SPRITES; i++){
         DestroySprite(_Wormhole_spriteList[i]);
-        // _Wormhole_spriteList[i] = 0;
+        _Wormhole_spriteList[i] = 0;
     }
 
     // ...
@@ -146,7 +146,8 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
     
     
 
-    free(data);
+    free(THIS->data_struct);
+    THIS->data_struct = 0;
 
     return 0;
 }

@@ -124,6 +124,7 @@ int _ParticleObject_Draw(void* self, float DeltaTime) {
 }
 int _ParticleObject_Destroy(void* self, float DeltaTime) {
     free(_particles);
+    _particles = 0;
 
     return 0;
 }

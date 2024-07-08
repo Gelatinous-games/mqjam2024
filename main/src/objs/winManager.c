@@ -124,6 +124,7 @@ int _WinManager_Draw(void* self, float DeltaTime) {
 int _WinManager_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the death screen.
     free(DATA);
+    THIS->data_struct = 0;
     return 0;
 }
 

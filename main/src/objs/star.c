@@ -188,6 +188,7 @@ int _StarObject_Draw(void* self, float DeltaTime) {
 
 int _StarObject_Destroy(void* self, float DeltaTime) {
     free(STAR_NEARBY_DATA);
+    THIS->data_struct = 0;
     return 0;
 }
 

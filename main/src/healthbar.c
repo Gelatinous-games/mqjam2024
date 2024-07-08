@@ -209,10 +209,13 @@ int _HealthBar_Destroy(void* self, float DeltaTime) {
     // if you malloc anything, destroy it here. this includes your data package.
 
     DestroySprite(HEALTHBAR_FRAME_SPRITE);
+    HEALTHBAR_FRAME_SPRITE = 0;
     DestroySprite(HEALTHBAR_OVERLAY_SPRITE);
+    HEALTHBAR_OVERLAY_SPRITE = 0;
 
     for(int i =  0; i < HEALTHBAR_GASLEVEL_SPRITE_COUNT; i++){
         DestroySprite(HEALTHBAR_GASLEVEL_LIST[i]);
+        HEALTHBAR_GASLEVEL_LIST[i] = 0;
     }
 
     free(HEALTHBAR_GASLEVEL_LIST);

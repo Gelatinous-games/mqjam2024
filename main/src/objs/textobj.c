@@ -79,6 +79,7 @@ int _TextObj_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the death screen.
 
     free(DATA);
+    THIS->data_struct = 0;
     return 0;
 }
 

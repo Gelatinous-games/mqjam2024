@@ -264,6 +264,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     
 
     free(BACKGROUNDSTARS_EFFECT_REF_LIST);
+    BACKGROUNDSTARS_EFFECT_REF_LIST = 0;
 
     if (DATA->makeTitleScreen) {
         AddToPool(CreateTitleManager());
@@ -274,6 +275,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
 
 
     free(DATA);
+    THIS->data_struct = 0;
 
     return 0;
 }
