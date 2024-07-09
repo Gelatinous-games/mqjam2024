@@ -126,9 +126,14 @@ int _ShieldObject_Draw(void* self, float DeltaTime) {
 
 
 void _ShieldObject_MirrorPlayer(void *self, float DeltaTime){
-    // ...
-    THIS->position = PLAYER_OBJECT_REF->position;
-    THIS->size = PLAYER_OBJECT_REF->size;
+    if(IsPlayerAlive()){
+        // ..
+        THIS->position = PLAYER_OBJECT_REF->position;
+        THIS->size = PLAYER_OBJECT_REF->size;
+    }
+    THIS->velocity = PLAYER_OBJECT_REF->velocity;
+    THIS->mass = PLAYER_OBJECT_REF->mass;
+    
 }
 
 
