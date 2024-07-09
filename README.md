@@ -1,4 +1,10 @@
 # MQJAM 2024 -- RE-ENTRY
+## STABLE - branch
+
+* this branch is only to be used for last *most* stable code.
+* new features should only be added to this once they're tested.
+
+## About:
 
 Game made for MQJAM 2024 - Re-entry
 Using C & Raylib.
