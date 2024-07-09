@@ -85,14 +85,14 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 * needed to install ninja via brew
 actually using:
 ```bash
-cmake -S . -B build -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=<fullpath_to_emsdk>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+cmake -S . -B buildweb -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=<fullpath_to_emsdk>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
 ```
 * aurora uses:
 ```bash
-cmake -S . -B build -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=/Users/auroragriffith/emscripten_pain/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B buildweb -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=/Users/auroragriffith/emscripten_pain/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" -DCMAKE_BUILD_TYPE=Release
 ```
 
 then:
 ```bash
-cmake --build build
+cmake --build buildweb
 ```

@@ -2,6 +2,10 @@
 */.DS_Store
 **/.DS_Store
 main/build
+main/build-win
+main/buildwin
 main/build-mac
+main/buildmac
 main/build-web
+main/buildweb
 main/main.exe

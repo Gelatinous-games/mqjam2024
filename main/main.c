@@ -95,13 +95,19 @@
 #include "src/objs/planet.c"
 #endif
 
-#ifndef _background_stars
-#define _background_star
-#include "src/objs/background_stars.c"
+#ifndef _background_dustart
+#define _background_dustart
+#include "src/objs/background_dustart.c"
 #endif
-#ifndef _background
-#define _background
-#include "src/objs/background.c"
+
+#ifndef _background_starfield
+#define _background_starfield
+#include "src/objs/background_starfield.c"
+#endif
+
+#ifndef _background_spritefield
+#define _background_spritefield
+#include "src/objs/background_spritefield.c"
 #endif
 #ifndef _healthbar
 #define _healthbar

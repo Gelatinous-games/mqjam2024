@@ -23,6 +23,11 @@
     #include "player.c"
 #endif
 
+#ifndef _background_dustart
+#define _background_dustart
+#include "background_dustart.c"
+#endif
+
 #include "../obj_register.h"
 #include "../settings.h"
 
@@ -114,8 +119,9 @@ int _GameManager_Init(void* self, float DeltaTime) {
         AddToPool(BACKGROUND_OBJECT_REF);
     }
 
-
-
+    printf("%s\n","ABOUT TO ADD DUST MANAGER");
+    // add the background dust manager
+    AddToPool(_BackgroundDust_Create());
     
     // BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
     // AddToPool(BACKGROUND_OBJECT_REF);
