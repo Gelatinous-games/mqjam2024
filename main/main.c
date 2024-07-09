@@ -198,9 +198,8 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
-    // fix our textures
     if(!TEXTURE_FIX_HACK_COMPLETE) performTextureFixHack();
-
+    
     // grab it
     float DeltaTime = GetFrameTime();
     // check for render
@@ -241,116 +240,107 @@ static void generateObjects()
 // this hack is ducttape to fix the sprite issue. fite mi it works
 static void performTextureFixHack(){
 
-
+    // GetObjectWithFlagsAny
+    // GameObj_Base *currManager = (GameObj_Base *)malloc(sizeof(GameObj_Base));
+    GameObj_Base *currManager;
     float DeltaTime = 0.0f;
+
+
 
     // =========================================
     // =========================================
     // ======= DRAW AS TITLE SCREEN
     //  == first frame where it dies immediately?
     
-    // grab it
-    DeltaTime = GetFrameTime();
-    // check for render
-    if(GameShouldRender()){
-        ProcessAllUpdates(DeltaTime);
-        soundUpdate();
+    if(GetObjectWithFlagsAny(FLAG_MANAGER, 0, &currManager) != -1){
+        // printf("%s\n", ">> [TEXTURE_HACK] - destroying title");
+        //...
+        currManager->awaitDestroy = 1;
+
+        _MainMenu_Update(0.1f);
+        BeginDrawing();
 
         UpdateCamera3D();
-        BeginDrawing();
         ClearBackground(BLACK);
-        ProcessAllDraws(DeltaTime);
+        _MainMenu_Draw();
         EndDrawing();
-
-        ProcessFreshAdd();
-        ProcessAllDestroys();
     }
-    // handle menus
     else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
-            _MainMenu_Update(DeltaTime);
-            _MainMenu_Draw();
-        }
+        // ..
+        // printf("%s\n", ">> [TEXTURE_HACK] - ERM, we didnt get the title manager?");
     }
+
+    // prepare
+    // printf("%s\n", ">> [TEXTURE_HACK] - processing destruction - pt1");
+    ProcessAllUpdates(0.2f);
+    ProcessFreshAdd();
+    ProcessAllDestroys();
+    // printf("%s\n", ">> [TEXTURE_HACK] - processing destruction - pt2");
+    ProcessAllUpdates(0.2f);
+    ProcessFreshAdd();
+    ProcessAllDestroys();
 
     // =========================================
     // =========================================
-    // ======= DRAW AS TITLE SCREEN
-    // SHOULDVE DELETED BUT JUST MAKE SURE
+    // ======= DRAW AS GAME STARTING
     
-    // grab it
-    DeltaTime = GetFrameTime();
-    // check for render
-    if(GameShouldRender()){
-        ProcessAllUpdates(DeltaTime);
-        soundUpdate();
+    // printf("%s\n", ">> [TEXTURE_HACK] - insta kill player");
+    // if(!PLAYER_OBJECT_REF) printf("%s\n", "WHENST PLAYER?");
 
-        UpdateCamera3D();
-        BeginDrawing();
-        ClearBackground(BLACK);
-        ProcessAllDraws(DeltaTime);
-        EndDrawing();
+    PlayerTakeDamage(PLAYER_OBJECT_REF,1.0f,9001,9001);
+    // let player figure it out
+    // printf("%s\n", ">> [TEXTURE_HACK] - learn dead");
+    ProcessAllUpdates(0.2f);
+    ProcessFreshAdd();
+    ProcessAllDestroys();
+    // set sound 0
+    // printf("%s\n", ">> [TEXTURE_HACK] - dont preach");
+    setTrackVolume(DEATH_SOUND_ID,0.0f);
+    // perform sound update
+    soundUpdate();
 
-        ProcessFreshAdd();
-        ProcessAllDestroys();
-    }
+    // let game know of death
+    // printf("%s\n", ">> [TEXTURE_HACK] - learn death scene");
+    ProcessAllUpdates(0.2f);
+    ProcessFreshAdd();
+    ProcessAllDestroys();
+
+
     // =========================================
     // =========================================
-    // ======= DRAW AS GAME? SCREEN
-    // SHOULDVE DELETED BUT JUST MAKE SURE
+    // ======= DIED, get game manager
+
     
+    // game manager
+    if(GetObjectWithFlagsAny(FLAG_GAME_MANAGER, 0, &currManager) != -1){
+        // printf("%s\n", ">> [TEXTURE_HACK] - kill game manager and return title");
+        // knows death,
+        // kill game manager and force title
+        TO_WORMHOLE = 1;
+        ((_GameManager_Data *)(currManager->data_struct))->makeTitleScreen = 1;
+        currManager->awaitDestroy = 1;
 
-    // grab it
-    DeltaTime = GetFrameTime();
-    // check for render
-    if(GameShouldRender()){
-        ProcessAllUpdates(DeltaTime);
-        soundUpdate();
-
-        UpdateCamera3D();
-        BeginDrawing();
-        ClearBackground(BLACK);
-        ProcessAllDraws(DeltaTime);
-        EndDrawing();
-
-        ProcessFreshAdd();
-        ProcessAllDestroys();
     }
-    // =========================================
-    // =========================================
-    // ======= DRAW AS TITLE? SCREEN
-    // SHOULDVE CHANGED BACK TO TITLE SCREEN
-    
-    // grab it
-    DeltaTime = GetFrameTime();
-    // check for render
-    if(GameShouldRender()){
-        ProcessAllUpdates(DeltaTime);
-        soundUpdate();
-
-        UpdateCamera3D();
-        BeginDrawing();
-        ClearBackground(BLACK);
-        ProcessAllDraws(DeltaTime);
-        EndDrawing();
-
-        ProcessFreshAdd();
-        ProcessAllDestroys();
-    }
-    // handle menus
     else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
-            _MainMenu_Update(DeltaTime);
-            _MainMenu_Draw();
-        }
+        // ..
+        // printf("%s\n", ">> [TEXTURE_HACK] - ERM, we didnt get the game manager?");
     }
+    
+    // let game know about it
+    
+    ProcessAllUpdates(0.2f);
+    ProcessFreshAdd();
+    ProcessAllDestroys();
 
+    ProcessFreshAdd();
 
+    // =====
+    
 
+    // printf("%s\n", ">> [TEXTURE_HACK] - completed texture hack");
 
+    TEXTURE_FIX_HACK_COMPLETE = 1;
 
-
-
-
-
+    // free(currManager);
+    // currManager = 0;
 }

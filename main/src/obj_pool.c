@@ -109,11 +109,13 @@ int GetObjectWithFlagsAny(long unsigned int flags, int sIDX, GameObj_Base** reto
 /// @brief Processes the update function on all objects that are not waiting to be initialized.
 /// @param DeltaTime 
 void ProcessAllUpdates(float DeltaTime) {
+    // printf("%s\n","process updates");
     for (int i = 0; i < _gameObjPoolSize; i++) {
         GameObj_Base* obj = _gameObjPool[i];
         obj->Update_Func(obj, DeltaTime);
         SetScaleFactor(1);
     }
+    // printf("%s\n","done process updates");
 }
 
 /// @brief Processes the draw function on all objects that are not waiting to be initialized.
@@ -143,6 +145,7 @@ void ProcessAllDestroys() {
         GameObj_Base* obj = _gameObjPool[i];
 
         if (obj->awaitDestroy) {
+            // printf("destroying with flag %lu\n",_gameObjPool[i]->flags);
             // replace this index with the end of the active pool 
             _gameObjPool[i] = _gameObjPool[_gameObjPoolSize-1];
             // replace that index with the end of the awaiting creation buffer
@@ -155,6 +158,8 @@ void ProcessAllDestroys() {
 
             obj->Destroy_Func(obj, 0);
             free(obj);
+            obj = 0;
+            // printf("%s\n","destroyed.");
         }
     }
 }

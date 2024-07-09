@@ -44,6 +44,7 @@ typedef struct {
 
 // Create everything needed for a scene
 int _TitleManager_Init(void* self, float DeltaTime) {
+    printf("%s\n","INIT TITLE MANAGER");
     // Create any objects we need for the title screen HERE.
     // They should be destroyed in our destroy function.
 
@@ -95,6 +96,7 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
 
 
+    printf("%s\n","DONE INIT TITLE MANAGER");
 
     return 0;
 }
@@ -163,6 +165,7 @@ int _TitleManager_Draw(void* self, float DeltaTime) {
 }
 
 int _TitleManager_Destroy(void* self, float DeltaTime) {
+    printf("%s\n","KILLING TITLE MANAGER");
     // Destroy any objects we're using for the title screen.
 
     ClearParticles();
@@ -190,6 +193,7 @@ int _TitleManager_Destroy(void* self, float DeltaTime) {
 
     TO_WORMHOLE = 1;
     AddToPool(CreateGameManager());
+    printf("%s\n","DESTROYED TITLE MANAGER");
     return 0;
 }
 

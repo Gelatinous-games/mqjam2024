@@ -62,7 +62,7 @@ int _Wormhole_Init(void* self, float DeltaTime) {
         _Wormhole_spriteList = (Sprite **)malloc(sizeof(Sprite *) * _WORMHOLE_NUMBER_OF_SPRITES);
         _Wormhole_spriteList[0] = CreateSprite("resources/wormhole/w1.png");
         _Wormhole_spriteList[1] = CreateSprite("resources/wormhole/w2.png");
-        _Wormhole_spriteList[3] = CreateSprite("resources/wormhole/w3.png");
+        _Wormhole_spriteList[2] = CreateSprite("resources/wormhole/w3.png");
 
         WORMHOLE_DATA->spriteID = INT_RAND % _WORMHOLE_NUMBER_OF_SPRITES;
     }
@@ -128,6 +128,7 @@ int _Wormhole_Draw(void* self, float DeltaTime) {
 }
 
 int _Wormhole_Destroy(void* self, float DeltaTime) {
+    printf("%s\n","DESTROYING WORMHOLE");
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
@@ -135,19 +136,25 @@ int _Wormhole_Destroy(void* self, float DeltaTime) {
     // Wormhole_Data* data = THIS->data_struct;
 
     // ...
+    printf("%d wormhole sprites\n",_WORMHOLE_NUMBER_OF_SPRITES);
     for(int i = 0; i < _WORMHOLE_NUMBER_OF_SPRITES; i++){
+        printf("DESTROYING WORMHOLE[%d]\n",i);
         DestroySprite(_Wormhole_spriteList[i]);
         _Wormhole_spriteList[i] = 0;
     }
 
+    printf("%s\n","DESTROYING SPRITE LIST");
     // ...
     free(_Wormhole_spriteList);
     _Wormhole_spriteList = 0;
     
     
+    printf("%s\n","DESTROYING WORMHOLE DATA");
 
     free(THIS->data_struct);
     THIS->data_struct = 0;
+
+    printf("%s\n","DONE WORMHOLE DESTROY");
 
     return 0;
 }

@@ -53,6 +53,7 @@ typedef struct {
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
+    printf("%s\n","INIT GAME MANAGER");
 
 
     SoundManager_EnableGameMusic();
@@ -118,6 +119,7 @@ int _GameManager_Init(void* self, float DeltaTime) {
     
     // BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
     // AddToPool(BACKGROUND_OBJECT_REF);
+    printf("%s\n","DONE INIT GAME MANAGER");
     return 0;
 }
 
@@ -161,6 +163,7 @@ int _GameManager_Update(void* self, float DeltaTime) {
         AddToPool(CreateDeathManager());
         DATA->madeDeathManager = 1;
         doTick = 0;
+        // TODO: lower the star proximity
         setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
     }
 
@@ -239,6 +242,7 @@ int _GameManager_Draw(void* self, float DeltaTime) {
 }
 
 int _GameManager_Destroy(void* self, float DeltaTime) {
+    printf("%s\n","KILLING GAME MANAGER");
     ClearParticles();
 
     GameObj_Base* obj;
@@ -277,6 +281,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     free(DATA);
     THIS->data_struct = 0;
 
+    printf("%s\n","KILLED GAME MANAGER");
     return 0;
 }
 
