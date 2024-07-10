@@ -44,6 +44,14 @@ cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 
 ---
 
+
+## TODO items
+
+* move sprite loading to main/game manager
+
+
+---
+
 ## Planning things
 
 ###  Sound / Music
