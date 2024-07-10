@@ -83,6 +83,7 @@ typedef struct
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer0;
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer1;
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer2;
+// TODO: dust art goes on layer 3/4/5
 // BackgroundSprite_SpriteData *backgroundSpriteList_Layer3;
 
 
