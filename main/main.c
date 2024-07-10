@@ -59,11 +59,6 @@
 #include "src/objs/asteroid.h"
 
 
-#ifndef _mainmenu
-#define _mainmenu
-#include "mainmenu.c"
-#endif
-
 #ifndef _player
 #define _player
 #include "src/objs/player.c"
@@ -181,7 +176,7 @@ int main()
     scaleAllTracksVolume(0.5f);
     startSounds();
 
-    _MainMenu_Init();
+    
 
     generateObjects();
 
@@ -199,7 +194,7 @@ int main()
 #endif
 
 
-    _MainMenu_Cleanup();
+    
 
     cleanupSounds();
 
@@ -237,13 +232,6 @@ static void UpdateDrawFrame(void)
         ProcessFreshAdd();
         ProcessAllDestroys();
     }
-    // handle menus
-    else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
-            _MainMenu_Update(DeltaTime);
-            _MainMenu_Draw();
-        }
-    }
 }
 
 /// @brief Generates all objects for initial gamestate.
@@ -261,8 +249,6 @@ static void generateObjects()
 // this hack is ducttape to fix the sprite issue. fite mi it works
 static void performTextureFixHack(){
 
-    // GetObjectWithFlagsAny
-    // GameObj_Base *currManager = (GameObj_Base *)malloc(sizeof(GameObj_Base));
     GameObj_Base *currManager;
     float DeltaTime = 0.0f;
 
@@ -278,12 +264,10 @@ static void performTextureFixHack(){
         //...
         currManager->awaitDestroy = 1;
 
-        _MainMenu_Update(0.1f);
         BeginDrawing();
 
         UpdateCamera3D();
         ClearBackground(BLACK);
-        _MainMenu_Draw();
         EndDrawing();
     }
     else {
@@ -361,7 +345,4 @@ static void performTextureFixHack(){
     // printf("%s\n", ">> [TEXTURE_HACK] - completed texture hack");
 
     TEXTURE_FIX_HACK_COMPLETE = 1;
-
-    // free(currManager);
-    // currManager = 0;
 }
