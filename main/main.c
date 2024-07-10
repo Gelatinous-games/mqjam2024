@@ -56,7 +56,12 @@
 
 #include "src/base.h"
 #include "src/obj_register.h"
-#include "src/objs/asteroid.h"
+
+
+#ifndef _asteroid
+#define _asteroid
+#include "src/objs/asteroid.c"
+#endif
 
 
 #ifndef _player
