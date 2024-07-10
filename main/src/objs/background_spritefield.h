@@ -32,6 +32,7 @@ enum SPRITE_LAYER
     SMALL = 0,
     MEDIUM = 1,
     LARGE = 2,
+    MASSIVE = 3,
 };
 
 typedef struct
@@ -49,6 +50,7 @@ typedef struct
     // and the spot in the relevant list
     int spriteID;
 
+
     // for when it's not an artwork
     Color spriteTint;
 
@@ -65,9 +67,13 @@ typedef struct
 {
     // the list of bg objects
     BackgroundSprite_GenerationData *backgroundGeneratedObjects;
+    int spawnCount;
 
 } Background_DataStruct;
 
+
+
+#define BACKGROUND_SPRITE_COUNT_ENVIRONMENTS 11
 #define BACKGROUND_SPRITE_COUNT_ARTWORKS 10
 #define BACKGROUND_SPRITE_COUNT_SMALL 5
 #define BACKGROUND_SPRITE_COUNT_MEDIUM 7
@@ -77,16 +83,20 @@ typedef struct
 #define BACKGROUND_SPRITE_COUNT_LAYER0 18
 #define BACKGROUND_SPRITE_COUNT_LAYER1 9
 #define BACKGROUND_SPRITE_COUNT_LAYER2 5
+#define BACKGROUND_SPRITE_COUNT_LAYER3 11
 
-#define BACKGROUND_SPRITE_COUNT_ALL (BACKGROUND_SPRITE_COUNT_LAYER0 + BACKGROUND_SPRITE_COUNT_LAYER1 + BACKGROUND_SPRITE_COUNT_LAYER2)
+
+#define BACKGROUND_SPRITE_LAYER3_SPAWN_MAX 1
+
+#define BACKGROUND_SPRITE_COUNT_ALL (BACKGROUND_SPRITE_COUNT_LAYER0 + BACKGROUND_SPRITE_COUNT_LAYER1 + BACKGROUND_SPRITE_COUNT_LAYER2 + BACKGROUND_SPRITE_COUNT_LAYER3)
 
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer0;
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer1;
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer2;
 // TODO: dust art goes on layer 3/4/5
-// BackgroundSprite_SpriteData *backgroundSpriteList_Layer3;
+BackgroundSprite_SpriteData *backgroundSpriteList_Layer3;
 
-
+#define ENVIRONMENT_SCALE 20.0f
 
 
 int _BackgroundSprites_Init(void *self, float DeltaTime);

@@ -109,6 +109,10 @@ int _GameManager_Init(void* self, float DeltaTime) {
 
     // Background Object
     //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
+
+
+
+     // TODO: have the backgrounnd sprites also use the layers
     BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
     for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
     {
@@ -120,9 +124,12 @@ int _GameManager_Init(void* self, float DeltaTime) {
         AddToPool(BACKGROUND_OBJECT_REF);
     }
 
-    printf("%s\n","ABOUT TO ADD DUST MANAGER");
-    // add the background dust manager
-    AddToPool(_BackgroundDust_Create());
+
+    AddToPool(CreateBackgroundSprites(3));
+
+    // printf("%s\n","ABOUT TO ADD DUST MANAGER");
+    // // add the background dust manager
+    // // AddToPool(_BackgroundDust_Create());
     
     // BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
     // AddToPool(BACKGROUND_OBJECT_REF);

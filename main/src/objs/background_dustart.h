@@ -30,6 +30,7 @@
 
 typedef struct {
     Vector2 position;
+    Vector2 scale;
     int spriteID;
 } BackgroundDust_SpawnData;
 
@@ -40,9 +41,10 @@ typedef struct {
 
 #define BACKGROUNDDUST_SPAWN_MAX 1
 #define BACKGROUNDDUST_SPRITE_COUNT 11
-#define BACKGROUNDDUST_SPAWN_EXTRADISTANCE_MAX WORMHOLE_TRAVEL_DISTANCE/BACKGROUNDDUST_SPAWN_MAX
+// #define BACKGROUNDDUST_SPAWN_EXTRADISTANCE_MAX WORMHOLE_TRAVEL_DISTANCE/BACKGROUNDDUST_SPAWN_MAX
+#define BACKGROUNDDUST_SPAWN_EXTRADISTANCE_MAX 50.0f
 
-Vector2 _BackgroundDust_scaleFactor = (Vector2){0.1f, 0.1f};
+Vector2 _BackgroundDust_scaleFactor = (Vector2){50.0f, 50.0f};
 
 int _BackgroundDust_Init(void* self, float DeltaTime);
 int _BackgroundDust_Update(void* self, float DeltaTime);

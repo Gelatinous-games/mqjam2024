@@ -5,6 +5,15 @@
 int _BackgroundSprites_Init(void *self, float DeltaTime)
 {
     // printf("%s\n","initialising sprite list");
+    BACKGROUND_DATA->spawnCount = 0;
+
+    if(THIS->currentLayer == LAYER_BACKGROUND_STARSCAPE_3){
+            BACKGROUND_DATA->spawnCount = BACKGROUND_SPRITE_LAYER3_SPAWN_MAX;
+    }
+    else {
+        // ...
+        BACKGROUND_DATA->spawnCount = BACKGROUND_OBJECT_COUNT;
+    }
 
     // loads our sprites ready for use
     prepareBackgroundSprites(self, DeltaTime);
@@ -29,22 +38,24 @@ void setScaleFactorToLayer(void *self)
     {
     default:
     case LAYER_BACKGROUND_STARSCAPE_0:
-        scaleFactor = (Vector2){3, 3};
+        scaleFactor = (Vector2){5, 5};
         break;
     case LAYER_BACKGROUND_STARSCAPE_1:
-        scaleFactor = (Vector2){2, 2};
+        scaleFactor = (Vector2){3, 3};
         break;
     case LAYER_BACKGROUND_STARSCAPE_2:
         scaleFactor = (Vector2){1, 1};
+        break;
+    case LAYER_BACKGROUND_STARSCAPE_3:
+        scaleFactor = (Vector2){1.0f, 1.0f};
         break;
     }
 }
 
 int _BackgroundSprites_Draw(void *self, float DeltaTime)
 {
-
     setScaleFactorToLayer(self);
-    for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
+    for (int i = 0; i < (BACKGROUND_DATA->spawnCount); i++)
     {
         // printf("drawing %d\n",i);
         Vector2 currSpritePosition = BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position;
@@ -136,7 +147,7 @@ void prepareBackgroundSprites(void *self, float DeltaTime)
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_03_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_04.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_05_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
-        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_06_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_2};
+        backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_06_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_07_noBG.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_08.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
         backgroundSpriteList_Layer0[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/background/bg_art_09.png"), BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0};
@@ -185,6 +196,23 @@ void prepareBackgroundSprites(void *self, float DeltaTime)
         backgroundSpriteList_Layer2[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/brushes/brush_large_flare_01.png"), BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2};
 
         break;
+    case LAYER_BACKGROUND_STARSCAPE_3:
+        index = 0;
+
+        backgroundSpriteList_Layer3 = (BackgroundSprite_SpriteData *)malloc(BACKGROUND_SPRITE_COUNT_LAYER3 * sizeof(BackgroundSprite_SpriteData));
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_01.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_02.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_03.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_04.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_05.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_06.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_07.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_08.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_long_09.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_short_01.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+        backgroundSpriteList_Layer3[index++] = (BackgroundSprite_SpriteData){CreateSprite("resources/dust/dust_cloud_short_02.png"), BG_SPRITETYPE_ENVIRONMENT, LAYER_BACKGROUND_STARSCAPE_3};
+
+        break;
     default:
         break;
     }
@@ -226,6 +254,16 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
         free(backgroundSpriteList_Layer2);
         backgroundSpriteList_Layer2 = 0;
         break;
+    case LAYER_BACKGROUND_STARSCAPE_3:
+        // LAYER 3
+        for (int i = 0; i < BACKGROUND_SPRITE_COUNT_LAYER3; i++)
+        {
+            DestroySprite(backgroundSpriteList_Layer3[i].sprite);
+            backgroundSpriteList_Layer3[i].sprite = 0;
+        }
+        free(backgroundSpriteList_Layer3);
+        backgroundSpriteList_Layer3 = 0;
+        break;
     }
 }
 
@@ -235,10 +273,10 @@ void prepareBackgroundGenerationData(void *self, float DeltaTime)
 
     // printf("%s\n","making bg objects list");
     // object reference array
-    BACKGROUND_DATA->backgroundGeneratedObjects = (BackgroundSprite_GenerationData *)malloc(BACKGROUND_OBJECT_COUNT * sizeof(BackgroundSprite_GenerationData));
+    BACKGROUND_DATA->backgroundGeneratedObjects = (BackgroundSprite_GenerationData *)malloc((BACKGROUND_DATA->spawnCount) * sizeof(BackgroundSprite_GenerationData));
 
     // roll each object
-    for (int i = 0; i < BACKGROUND_OBJECT_COUNT; i++)
+    for (int i = 0; i < BACKGROUND_SPRITE_LAYER3_SPAWN_MAX; i++)
     {
         rollForBackgroundObjectData(self, DeltaTime, i);
     }
@@ -262,6 +300,8 @@ int getBackgroundSpriteCount(void *self)
         return BACKGROUND_SPRITE_COUNT_LAYER1;
     case LAYER_BACKGROUND_STARSCAPE_2:
         return BACKGROUND_SPRITE_COUNT_LAYER2;
+    case LAYER_BACKGROUND_STARSCAPE_3:
+        return BACKGROUND_SPRITE_COUNT_LAYER2;
     }
 }
 
@@ -278,6 +318,7 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
 
     // === selection roll
     int selectionRoll = abs((INT_RAND) % (getBackgroundSpriteCount(self)));
+    
     // === get the index
     generatedIndex = selectionRoll;
 
@@ -290,6 +331,7 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     switch (generatedType)
     {
     default:
+    case BG_SPRITETYPE_ENVIRONMENT:
     case BG_SPRITETYPE_ARTWORK:
         generatedTint = WHITE;
         break;
@@ -323,24 +365,45 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     }
 
     // === positioning
+    switch (generatedType){
+        case BG_SPRITETYPE_ENVIRONMENT:
+            generatedPosition = (Vector2){
+                (FLOAT_RAND * WORMHOLE_TRAVEL_DISTANCE + (WORMHOLE_TRAVEL_DISTANCE*0.25f)),
+                (0.0f)};
+            break;
+        default:
+            generatedPosition = (Vector2){
+                (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_X),
+                (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_Y - BACKGROUND_SPAWN_MAX_DISTANCE_Y / 2.0f)};
+            break;
+    }
 
-    generatedPosition = (Vector2){
-        (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_X),
-        (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_Y - BACKGROUND_SPAWN_MAX_DISTANCE_Y / 2.0f)};
 
     // === rotation
-
-    generatedRotation = FLOAT_RAND * 360.0f;
-
-    // === scaling
+    switch(generatedType){
+        default:
+        generatedRotation = FLOAT_RAND * 360.0f;
+        break;
+        case BG_SPRITETYPE_ENVIRONMENT:
+        generatedRotation = 0.0f;
+        break;
+    }
 
     // generate two random percentage values
     float scaleRand = FLOAT_RAND;
-
-    // then lerp between the minimum and maximum
-    generatedScale = (Vector2){
-        ((1.0f - scaleRand) * BACKGROUND_SPAWN_MIN_SCALE_X + (scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_X),
-        ((1.0f - scaleRand) * BACKGROUND_SPAWN_MIN_SCALE_Y + (scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_Y)};
+    float aspect = (spriteDataListTemp->sprite[generatedIndex].tex.width) / (spriteDataListTemp->sprite[generatedIndex].tex.height);
+    // === scaling
+    switch (generatedType){
+        case BG_SPRITETYPE_ENVIRONMENT:
+            generatedScale = (Vector2){ENVIRONMENT_SCALE*aspect, ENVIRONMENT_SCALE/aspect*2.0f};
+            break;
+        default:
+            // then lerp between the minimum and maximum
+            generatedScale = (Vector2){
+                ((1.0f - scaleRand) * BACKGROUND_SPAWN_MIN_SCALE_X + (scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_X),
+                ((1.0f - scaleRand) * BACKGROUND_SPAWN_MIN_SCALE_Y + (scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_Y)};
+            break;
+    }
 
     // === assign the data we generated
 
@@ -358,7 +421,8 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
         // scale
         generatedScale,
         // position offset
-        positionOffsetX};
+        positionOffsetX
+    };
 }
 
 BackgroundSprite_SpriteData *getSpriteListInCurrentLayer(void *self)
@@ -371,6 +435,8 @@ BackgroundSprite_SpriteData *getSpriteListInCurrentLayer(void *self)
         return backgroundSpriteList_Layer1;
     case LAYER_BACKGROUND_STARSCAPE_2:
         return backgroundSpriteList_Layer2;
+    case LAYER_BACKGROUND_STARSCAPE_3:
+        return backgroundSpriteList_Layer3;
     default:
         printf("ERROR: background_spritefield.c currentLayer is not a background layer");
         return backgroundSpriteList_Layer0;

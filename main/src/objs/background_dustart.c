@@ -36,11 +36,15 @@ int _BackgroundDust_Update(void* self, float DeltaTime) {
     //  reroll if it went off camera
     //      as somewhere approaching camera
     for(int i = 0; i < BACKGROUNDDUST_SPAWN_MAX; i++){
+        int response = _BackgroundDust_SpawnData_TestLeftField(THIS, BACKGROUNDDUST_DATA->spawnDataList[i], _BackgroundDust_scaleFactor);
         // when left
-        if(_BackgroundDust_SpawnData_TestLeftField(THIS, BACKGROUNDDUST_DATA->spawnDataList[i], _BackgroundDust_scaleFactor)){
+        if( response > 0){
             // reroll
             printf("rerolling dust %d\n",i);
             _BackgroundDust_SpawnData_RollSpawn(THIS, BACKGROUNDDUST_DATA->spawnDataList[i], _BackgroundDust_scaleFactor);
+            printf("went to %f with ID %d\n",BACKGROUNDDUST_DATA->spawnDataList[i].position.x,BACKGROUNDDUST_DATA->spawnDataList[i].spriteID);
+        }else{
+            // printf("had response %d for x: %f, when camera %f\n", response, BACKGROUNDDUST_DATA->spawnDataList[i].position.x, cameraPosition.x);
         }
     }
     
@@ -49,7 +53,6 @@ int _BackgroundDust_Update(void* self, float DeltaTime) {
 }
 
 int _BackgroundDust_Draw(void* self, float DeltaTime) {
-
     // each spawn
     for(int i = 0; i < BACKGROUNDDUST_SPAWN_MAX; i++){
         // get spawn
@@ -57,16 +60,20 @@ int _BackgroundDust_Draw(void* self, float DeltaTime) {
         // get sprite
         Sprite *currSprite = BACKGROUNDDUST_DATA->spriteList[currSpawn.spriteID];
         Vector2 position = currSpawn.position;
-
+        // printf("drawing dust %d -> [%f, %f]\n",i,position.x,position.y);
+        scaleFactor = Vector2One();
         // draw
         // ...
         RenderSpriteRelative(
             currSprite,
             position,
-            _BackgroundDust_scaleFactor,
+            // PLAYER_OBJECT_REF->position,
+            // (Vector2){, currSprite->tex.height},
+            currSpawn.scale,
             0.0f,
             WHITE
         );
+        // RenderSquareRelative(position, (Vector2){currSprite->tex.width, currSprite->tex.height},0,(Color){200,200,200,127});
     }
 
     return 0;
@@ -116,11 +123,11 @@ GameObj_Base* _BackgroundDust_Create() {
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
-    obj_ptr->flags = FLAG_UNDEFINED_OBJ;
+    obj_ptr->flags = FLAG_BACKGROUND;
 
     obj_ptr->data_struct = malloc(sizeof(BackgroundDust_Data));
 
-    obj_ptr->currentLayer = LAYER_GUI;
+    obj_ptr->currentLayer = LAYER_BACKGROUND_STARSCAPE_3;
 
     obj_ptr->radius = 0;
     obj_ptr->mass = 100;
@@ -140,11 +147,11 @@ int _BackgroundDust_SpawnData_TestLeftField(GameObj_Base *BackgroundDustObject, 
     Sprite *currSprite = ((BackgroundDust_Data *)(BackgroundDustObject->data_struct))->spriteList[spawnInformation.spriteID];
     // currSprite->
     Vector2 currPosition = spawnInformation.position;
-    float spriteWidth = currSprite->tex.width;
     float cameraLeftSide = cameraPosition.x - cameraBounds.x;
     // check less than
-    if(currPosition.x < cameraLeftSide - spriteWidth){
+    if(currPosition.x < cameraPosition.x - spawnInformation.scale.x){
         // it left
+        printf("%s\n", "need to reroll some dust");
         return 1;
     }
     return 0;
@@ -155,10 +162,12 @@ void _BackgroundDust_SpawnData_RollSpawn(GameObj_Base *BackgroundDustObject, Bac
     spawnInformation.spriteID = INT_RAND % BACKGROUNDDUST_SPRITE_COUNT;
     // find the sprite with that ID
     Sprite *currSprite = ((BackgroundDust_Data *)(BackgroundDustObject->data_struct))->spriteList[spawnInformation.spriteID];
+    float ratio = currSprite->tex.width / currSprite->tex.height;
+    spawnInformation.scale = (Vector2){_BackgroundDust_scaleFactor.x * ratio, _BackgroundDust_scaleFactor.y / ratio};
     // position it to somewhere after the camera
     //  including the sprite width
     //  randomise it a little
-    spawnInformation.position.x = cameraPosition.x + cameraBounds.x + currSprite->tex.width + (BACKGROUNDDUST_SPAWN_EXTRADISTANCE_MAX*FLOAT_RAND);
+    spawnInformation.position.x = cameraPosition.x + spawnInformation.scale.x + (BACKGROUNDDUST_SPAWN_EXTRADISTANCE_MAX*FLOAT_RAND);
 }
 
 
