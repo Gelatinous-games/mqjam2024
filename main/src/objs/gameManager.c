@@ -12,6 +12,10 @@
     #define _camera
     #include "../camera.c"
 #endif
+#ifndef _timer
+    #define _timer
+    #include "../timer.c"
+#endif
 
 #ifndef _obj_pool
     #define _obj_pool
@@ -70,6 +74,8 @@ int _GameManager_Init(void* self, float DeltaTime) {
     ClearParticles();
     doTick = 1;
     gettimeofday(&timerStart, NULL);
+
+    resetTimers();
 
     DATA->DoLoadIn = 1;
     DATA->DoLoadOut = 0;

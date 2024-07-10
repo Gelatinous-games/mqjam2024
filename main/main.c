@@ -74,7 +74,10 @@
 #include "src/objs/shield.c"
 #endif
 
+#ifndef _timer
+#define _timer
 #include "src/timer.c"
+#endif
 
 #ifndef _obj_example
 #define _obj_example
