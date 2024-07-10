@@ -23,10 +23,10 @@
     #include "player.c"
 #endif
 
-#ifndef _background_dustart
-#define _background_dustart
-#include "background_dustart.c"
-#endif
+// #ifndef _background_dustart
+// #define _background_dustart
+// #include "background_dustart.c"
+// #endif
 
 #include "../obj_register.h"
 #include "../settings.h"

@@ -338,8 +338,10 @@ void handleCameraRelativity(void *self, float DeltaTime){
         cameraVelocity.x = CAMERA_COAST_SPEED;
     }
     else if (THIS->position.x > cameraPosition.x) {
+        // vector from center to player
         float delta = THIS->position.x - cameraPosition.x;
-        delta /= cameraBounds.x;
+        // 0.5f limits the amount we can travel past center
+        delta /= (cameraBounds.x*0.5f);
         cameraVelocity.x = CAMERA_COAST_SPEED + (delta * ((FREE_MAX_SPEED - CAMERA_COAST_SPEED) + 1));
     }
 

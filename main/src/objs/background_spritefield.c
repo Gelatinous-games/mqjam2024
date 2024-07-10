@@ -8,10 +8,12 @@ int _BackgroundSprites_Init(void *self, float DeltaTime)
     BACKGROUND_DATA->spawnCount = 0;
 
     if(THIS->currentLayer == LAYER_BACKGROUND_STARSCAPE_3){
+            printf("layer was %d, so using %d\n",THIS->currentLayer,BACKGROUND_SPRITE_LAYER3_SPAWN_MAX);
             BACKGROUND_DATA->spawnCount = BACKGROUND_SPRITE_LAYER3_SPAWN_MAX;
     }
     else {
         // ...
+        printf("layer was %d, so using %d\n",THIS->currentLayer,BACKGROUND_OBJECT_COUNT);
         BACKGROUND_DATA->spawnCount = BACKGROUND_OBJECT_COUNT;
     }
 
@@ -54,8 +56,9 @@ void setScaleFactorToLayer(void *self)
 
 int _BackgroundSprites_Draw(void *self, float DeltaTime)
 {
+    int numberOfSprites = (BACKGROUND_DATA->spawnCount);
     setScaleFactorToLayer(self);
-    for (int i = 0; i < (BACKGROUND_DATA->spawnCount); i++)
+    for (int i = 0; i < numberOfSprites; i++)
     {
         // printf("drawing %d\n",i);
         Vector2 currSpritePosition = BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position;
@@ -123,7 +126,7 @@ GameObj_Base *CreateBackgroundSprites(enum LAYER_ID layer)
 
 void resetBackgroundSpritesPositionIfOutOfBounds(void *self, Vector2 position, int idx)
 {
-    if (abs(((int)position.x) < cameraPosition.x-100))
+    if (((int)position.x) < cameraPosition.x-100)
     {
         BACKGROUND_DATA->backgroundGeneratedObjects[idx].spritePositionOffset += 100+cameraBounds.x*scaleFactor.x;
     }
@@ -270,13 +273,14 @@ void destroyBackgroundSprites(void *self, float DeltaTime)
 void prepareBackgroundGenerationData(void *self, float DeltaTime)
 {
     // ...
+    int numberOfSprites = (BACKGROUND_DATA->spawnCount);
 
     // printf("%s\n","making bg objects list");
     // object reference array
-    BACKGROUND_DATA->backgroundGeneratedObjects = (BackgroundSprite_GenerationData *)malloc((BACKGROUND_DATA->spawnCount) * sizeof(BackgroundSprite_GenerationData));
+    BACKGROUND_DATA->backgroundGeneratedObjects = (BackgroundSprite_GenerationData *)malloc(numberOfSprites * sizeof(BackgroundSprite_GenerationData));
 
     // roll each object
-    for (int i = 0; i < BACKGROUND_SPRITE_LAYER3_SPAWN_MAX; i++)
+    for (int i = 0; i < numberOfSprites; i++)
     {
         rollForBackgroundObjectData(self, DeltaTime, i);
     }
@@ -301,7 +305,7 @@ int getBackgroundSpriteCount(void *self)
     case LAYER_BACKGROUND_STARSCAPE_2:
         return BACKGROUND_SPRITE_COUNT_LAYER2;
     case LAYER_BACKGROUND_STARSCAPE_3:
-        return BACKGROUND_SPRITE_COUNT_LAYER2;
+        return BACKGROUND_SPRITE_COUNT_LAYER3;
     }
 }
 
@@ -324,7 +328,7 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
 
     // === get the sprite type
     BackgroundSprite_SpriteData *spriteDataListTemp = getSpriteListInCurrentLayer(self);
-    generatedType = spriteDataListTemp->spriteType;
+    generatedType = spriteDataListTemp[selectionRoll].spriteType;
 
     // === tinting
     int colourCount = 5;
@@ -364,20 +368,6 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
         break;
     }
 
-    // === positioning
-    switch (generatedType){
-        case BG_SPRITETYPE_ENVIRONMENT:
-            generatedPosition = (Vector2){
-                (FLOAT_RAND * WORMHOLE_TRAVEL_DISTANCE + (WORMHOLE_TRAVEL_DISTANCE*0.25f)),
-                (0.0f)};
-            break;
-        default:
-            generatedPosition = (Vector2){
-                (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_X),
-                (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_Y - BACKGROUND_SPAWN_MAX_DISTANCE_Y / 2.0f)};
-            break;
-    }
-
 
     // === rotation
     switch(generatedType){
@@ -391,7 +381,7 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
 
     // generate two random percentage values
     float scaleRand = FLOAT_RAND;
-    float aspect = (spriteDataListTemp->sprite[generatedIndex].tex.width) / (spriteDataListTemp->sprite[generatedIndex].tex.height);
+    float aspect = (spriteDataListTemp[generatedIndex].sprite->tex.width) / (spriteDataListTemp[generatedIndex].sprite->tex.height);
     // === scaling
     switch (generatedType){
         case BG_SPRITETYPE_ENVIRONMENT:
@@ -402,6 +392,22 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
             generatedScale = (Vector2){
                 ((1.0f - scaleRand) * BACKGROUND_SPAWN_MIN_SCALE_X + (scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_X),
                 ((1.0f - scaleRand) * BACKGROUND_SPAWN_MIN_SCALE_Y + (scaleRand)*BACKGROUND_SPAWN_MAX_SCALE_Y)};
+            break;
+    }
+
+    
+
+    // === positioning
+    switch (generatedType){
+        case BG_SPRITETYPE_ENVIRONMENT:
+            generatedPosition = (Vector2){
+                (PLAYER_OBJECT_REF->position.x + PLAYER_OBJECT_REF->velocity.x) + (FLOAT_RAND * WORMHOLE_TRAVEL_DISTANCE) + (2*cameraBounds.x) + generatedScale.x + 400.0f,
+                (0.0f)};
+            break;
+        default:
+            generatedPosition = (Vector2){
+                (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_X),
+                (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_Y - BACKGROUND_SPAWN_MAX_DISTANCE_Y / 2.0f)};
             break;
     }
 

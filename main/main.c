@@ -110,10 +110,10 @@
 #include "src/objs/planet_body.c"
 #endif
 
-#ifndef _background_dustart
-#define _background_dustart
-#include "src/objs/background_dustart.c"
-#endif
+// #ifndef _background_dustart
+// #define _background_dustart
+// #include "src/objs/background_dustart.c"
+// #endif
 
 #ifndef _background_starfield
 #define _background_starfield
