@@ -1,5 +1,7 @@
 #include "background_spritefield.h"
 
+#define BACKGROUND_DATA ((Background_DataStruct *)(THIS->data_struct))
+
 int _BackgroundSprites_Init(void *self, float DeltaTime)
 {
     // printf("%s\n","initialising sprite list");
@@ -374,3 +376,7 @@ BackgroundSprite_SpriteData *getSpriteListInCurrentLayer(void *self)
         return backgroundSpriteList_Layer0;
     }
 }
+
+
+
+#undef BACKGROUND_DATA

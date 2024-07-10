@@ -7,6 +7,7 @@
 #include "raymath.h"
 
 #include "../base.h"
+#include "../settings.h"
 
 
 #ifndef _camera

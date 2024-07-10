@@ -83,8 +83,16 @@ typedef struct
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer0;
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer1;
 BackgroundSprite_SpriteData *backgroundSpriteList_Layer2;
+// BackgroundSprite_SpriteData *backgroundSpriteList_Layer3;
 
-#define BACKGROUND_DATA ((Background_DataStruct *)(THIS->data_struct))
+
+
+
+int _BackgroundSprites_Init(void *self, float DeltaTime);
+int _BackgroundSprites_Update(void *self, float DeltaTime);
+int _BackgroundSprites_Draw(void *self, float DeltaTime);
+int _BackgroundSprites_Destroy(void *self, float DeltaTime);
+
 
 /**
  *  DECLARING ALL THE EXTRA FUNCTIONS FOR USABILITY
@@ -99,3 +107,6 @@ void resetBackgroundSpritesPositionIfOutOfBounds(void *self, Vector2 position, i
 void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObjectIndex);
 
 BackgroundSprite_SpriteData *getSpriteListInCurrentLayer(void *self);
+
+void setScaleFactorToLayer(void *self);
+int getBackgroundSpriteCount(void *self);
