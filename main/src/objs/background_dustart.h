@@ -51,7 +51,5 @@ int _BackgroundDust_Update(void* self, float DeltaTime);
 int _BackgroundDust_Draw(void* self, float DeltaTime);
 int _BackgroundDust_Destroy(void* self, float DeltaTime);
 
-GameObj_Base* _BackgroundDust_Create();
-
 int _BackgroundDust_SpawnData_TestLeftField(GameObj_Base *BackgroundDustObject, BackgroundDust_SpawnData spawnInformation, Vector2 backgroundDustScale);
 void _BackgroundDust_SpawnData_RollSpawn(GameObj_Base *BackgroundDustObject, BackgroundDust_SpawnData spawnInformation, Vector2 backgroundDustScale);

@@ -84,3 +84,5 @@ GameObj_Base* CreateDeathManager();
 GameObj_Base* CreateTextObj();
 GameObj_Base* CreateWinManager();
 GameObj_Base* CreateHealthBar();
+
+GameObj_Base* _BackgroundDust_Create();

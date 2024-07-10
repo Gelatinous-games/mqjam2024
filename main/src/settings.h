@@ -146,7 +146,7 @@ const static int NUMBER_OF_ASTEROIDS = 4;
 static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *WORMHOLE_OBJECT_REF;
-static GameObj_Base *PLANET_OBJECT_REF;
+static GameObj_Base *PLANET_BODY_REF;
 static GameObj_Base *STAR_OBJECT_REF;
 
 

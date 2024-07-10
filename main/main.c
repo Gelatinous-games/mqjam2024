@@ -90,9 +90,9 @@
 #define _wormhole_obj
 #include "src/objs/wormhole.c"
 #endif
-#ifndef _planet_obj
-#define _planet_obj
-#include "src/objs/planet.c"
+#ifndef _planet_body
+#define _planet_body
+#include "src/objs/planet_body.c"
 #endif
 
 #ifndef _background_dustart

@@ -103,8 +103,8 @@ int _GameManager_Init(void* self, float DeltaTime) {
     AddToPool(WORMHOLE_OBJECT_REF);
 
     // Planet Object
-    PLANET_OBJECT_REF = CreatePlanet();
-    AddToPool(PLANET_OBJECT_REF);
+    PLANET_BODY_REF = CreatePlanet();
+    AddToPool(PLANET_BODY_REF);
 
     // Background Object
     //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
@@ -196,7 +196,7 @@ int _GameManager_Update(void* self, float DeltaTime) {
         // printf("<%f, %f> to <%f, %f>\n", PLAYER_OBJECT_REF->position.x, PLAYER_OBJECT_REF->position.y, WORMHOLE_OBJECT_REF->position.x, WORMHOLE_OBJECT_REF->position.y);
         DATA->DoLoadOut = 1;
     }
-    else if (!TO_WORMHOLE && GetCollided(PLAYER_OBJECT_REF, PLANET_OBJECT_REF, &a, &b)) {
+    else if (!TO_WORMHOLE && GetCollided(PLAYER_OBJECT_REF, PLANET_BODY_REF, &a, &b)) {
         playerCanControl = 0;
         DATA->DoLoadOut = 1;
     }
@@ -269,7 +269,7 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     }
 
     WORMHOLE_OBJECT_REF = 0;
-    PLANET_OBJECT_REF = 0;
+    PLANET_BODY_REF = 0;
     STAR_OBJECT_REF = 0;
     
 
