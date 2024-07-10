@@ -6,7 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
-#include "../sound.h"
+#include "../sound_manager.h"
 
 
 #ifndef _camera
@@ -26,6 +26,7 @@
 
 #include "../obj_register.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
 
 

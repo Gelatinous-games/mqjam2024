@@ -10,6 +10,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "../misc_util.h"
 #include "player.h"
 
 
@@ -29,10 +30,7 @@
     #include "particle.c"
 #endif
 
-#ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
-#endif
+#include "../sprite.h"
 
 
 

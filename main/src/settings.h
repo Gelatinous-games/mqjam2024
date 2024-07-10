@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "base.h"
+#include "misc_util.h"
 #include "obj_register.h"
 #include <sys/time.h>
 
@@ -30,12 +31,6 @@ enum GAME_SCENE_STATE {
 // skip till it's implemented
 static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
 
-
-enum IMPACT_TYPE {
-    HULL_IMPACT,
-    SHIELD_IMPACT,
-    DEATH_IMPACT
-};
 
 // reset this to 0 whenever you take shield damage 
 int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
@@ -153,44 +148,6 @@ static GameObj_Base *STAR_OBJECT_REF;
 unsigned long long currMillis();
 Vector2 GetRandomUnitVector();
 
-
-
-
-#define THIS ((GameObj_Base *)self)
-#ifndef _WIN32
-// unix randoming
-#define INT_RAND (int)(random())
-#define FLOAT_RAND ((float)(random()) / (float)RAND_MAX)
-#define CHAR_RAND ((char)(random() & 0xff))
-#define GAME_TIME currMillis()
-// #define GAME_TIME GetSystemTime( &systemTime )
-#else
-// windows randoming
-#define INT_RAND (int)(rand())
-#define FLOAT_RAND ((float)(rand()) / (float)RAND_MAX)
-#define CHAR_RAND ((char)(rand() & 0xff))
-#define GAME_TIME GetTime
-#endif
-
-
-
-unsigned long long currMillis(){
-    struct timeval timeVal;
-    unsigned long long millisecondsSinceEpoch;
-
-    gettimeofday(&timeVal, NULL);
-
-    millisecondsSinceEpoch =
-        (unsigned long long)(timeVal.tv_sec) * 1000 +
-        (unsigned long long)(timeVal.tv_usec) / 1000;
-    
-    return millisecondsSinceEpoch;
-}
-
-Vector2 GetRandomUnitVector(){
-    float angle = FLOAT_RAND*360.0;
-    return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
-}
 
 
 

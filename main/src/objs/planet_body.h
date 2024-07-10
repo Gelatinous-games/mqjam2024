@@ -10,6 +10,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
 
 #ifndef _camera
@@ -28,17 +29,12 @@
     #include "./particle.c"
 #endif
 
-#ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
-#endif
+#include "../sprite.h"
 
 #ifndef _gm
     #define _gm
     #include "gameManager.c"
 #endif
-
-#include "../settings.h"
 
 typedef struct {
     int spriteID;
@@ -46,8 +42,6 @@ typedef struct {
 
     float rotate;
 } Planet_DataStruct;
-
-#define PLANET_DATA ((Planet_DataStruct *)(THIS->data_struct))
 
 #define PLANET_SPRITE_COUNT 5
 

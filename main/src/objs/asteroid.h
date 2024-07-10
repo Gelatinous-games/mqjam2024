@@ -7,6 +7,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
 
 #ifndef _camera
@@ -19,19 +20,11 @@
     #include "../obj_pool.c"
 #endif
 
-#ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
-#endif
+#include "../sprite.h"
 
 #ifndef _obj_particle
     #define _obj_particle
     #include "./particle.c"
-#endif
-
-#ifndef _misc
-    #define _misc
-    #include "../misc.c"
 #endif
 
 #ifndef _star_obj

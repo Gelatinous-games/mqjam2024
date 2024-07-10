@@ -36,7 +36,22 @@
 
 // project header includes
 #include "src/settings.h"
-#include "src/sound.h"
+
+#ifndef _sprite
+    #define _sprite
+    #include "src/sprite.c"
+#endif
+
+#ifndef _misc_util
+#define _misc_util
+#include "src/misc_util.c"
+#endif
+
+
+#ifndef _sound_manager
+#define _sound_manager
+#include "src/sound_manager.c"
+#endif
 
 
 #include "src/base.h"

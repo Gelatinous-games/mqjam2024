@@ -1,5 +1,7 @@
 #include "planet_body.h"
 
+#define PLANET_DATA ((Planet_DataStruct *)(THIS->data_struct))
+
 int _Planet_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
     // here we should create a reference to our datastructure and store it in the data_struct pointer.
@@ -102,3 +104,6 @@ GameObj_Base* CreatePlanet() {
     obj_ptr->size = Vector2One();
     return obj_ptr;
 }
+
+
+#undef PLANET_DATA

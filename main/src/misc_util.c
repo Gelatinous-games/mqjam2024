@@ -1,12 +1,28 @@
-#include "raylib.h"
-#include "raymath.h"
-#include "base.h"
+#include "misc_util.h"
 
-#include "obj_register.h"
-#include "sound.h"
 
-#define COLLIDE_MAX_SPEED 3
-#define FREE_MAX_SPEED 10
+
+unsigned long long currMillis(){
+    struct timeval timeVal;
+    unsigned long long millisecondsSinceEpoch;
+
+    gettimeofday(&timeVal, NULL);
+
+    millisecondsSinceEpoch =
+        (unsigned long long)(timeVal.tv_sec) * 1000 +
+        (unsigned long long)(timeVal.tv_usec) / 1000;
+    
+    return millisecondsSinceEpoch;
+}
+
+Vector2 GetRandomUnitVector(){
+    float angle = FLOAT_RAND*360.0;
+    return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
+}
+
+
+
+
 
 
 /// @brief Returns 1 if key A is down and not B, -1 if B and not A, and 0 if neither.

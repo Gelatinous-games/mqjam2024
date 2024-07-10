@@ -24,10 +24,7 @@
     #include "./particle.c"
 #endif
 
-#ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
-#endif
+#include "../sprite.h"
 
 typedef struct {
     float a;

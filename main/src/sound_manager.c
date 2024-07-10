@@ -1,55 +1,5 @@
-#pragma once
+#include "sound_manager.h"
 
-
-
-// standard library includes
-#include <stdio.h>
-#include <stdlib.h>
-
-// library includes
-#include "raylib.h"
-#include "raymath.h"
-
-// project includes
-#include "settings.h"
-
-typedef struct {
-    const char *path;
-    Sound track;
-    float baseVolume;
-    float scaleOfBaseVolume;
-    int loopingTrack;
-} Sound_Track;
-
-static Sound_Track **TRACKS;
-
-enum TRACK_INDEX_ID {
-    BGMUSIC_LOOP_ID,
-    BGMENUMUSIC_SOUND_ID,
-    HIT_SOUND_ID,
-    THRUST_LOOP_ID,
-    STAR_PROXIMITY_LOOP_ID,
-    THRUST_END_ID,
-    THRUST_START_ID,
-    DEATH_SOUND_ID,
-    BUTTON_SOUND_ID,
-    SHIELD_HIT_SOUND_ID,
-    SHIELD_REGEN_SOUND_ID,
-    UI_HOVER_SOUND_ID,
-    WIN_SOUND_ID,
-    
-
-
-    // REMEMBER THE BOOKEND THING, IF U DONT THEN GOTO REGISTER IDK
-
-    TRACK_COUNT
-};
-
-
-
-static float MASTER_VOLUME = 0.5f;
-
-static int PLAYED_DEATH_SOUND_BEFORE = 0;
 
 static void setAllTracksVolume(float volume){
     MASTER_VOLUME = volume;
@@ -235,21 +185,25 @@ static void playSoundOnce(int soundID){
     PlaySound(TRACKS[soundID]->track);
     
 }
+
 static void setTrackVolume(int soundID, float volume){
     
     TRACKS[soundID]->scaleOfBaseVolume = volume;
     SetSoundVolume(TRACKS[soundID]->track, (TRACKS[soundID]->baseVolume)*(TRACKS[soundID]->scaleOfBaseVolume));
     
 }
+
 static float getTrackVolume(int soundID){
     
     return TRACKS[soundID]->scaleOfBaseVolume;
     
 }
+
 static void SoundManager_EnableMenuMusic(){
     setTrackVolume(BGMUSIC_LOOP_ID,0.0f);
     setTrackVolume(BGMENUMUSIC_SOUND_ID,1.0f);
 }
+
 static void SoundManager_EnableGameMusic(){
     setTrackVolume(BGMUSIC_LOOP_ID,1.0f);
     setTrackVolume(BGMENUMUSIC_SOUND_ID,0.0f);

@@ -4,6 +4,7 @@
 #include "raylib.h"
 
 #include "./settings.h"
+#include "./misc_util.h"
 
 int storedMS = 0;
 char doTick = 1;

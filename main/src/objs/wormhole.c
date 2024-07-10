@@ -7,6 +7,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
 
 #ifndef _camera
@@ -25,10 +26,7 @@
     #include "./particle.c"
 #endif
 
-#ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
-#endif
+#include "../sprite.h"
 
 #ifndef _gm
     #define _gm

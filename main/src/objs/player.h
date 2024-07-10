@@ -8,7 +8,10 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "../misc_util.h"
 #include "shield.h"
+
+#include "../sprite.h"
 
 #ifndef _camera
     #define _camera
@@ -24,11 +27,6 @@
 #ifndef _obj_particle
     #define _obj_particle
     #include "./particle.c"
-#endif
-
-#ifndef _misc
-    #define _misc
-    #include "../misc.c"
 #endif
 
 #ifndef _star_obj
