@@ -64,6 +64,8 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     DATA->doLoadGame = 0;
     DATA->sphereRadius = 0;
 
+    // ==== title text ====
+
     GameObj_Base* obj = CreateTextObj();
     _TextObj_Data* textData = (_TextObj_Data*) obj->data_struct;
 
@@ -79,15 +81,34 @@ int _TitleManager_Init(void* self, float DeltaTime) {
 
     AddToPool(obj);
 
+    // ==== note about the webpage ====
+
     obj = CreateTextObj();
     textData = (_TextObj_Data*) obj->data_struct;
 
-    textData->data = "Press space to start";
+    textData->data = "Press [u] to focus";
     textData->doTextFlash = 0;
     textData->textFlash = 0;
     textData->doWidthSubtr = 1;
 
-    obj->position = (Vector2) { 0, 2 };
+    obj->position = (Vector2) { 0, 1.6 };
+    obj->size = (Vector2) { 0.5, 0.5 };
+
+    obj->currentLayer = LAYER_GUI;
+
+    AddToPool(obj);
+
+    // ==== game start key ====
+
+    obj = CreateTextObj();
+    textData = (_TextObj_Data*) obj->data_struct;
+
+    textData->data = "Press [space] to start";
+    textData->doTextFlash = 0;
+    textData->textFlash = 0;
+    textData->doWidthSubtr = 1;
+
+    obj->position = (Vector2) { 0, 2.2 };
     obj->size = (Vector2) { 0.5, 0.5 };
 
     obj->currentLayer = LAYER_GUI;
