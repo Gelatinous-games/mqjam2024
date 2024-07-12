@@ -22,7 +22,6 @@ int _Player_Init(void* self, float DeltaTime) {
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
     
-    PLAYER_DATA->sprite = CreateSprite(SPACESHIP_SPRITE_PATH);
 
     CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
     CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
@@ -62,7 +61,7 @@ int _Player_Update(void* self, float DeltaTime) {
 
 int _Player_Draw(void* self, float DeltaTime) {
     if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
-        RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+        RenderSpriteRelative(_SpriteLibrary_Player_ShipSprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
 
     #ifdef DEBUG_ON
@@ -74,8 +73,6 @@ int _Player_Draw(void* self, float DeltaTime) {
 }
 
 int _Player_Destroy(void* self, float DeltaTime) {
-    DestroySprite(PLAYER_DATA->sprite);
-    PLAYER_DATA->sprite = 0;
     free(PLAYER_DATA);
     THIS->data_struct = 0;
     

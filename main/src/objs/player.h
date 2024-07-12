@@ -34,8 +34,11 @@
     #include "star.c"
 #endif
 
+
+#include "../SpriteLibrary.h"
+
 typedef struct {
-    Sprite* sprite;
+    // Sprite* sprite;
     Vector2 headingVector;
     float rotateJerk;
     float rotateRate;

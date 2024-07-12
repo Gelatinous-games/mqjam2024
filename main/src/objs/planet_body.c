@@ -3,26 +3,12 @@
 #define PLANET_DATA ((Planet_DataStruct *)(THIS->data_struct))
 
 int _Planet_Init(void* self, float DeltaTime) {
-    // we have a reference to our own gameobject from which we can do things.
-    // here we should create a reference to our datastructure and store it in the data_struct pointer.
-    if(!_planetSprites){
-        printf("%s\n","loading planets");
-        _planetSprites = (Sprite **)malloc(PLANET_SPRITE_COUNT * sizeof(Sprite*));
-        int planetSpriteIndex = 0;
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P0_updoot.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P1_updoot.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P2_updoot.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P3_updoot.png");
-        _planetSprites[planetSpriteIndex++] = CreateSprite("./resources/planets/P4_updoot.png");
-    }
-
-
 
     THIS->data_struct = malloc(sizeof(Planet_DataStruct));
 
     
     // choose randome sprite
-    PLANET_DATA->spriteID = (INT_RAND%PLANET_SPRITE_COUNT);
+    PLANET_DATA->spriteID = (INT_RAND%_SPRITELIBRARY_PLANET_SPRITELIST_LENGTH);
     printf("using planet %d\n",PLANET_DATA->spriteID);
     if (TO_WORMHOLE)
         THIS->position.x = PLANET_DATA->distanceFromStart;
@@ -56,22 +42,13 @@ int _Planet_Update(void* self, float DeltaTime) {
 int _Planet_Draw(void* self, float DeltaTime) {
     // ibid
 
-    RenderSpriteRelative(_planetSprites[PLANET_DATA->spriteID], THIS->position, THIS->size, PLANET_DATA->rotate, WHITE);
+    RenderSpriteRelative(_SpriteLibrary_Planet_spritelist[PLANET_DATA->spriteID], THIS->position, THIS->size, PLANET_DATA->rotate, WHITE);
 
     return 0;
 }
 
 int _Planet_Destroy(void* self, float DeltaTime) {
     // ibid.
-    // if you malloc anything, destroy it here. this includes your data package.
-
-    // free our data struct here. free anything contained.
-    for(int i = 0; i < PLANET_SPRITE_COUNT; i++){
-        DestroySprite(_planetSprites[i]);
-        _planetSprites[i] = 0;
-    }
-    free(_planetSprites);
-    _planetSprites = 0;
 
 
     free(PLANET_DATA);

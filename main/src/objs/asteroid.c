@@ -18,8 +18,7 @@ void _Asteroid_Randomize(void *self) {
     }
 
     // sprite
-    ASTEROIDDATA->spriteID = (int)(FLOAT_RAND * 4);
-    if (ASTEROIDDATA->spriteID == 4) ASTEROIDDATA->spriteID = 3;
+    ASTEROIDDATA->spriteID = INT_RAND % _SPRITELIBRARY_ASTEROID_SPRITELIST_LENGTH;
 
     // size
     float rng = (FLOAT_RAND * 2.25) + .25;
@@ -58,15 +57,6 @@ void _Asteroid_Randomize(void *self) {
 
 int _Asteroid_Init(void* self, float DeltaTime) {
     asteroidsUsing++;
-    // If they havent yet been loaded, load all the asteroid sprites.
-    if (!_asteroidSprites) {
-        _asteroidSprites = malloc(sizeof(Sprite*) * ASTEROID_SPRITE_COUNT);
-
-        _asteroidSprites[0] = CreateSprite("resources/asteroids/A0.png");
-        _asteroidSprites[1] = CreateSprite("resources/asteroids/A1.png");
-        _asteroidSprites[2] = CreateSprite("resources/asteroids/A2.png");
-        _asteroidSprites[3] = CreateSprite("resources/asteroids/A3.png");
-    }
 
     // Set a random position & size.
     // Position should be somewhere off top or bottom of screen.
@@ -162,7 +152,7 @@ int _Asteroid_Update(void* self, float DeltaTime) {
 
 int _Asteroid_Draw(void* self, float DeltaTime) {
     // TODO: red/blue shift calculation.
-    RenderSpriteRelative(_asteroidSprites[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
+    RenderSpriteRelative(_SpriteLibrary_Asteroid_spritelist[ASTEROIDDATA->spriteID], THIS->position, THIS->size, ASTEROIDDATA->degreeRotation, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // debug function
     return 0;
 }
@@ -171,14 +161,7 @@ int _Asteroid_Destroy(void* self, float DeltaTime) {
     // DestroySprite(ASTEROIDDATA->sprite);
     free(ASTEROIDDATA);
     asteroidsUsing = 0;
-    if (!asteroidsUsing && _asteroidSprites) {
-        for (int i = 0; i < 4; i++) {
-            DestroySprite(_asteroidSprites[i]);
-            _asteroidSprites[i] = 0;
-        }
-        free(_asteroidSprites);
-        _asteroidSprites = 0;
-    }
+    
     return 0;
 }
 

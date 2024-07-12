@@ -28,9 +28,11 @@
 
 #include "../misc_util.h"
 
+#include "../SpriteLibrary.h"
+
+
 #define STAR_RANDOM_RANGE 4
 
-#define STAR_SPRITE_COUNT 9
 
 typedef struct {
     float maxRange;
@@ -39,12 +41,8 @@ typedef struct {
 } _Star_Data;
 
 
-// the ID of black hole
-#define BLACK_HOLE_SPRITE_ID_1 4
-#define BLACK_HOLE_SPRITE_ID_2 4
 // d20 dice check for when we roll a black hole for if we should reroll it
 #define BLACK_HOLE_REROLL_DC 9
 // how much we amplify the stats for them
 #define BLACK_HOLE_POWER_FACTOR 1.333333f
 
-Sprite** _starSprites;

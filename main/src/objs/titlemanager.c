@@ -28,11 +28,12 @@
 #include "../settings.h"
 #include "../misc_util.h"
 
+#include "../SpriteLibrary.h"
 
 
 typedef struct {
-    Sprite* shipSprite;
-    Sprite* asteroidSprite;
+    // Sprite* shipSprite;
+    // Sprite* asteroidSprite;
 
     float shipSpriteWobble;
     float asteroidRotate;
@@ -53,13 +54,12 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     SoundManager_EnableMenuMusic();
 
 
-    DATA->shipSprite = CreateSprite(SPACESHIP_SPRITE_PATH);
+    
     cameraPosition = Vector2Zero();
     THIS->size = (Vector2){2, 2};
 
     DATA->shipSpriteWobble = 0;
 
-    DATA->asteroidSprite = CreateSprite("resources/asteroids/A3.png");
 
     DATA->doLoadGame = 0;
     DATA->sphereRadius = 0;
@@ -173,11 +173,11 @@ int _TitleManager_Update(void* self, float DeltaTime) {
 }
 
 int _TitleManager_Draw(void* self, float DeltaTime) {
-    RenderSpriteRelative(DATA->shipSprite, THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(_SpriteLibrary_Player_ShipSprite, THIS->position, THIS->size, 0, WHITE);
 
     Vector2 siz = (Vector2) { 8, 8 };
     Vector2 pos = (Vector2) { 0, cameraBounds.y + 2};
-    RenderSpriteRelative(DATA->asteroidSprite, pos, siz, DATA->asteroidRotate, WHITE);
+    RenderSpriteRelative(_SPRITELIBRARY_TITLE_ASTEROID_SPRITE_REF, pos, siz, DATA->asteroidRotate, WHITE);
 
     if (DATA->doLoadGame) {
         RenderCircleAbsolute(Vector2Zero(), DATA->sphereRadius * cameraBounds.x * 1.1, (Color) { 0, 0, 0, 255});
@@ -206,10 +206,6 @@ int _TitleManager_Destroy(void* self, float DeltaTime) {
         obj->awaitDestroy = 1;
     }
 
-    DestroySprite(DATA->shipSprite);
-    DATA->shipSprite = 0;
-    DestroySprite(DATA->asteroidSprite);
-    DATA->asteroidSprite = 0;
     free(DATA);
     THIS->data_struct = 0;
 

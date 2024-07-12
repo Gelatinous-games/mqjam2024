@@ -35,7 +35,6 @@ static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
 // reset this to 0 whenever you take shield damage 
 int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
 
-#define SPACESHIP_SPRITE_PATH "resources/spaceship_outlined_v2.png"
 
 #define CAMERA_COAST_SPEED 3
 
@@ -138,7 +137,6 @@ static GameObj_Base **BACKGROUNDSTARS_EFFECT_REF_LIST;
 
 
 const static int NUMBER_OF_ASTEROIDS = 4;
-static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *WORMHOLE_OBJECT_REF;
 static GameObj_Base *PLANET_BODY_REF;

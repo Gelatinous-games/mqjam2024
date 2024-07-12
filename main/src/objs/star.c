@@ -20,14 +20,14 @@ void _StarObject_Randomize(void* self) {
 
 
     // sprite
-    STAR_NEARBY_DATA->spriteID = (INT_RAND % STAR_SPRITE_COUNT);
+    STAR_NEARBY_DATA->spriteID = (INT_RAND % _SPRITELIBRARY_STAR_SPRITELIST_LENGTH);
 
     // sometimes reroll on blackhole
     if(
-        ( STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_1 || STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_2 ) &&
+        ( STAR_NEARBY_DATA->spriteID == _SPRITELIBRARY_STAR_SPRITELIST_BLACK_HOLE_ID_1 || STAR_NEARBY_DATA->spriteID == _SPRITELIBRARY_STAR_SPRITELIST_BLACK_HOLE_ID_2 ) &&
             ((INT_RAND % 20) >= BLACK_HOLE_REROLL_DC)
     ) {
-        STAR_NEARBY_DATA->spriteID = (INT_RAND % STAR_SPRITE_COUNT);
+        STAR_NEARBY_DATA->spriteID = (INT_RAND % _SPRITELIBRARY_STAR_SPRITELIST_LENGTH);
     }
 
     THIS->position.x = (STAR_RANDOM_RANGE * FLOAT_RAND * cameraBounds.x) + ( 2 * cameraBounds.x); 
@@ -40,7 +40,7 @@ void _StarObject_Randomize(void* self) {
     STAR_NEARBY_DATA->maxRange = (FLOAT_RAND * 8) + 8;
 
     if(
-        ( STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_1 || STAR_NEARBY_DATA->spriteID == BLACK_HOLE_SPRITE_ID_2 )
+        ( STAR_NEARBY_DATA->spriteID == _SPRITELIBRARY_STAR_SPRITELIST_BLACK_HOLE_ID_1 || STAR_NEARBY_DATA->spriteID == _SPRITELIBRARY_STAR_SPRITELIST_BLACK_HOLE_ID_2 )
     ){
         // BLACK HOLE, double them
         STAR_NEARBY_DATA->maxPull = STAR_NEARBY_DATA->maxPull * BLACK_HOLE_POWER_FACTOR;
@@ -69,19 +69,6 @@ Vector2 GetAccelerationToSink(GameObj_Base* star, GameObj_Base* obj) {
 }
 
 int _StarObject_Init(void* self, float DeltaTime) {
-    if (!_starSprites) {
-        _starSprites = malloc(sizeof(Sprite*) * STAR_SPRITE_COUNT);
-        int index = 0;
-        _starSprites[index++] = CreateSprite("resources/stars/S0.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S1.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S2.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S3.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S4.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S5.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S6.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S7.png");
-        _starSprites[index++] = CreateSprite("resources/stars/S8.png");
-    }
     _StarObject_Randomize(self);
 
     return 0;
@@ -108,6 +95,8 @@ int _StarObject_Draw(void* self, float DeltaTime) {
     // // render effective radius
     // RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange, (Color) { 255, 127, 0, 100 });
     // // RenderCircleRelative(THIS->position, THIS->radius, (Color) { 255, 127, 0, 127 });
+
+    // star glow
     int additiveAlpha = 15;
     int shadeValue = 100;
     Color additiveColor = (Color) { shadeValue, shadeValue, shadeValue, additiveAlpha };
@@ -123,7 +112,7 @@ int _StarObject_Draw(void* self, float DeltaTime) {
     
 
     RenderSpriteRelative(
-        _starSprites[STAR_NEARBY_DATA->spriteID],
+        _SpriteLibrary_Star_spriteList[STAR_NEARBY_DATA->spriteID],
         THIS->position,
         THIS->size,
         0,

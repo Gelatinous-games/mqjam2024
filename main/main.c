@@ -35,6 +35,7 @@
 #endif
 
 // project header includes
+#include "src/SpriteLibrary.c"
 #include "src/settings.h"
 
 #ifndef _sprite
@@ -179,6 +180,7 @@ int main()
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
 
+    _SpriteLibrary_LoadSprites();
     prepareSounds();
     //setAllTracksVolume(0.5f);
     scaleAllTracksVolume(0.5f);
@@ -205,6 +207,7 @@ int main()
     
 
     cleanupSounds();
+    _SpriteLibrary_DestroySprites();
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
@@ -214,15 +217,14 @@ int main()
 
     GameObjPoolDestroy();
 
-    free(ASTEROID_REF_LIST);
-
     return 0;
 }
 
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
-    if(!TEXTURE_FIX_HACK_COMPLETE) performTextureFixHack();
+    // if(!TEXTURE_FIX_HACK_COMPLETE) performTextureFixHack();
+    TEXTURE_FIX_HACK_COMPLETE = 1;
     
     // grab it
     float DeltaTime = GetFrameTime();

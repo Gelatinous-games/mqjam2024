@@ -36,6 +36,8 @@
     #include "gameManager.c"
 #endif
 
+#include "../SpriteLibrary.h"
+
 typedef struct {
     int spriteID;
     float distanceFromStart;
@@ -43,9 +45,6 @@ typedef struct {
     float rotate;
 } Planet_DataStruct;
 
-#define PLANET_SPRITE_COUNT 5
-
-Sprite** _planetSprites;
 
 int _Planet_Init(void* self, float DeltaTime);
 int _Planet_Update(void* self, float DeltaTime);

@@ -33,6 +33,8 @@
     #include "star.c"
 #endif
 
+#include "../SpriteLibrary.h"
+
 
 
 /** ====== PARENT OBJ DATA ======
@@ -65,11 +67,11 @@ typedef struct {
 
 } Asteroid_Data;
 
-#define ASTEROID_SPRITE_COUNT 4
+// #define ASTEROID_SPRITE_COUNT 4
 
 #define ASTEROID_RANDOM_RANGE 4
 
-Sprite** _asteroidSprites;
+// Sprite** _asteroidSprites;
 int asteroidsUsing = 0;
 
 Color GetAsteroidParticleColor();
