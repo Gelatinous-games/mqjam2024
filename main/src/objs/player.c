@@ -281,20 +281,24 @@ void handlePlayerMovement(void *self, float DeltaTime){
 
     // COSMETIC, CREATES PARTICLES WHEN ACCELERATING.
     if (accel_delta) {
-        float vel = Vector2Length(THIS->velocity);
-        Vector2 ang = Vector2Normalize(PLAYER_DATA->headingVector);
-        Vector2 rorth = (Vector2) { -ang.y, ang.x };
-        Vector2 pos = THIS->position;
+        float playerVelocityDisplacement = Vector2Length(THIS->velocity);
+        Vector2 playerHeading = Vector2Normalize(PLAYER_DATA->headingVector);
 
-        Vector2 origin = pos;
-        float tmp = accel_delta == -1 ? 0.05 : -0.5;
-        origin = Vector2Add(origin, Vector2Scale(ang, tmp));
+        // perpendicular vector
+        Vector2 perpendicularVector = (Vector2) { -playerHeading.y, playerHeading.x };
+        Vector2 playerPos = THIS->position;
 
-        if (accel_delta == 1) ang = Vector2Negate(ang);
+        Vector2 modelOrigin = playerPos;
+        // check if backward, then only move a little from center, otherwise, we move back half the model
+        float forwardBackwardScale = (accel_delta == -1) ? 0.05 : -0.5;
+        modelOrigin = Vector2Add(modelOrigin, Vector2Scale(playerHeading, forwardBackwardScale));
+
+        // positive accel, negate the heading for later calculations
+        if (accel_delta == 1) playerHeading = Vector2Negate(playerHeading);
 
         SpawnParticle(
-            Vector2Add(origin, Vector2Scale(rorth, -0.225)),
-            Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)),
+            Vector2Add(modelOrigin, Vector2Scale(perpendicularVector, -0.225)),
+            Vector2Add(Vector2Scale(playerHeading, playerVelocityDisplacement + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(perpendicularVector, (FLOAT_RAND-0.5)*0.5)),
             Vector2Zero(),
             (Vector2) {0.0625, 0.0625},
             0.5,
@@ -303,8 +307,8 @@ void handlePlayerMovement(void *self, float DeltaTime){
         );
 
         SpawnParticle(
-            Vector2Add(origin, Vector2Scale(rorth, +0.225)),
-            Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)),
+            Vector2Add(modelOrigin, Vector2Scale(perpendicularVector, +0.225)),
+            Vector2Add(Vector2Scale(playerHeading, playerVelocityDisplacement + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(perpendicularVector, (FLOAT_RAND-0.5)*0.5)),
             Vector2Zero(),
             (Vector2) {0.0625, 0.0625},
             0.5,
