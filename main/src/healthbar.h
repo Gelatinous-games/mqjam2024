@@ -31,15 +31,9 @@
 #endif
 
 #include "sprite.h"
+#include "SpriteLibrary.h"
 
 
-#define HEALTHBAR_GASLEVEL_SPRITE_COUNT 10
-#define HEALTHBAR_SHIELDLEVEL_SPRITE_COUNT 10
-
-Sprite *HEALTHBAR_FRAME_SPRITE;
-Sprite *HEALTHBAR_OVERLAY_SPRITE;
-Sprite **HEALTHBAR_GASLEVEL_LIST;
-Sprite **HEALTHBAR_SHIELDLEVEL_LIST;
 
 
 typedef struct {

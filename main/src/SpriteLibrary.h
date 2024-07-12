@@ -43,3 +43,25 @@ Sprite** _SpriteLibrary_Planet_spritelist;
 // === asteroid sprites ===
 #define _SPRITELIBRARY_ASTEROID_SPRITELIST_LENGTH 4
 Sprite** _SpriteLibrary_Asteroid_spritelist;
+
+
+// === background sprites ===
+#define _SPRITELIBRARY_BACKGROUNDLAYER0_SPRITELIST_LENGTH 18
+Sprite** _SpriteLibrary_backgroundLayer0_spritelist;
+#define _SPRITELIBRARY_BACKGROUNDLAYER1_SPRITELIST_LENGTH 9
+Sprite** _SpriteLibrary_backgroundLayer1_spritelist;
+#define _SPRITELIBRARY_BACKGROUNDLAYER2_SPRITELIST_LENGTH 5
+Sprite** _SpriteLibrary_backgroundLayer2_spritelist;
+#define _SPRITELIBRARY_BACKGROUNDLAYER3_SPRITELIST_LENGTH 11
+Sprite** _SpriteLibrary_backgroundLayer3_spritelist;
+
+
+// === healthbar sprites ===
+
+#define _SPRITELIBRARY_HEALTHBARGASLEVEL_SPRITELIST_LENGTH 10
+#define _SPRITELIBRARY_HEALTHBARSHIELDLEVEL_SPRITELIST_LENGTH 10
+
+Sprite *_SpriteLibrary_HealthBarFrame_sprite;
+Sprite *_SpriteLibrary_HealthBarOverlay_sprite;
+Sprite **_SpriteLibrary_HealthBarGasLevel_spritelist;
+Sprite **_SpriteLibrary_HealthBarShieldLevel_spritelist;
