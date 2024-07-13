@@ -145,14 +145,3 @@ static GameObj_Base *STAR_OBJECT_REF;
 
 unsigned long long currMillis();
 Vector2 GetRandomUnitVector();
-
-
-
-
-
-
-
-
-// THESE ARE DANGEROUS AND LIVE WIRES, DONT TOUCH
-
-int TEXTURE_FIX_HACK_COMPLETE = false;

@@ -33,9 +33,9 @@ int _Player_Update(void* self, float DeltaTime) {
     PLAYER_DATA->deltaTimeSinceLastImpact -= DeltaTime;
 
     // ================
-    updateThrustingSoundState(self, DeltaTime);
+    if(playerCanControl) updateThrustingSoundState(self, DeltaTime);
     
-    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD || !playerCanControl) return 0;
+    if (!IsPlayerAlive() || !playerCanControl) return 0;
 
     handlePlayerMovement(self, DeltaTime);
 
@@ -60,15 +60,17 @@ int _Player_Update(void* self, float DeltaTime) {
 }
 
 int _Player_Draw(void* self, float DeltaTime) {
-    if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
+    // if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
+    if (IsPlayerAlive())
         RenderSpriteRelative(_SpriteLibrary_Player_ShipSprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
 
-    #ifdef DEBUG_ON
-        char dt_buff[128];
-        gcvt(THIS->position.x, 10, dt_buff);
-        DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
-    #endif
+    // hwat the henk is a gcvt??
+    // #ifdef DEBUG_ON
+    //     char dt_buff[128];
+    //     gcvt(THIS->position.x, 10, dt_buff);
+    //     DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
+    // #endif
     return 0;
 }
 
@@ -94,6 +96,7 @@ GameObj_Base* CreatePlayer() {
     // ============================================================
 
     obj_ptr->awaitDestroy = 0;
+    _PLAYER_CauseOfDeath = -1;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
@@ -114,7 +117,7 @@ GameObj_Base* CreatePlayer() {
 }
 
 void updateThrustingSoundState(void *self, float DeltaTime){
-
+    
     // when starting to thrust
     float trackSettingVolume = 0.0f;
     if (
@@ -192,7 +195,7 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             }
 
             // get the damage rate and apply
-            PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
+            PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED, extobj->flags);
 
             // create a spark effect or something
             int randomCount = 2 * ((FLOAT_RAND * 8) + 8);
@@ -228,7 +231,7 @@ void handleGravityInteractions(void *self, float DeltaTime){
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
 
-            PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED);
+            PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED, extobj->flags);
 
 
             // END STATE
@@ -353,7 +356,7 @@ void handleCameraRelativity(void *self, float DeltaTime){
 }
 
 void updateHealth(void *self, float DeltaTime){
-    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) return;
+    if (!IsPlayerAlive()) return;
 
     // when hull is gone
     if(GetPlayerHullPercentage()<=0.0f ){
@@ -412,14 +415,16 @@ Color GetImpactParticleColor(){
     return GetHullParticleColor();
 }
 
-void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate){
+void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate, int flagOfDamageSource){
     // TODO: shake the health bar
     if(IsPlayerAlive()){
-        /// ...
+        // ...
         // reset the time since counter
         if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
             return;
         }
+        // otherwise
+        PLAYER_DATA->lastDamageSourceFlag = flagOfDamageSource;
         PLAYER_DATA->deltaTimeSinceLastImpact = PLAYER_DAMAGE_IMMUNITY_TIMEOUT; // set to the timout
 
         float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
@@ -444,6 +449,7 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
 
 
 void _PLAYER_HandleDeath(void *self, float DeltaTime){
+    _PLAYER_CauseOfDeath = PLAYER_DATA->lastDamageSourceFlag;
 
     // also handle death
     SoundManagerHandleDeath();
@@ -471,6 +477,8 @@ void _PLAYER_HandleDeath(void *self, float DeltaTime){
             Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
             Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
     }
+
+    
 }
 
 
@@ -481,6 +489,7 @@ void _PLAYER_HandleDeath(void *self, float DeltaTime){
 // returns 0 when dead
 //  non zero otherwise, which is treated as true
 int IsPlayerAlive(){
+    
     return (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD);
 }
 

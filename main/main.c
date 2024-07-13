@@ -154,7 +154,6 @@ static int GameShouldRender(){
     return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
 }
 
-static void performTextureFixHack();
 
 
 int main()
@@ -223,8 +222,6 @@ int main()
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
-    // if(!TEXTURE_FIX_HACK_COMPLETE) performTextureFixHack();
-    TEXTURE_FIX_HACK_COMPLETE = 1;
     
     // grab it
     float DeltaTime = GetFrameTime();
@@ -254,105 +251,4 @@ static void generateObjects()
     AddToPool(CreateTitleManager());
 
     // AddToPool(CreateExampleObject());
-}
-
-// this hack is ducttape to fix the sprite issue. fite mi it works
-static void performTextureFixHack(){
-
-    GameObj_Base *currManager;
-    float DeltaTime = 0.0f;
-
-
-
-    // =========================================
-    // =========================================
-    // ======= DRAW AS TITLE SCREEN
-    //  == first frame where it dies immediately?
-    
-    if(GetObjectWithFlagsAny(FLAG_MANAGER, 0, &currManager) != -1){
-        // printf("%s\n", ">> [TEXTURE_HACK] - destroying title");
-        //...
-        currManager->awaitDestroy = 1;
-
-        BeginDrawing();
-
-        UpdateCamera3D();
-        ClearBackground(BLACK);
-        EndDrawing();
-    }
-    else {
-        // ..
-        // printf("%s\n", ">> [TEXTURE_HACK] - ERM, we didnt get the title manager?");
-    }
-
-    // prepare
-    // printf("%s\n", ">> [TEXTURE_HACK] - processing destruction - pt1");
-    ProcessAllUpdates(0.2f);
-    ProcessFreshAdd();
-    ProcessAllDestroys();
-    // printf("%s\n", ">> [TEXTURE_HACK] - processing destruction - pt2");
-    ProcessAllUpdates(0.2f);
-    ProcessFreshAdd();
-    ProcessAllDestroys();
-
-    // =========================================
-    // =========================================
-    // ======= DRAW AS GAME STARTING
-    
-    // printf("%s\n", ">> [TEXTURE_HACK] - insta kill player");
-    // if(!PLAYER_OBJECT_REF) printf("%s\n", "WHENST PLAYER?");
-
-    PlayerTakeDamage(PLAYER_OBJECT_REF,1.0f,9001,9001);
-    // let player figure it out
-    // printf("%s\n", ">> [TEXTURE_HACK] - learn dead");
-    ProcessAllUpdates(0.2f);
-    ProcessFreshAdd();
-    ProcessAllDestroys();
-    // set sound 0
-    // printf("%s\n", ">> [TEXTURE_HACK] - dont preach");
-    setTrackVolume(DEATH_SOUND_ID,0.0f);
-    // perform sound update
-    soundUpdate();
-
-    // let game know of death
-    // printf("%s\n", ">> [TEXTURE_HACK] - learn death scene");
-    ProcessAllUpdates(0.2f);
-    ProcessFreshAdd();
-    ProcessAllDestroys();
-
-
-    // =========================================
-    // =========================================
-    // ======= DIED, get game manager
-
-    
-    // game manager
-    if(GetObjectWithFlagsAny(FLAG_GAME_MANAGER, 0, &currManager) != -1){
-        // printf("%s\n", ">> [TEXTURE_HACK] - kill game manager and return title");
-        // knows death,
-        // kill game manager and force title
-        TO_WORMHOLE = 1;
-        ((_GameManager_Data *)(currManager->data_struct))->makeTitleScreen = 1;
-        currManager->awaitDestroy = 1;
-
-    }
-    else {
-        // ..
-        // printf("%s\n", ">> [TEXTURE_HACK] - ERM, we didnt get the game manager?");
-    }
-    
-    // let game know about it
-    
-    ProcessAllUpdates(0.2f);
-    ProcessFreshAdd();
-    ProcessAllDestroys();
-
-    ProcessFreshAdd();
-
-    // =====
-    
-
-    // printf("%s\n", ">> [TEXTURE_HACK] - completed texture hack");
-
-    TEXTURE_FIX_HACK_COMPLETE = 1;
 }
