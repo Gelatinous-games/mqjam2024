@@ -46,11 +46,11 @@ Sprite** _SpriteLibrary_Asteroid_spritelist;
 
 
 // === background sprites ===
-#define _SPRITELIBRARY_BACKGROUNDLAYER0_SPRITELIST_LENGTH 18
+#define _SPRITELIBRARY_BACKGROUNDLAYER0_SPRITELIST_LENGTH 20
 Sprite** _SpriteLibrary_backgroundLayer0_spritelist;
-#define _SPRITELIBRARY_BACKGROUNDLAYER1_SPRITELIST_LENGTH 9
+#define _SPRITELIBRARY_BACKGROUNDLAYER1_SPRITELIST_LENGTH 5
 Sprite** _SpriteLibrary_backgroundLayer1_spritelist;
-#define _SPRITELIBRARY_BACKGROUNDLAYER2_SPRITELIST_LENGTH 5
+#define _SPRITELIBRARY_BACKGROUNDLAYER2_SPRITELIST_LENGTH 9
 Sprite** _SpriteLibrary_backgroundLayer2_spritelist;
 #define _SPRITELIBRARY_BACKGROUNDLAYER3_SPRITELIST_LENGTH 11
 Sprite** _SpriteLibrary_backgroundLayer3_spritelist;

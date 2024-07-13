@@ -72,12 +72,14 @@ int _SpriteLibrary_LoadSprites(){
     _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_01_noBG.png");
     _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_02_noBG.png");
     _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_03_noBG.png");
-    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_04.png");
+    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_04_noBG.png");
     _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_05_noBG.png");
     _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_06_noBG.png");
     _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_07_noBG.png");
-    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_08.png");
-    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_09.png");
+    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_08_noBG.png");
+    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_09_noBG.png");
+    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_11_noBG.png");
+    _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/background/bg_art_12_noBG.png");
 
     // medium 6
     _SpriteLibrary_backgroundLayer0_spritelist[index++] = CreateSprite("resources/brushes/brush_medium_dust_01.png");
@@ -95,45 +97,45 @@ int _SpriteLibrary_LoadSprites(){
     // === layer 1 ===
     _SpriteLibrary_backgroundLayer1_spritelist = (Sprite **)malloc(_SPRITELIBRARY_BACKGROUNDLAYER1_SPRITELIST_LENGTH * sizeof(Sprite *));
     index = 0;
-    // small 3
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_small_star_01.png");
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_small_star_02.png");
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_small_star_03.png");
-    // large 6
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_01.png");
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_02.png");
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_03.png");
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_04.png");
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_05.png");
-    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_06.png");
+    // artwork 1
+    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/background/bg_art_10.png");
+    // small 2
+    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_small_glitter_01.png");
+    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_small_glitter_02.png");
+    // medium 1
+    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_medium_flare_01.png");
+    // large 1
+    _SpriteLibrary_backgroundLayer1_spritelist[index++] = CreateSprite("resources/brushes/brush_large_flare_01.png");
     
     // === layer 2 ===
     _SpriteLibrary_backgroundLayer2_spritelist = (Sprite **)malloc(_SPRITELIBRARY_BACKGROUNDLAYER2_SPRITELIST_LENGTH * sizeof(Sprite *));
     index = 0;
-    // artwork 1
-    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/background/bg_art_10.png");
-    // small 2
-    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_small_glitter_01.png");
-    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_small_glitter_02.png");
-    // medium 1
-    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_medium_flare_01.png");
-    // large 1
-    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_large_flare_01.png");
+    // small 3
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_small_star_01.png");
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_small_star_02.png");
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_small_star_03.png");
+    // large 6
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_01.png");
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_02.png");
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_03.png");
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_04.png");
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_05.png");
+    _SpriteLibrary_backgroundLayer2_spritelist[index++] = CreateSprite("resources/brushes/brush_large_constellation_06.png");
 
     // === layer 3 ===
     _SpriteLibrary_backgroundLayer3_spritelist = (Sprite **)malloc(_SPRITELIBRARY_BACKGROUNDLAYER3_SPRITELIST_LENGTH * sizeof(Sprite *));
     index = 0;
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_01.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_02.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_03.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_04.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_05.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_06.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_07.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_08.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_09.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_short_01.png");
-    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_short_02.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_01_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_02_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_03_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_04_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_05_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_06_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_07_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_08_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_long_09_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_short_01_halfres.png");
+    _SpriteLibrary_backgroundLayer3_spritelist[index++] = CreateSprite("resources/dust/dust_cloud_short_02_halfres.png");
 
 
     // ============================= healthbar sprites =============================

@@ -146,7 +146,9 @@ void prepareBackgroundSprites(void *self, float DeltaTime)
         index = 0;
 
         backgroundSpriteList_Layer0 = (BackgroundSprite_SpriteData *)malloc(_SPRITELIBRARY_BACKGROUNDLAYER0_SPRITELIST_LENGTH * sizeof(BackgroundSprite_SpriteData));
-        // artwork 9
+        // artwork 11
+        backgroundSpriteList_Layer0[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer0_spritelist[index], BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0}; index++;
+        backgroundSpriteList_Layer0[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer0_spritelist[index], BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0}; index++;
         backgroundSpriteList_Layer0[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer0_spritelist[index], BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0}; index++;
         backgroundSpriteList_Layer0[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer0_spritelist[index], BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0}; index++;
         backgroundSpriteList_Layer0[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer0_spritelist[index], BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_0}; index++;
@@ -174,31 +176,34 @@ void prepareBackgroundSprites(void *self, float DeltaTime)
         index = 0;
         backgroundSpriteList_Layer1 = (BackgroundSprite_SpriteData *)malloc(_SPRITELIBRARY_BACKGROUNDLAYER1_SPRITELIST_LENGTH * sizeof(BackgroundSprite_SpriteData));
 
-        // small 3
+        // artwork 1
+        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_1}; index++;
+        // small 2
         backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_SMALL, LAYER_BACKGROUND_STARSCAPE_1}; index++;
         backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_SMALL, LAYER_BACKGROUND_STARSCAPE_1}; index++;
-        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_SMALL, LAYER_BACKGROUND_STARSCAPE_1}; index++;
-        // large 6
+        // medium 1
+        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_MEDIUM, LAYER_BACKGROUND_STARSCAPE_1}; index++;
+        // large 1
         backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_1}; index++;
-        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_1}; index++;
-        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_1}; index++;
-        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_1}; index++;
-        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_1}; index++;
-        backgroundSpriteList_Layer1[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer1_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_1}; index++;
+        
         break;
     case LAYER_BACKGROUND_STARSCAPE_2:
         index = 0;
 
         backgroundSpriteList_Layer2 = (BackgroundSprite_SpriteData *)malloc(_SPRITELIBRARY_BACKGROUNDLAYER2_SPRITELIST_LENGTH * sizeof(BackgroundSprite_SpriteData));
-        // artwork 1
-        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_ARTWORK, LAYER_BACKGROUND_STARSCAPE_2}; index++;
-        // small 2
+
+        // small 3
         backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_SMALL, LAYER_BACKGROUND_STARSCAPE_2}; index++;
         backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_SMALL, LAYER_BACKGROUND_STARSCAPE_2}; index++;
-        // medium 1
-        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_MEDIUM, LAYER_BACKGROUND_STARSCAPE_2}; index++;
-        // large 1
+        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_SMALL, LAYER_BACKGROUND_STARSCAPE_2}; index++;
+        // large 6
         backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2}; index++;
+        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2}; index++;
+        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2}; index++;
+        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2}; index++;
+        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2}; index++;
+        backgroundSpriteList_Layer2[index] = (BackgroundSprite_SpriteData){ _SpriteLibrary_backgroundLayer2_spritelist[index], BG_SPRITETYPE_TINTABLE_LARGE, LAYER_BACKGROUND_STARSCAPE_2}; index++;
+
         break;
     case LAYER_BACKGROUND_STARSCAPE_3:
         index = 0;
@@ -382,7 +387,7 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
         case BG_SPRITETYPE_ENVIRONMENT:
             SetScaleFactor(1.0f);
             generatedPosition = (Vector2){
-                (PLAYER_OBJECT_REF->position.x + PLAYER_OBJECT_REF->velocity.x) + (FLOAT_RAND * WORMHOLE_TRAVEL_DISTANCE) + (2*cameraBounds.x) + generatedScale.x + 400.0f,
+                (PLAYER_OBJECT_REF->position.x + PLAYER_OBJECT_REF->velocity.x) + (FLOAT_RAND * WORMHOLE_TRAVEL_DISTANCE) + (2*cameraBounds.x) + generatedScale.x + ENVIRONMENT_POSITION_GENERATION_BUFFER,
                 (0.0f)};
             break;
         default:
