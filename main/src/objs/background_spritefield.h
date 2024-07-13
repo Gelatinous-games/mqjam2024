@@ -72,8 +72,8 @@ typedef struct
 
 } Background_DataStruct;
 
-#define BACKGROUND_SPRITE_LAYER3_SPAWN_MAX 5
-#define ENVIRONMENT_POSITION_GENERATION_BUFFER 0.0f
+#define BACKGROUND_SPRITE_LAYER3_SPAWN_MAX 3
+#define ENVIRONMENT_POSITION_GENERATION_BUFFER 50.0f
 
 #define BACKGROUND_SPRITE_COUNT_ALL (BACKGROUND_SPRITE_COUNT_LAYER0 + BACKGROUND_SPRITE_COUNT_LAYER1 + BACKGROUND_SPRITE_COUNT_LAYER2 + BACKGROUND_SPRITE_COUNT_LAYER3)
 
@@ -101,7 +101,7 @@ void destroyBackgroundSprites(void *self, float DeltaTime);
 void prepareBackgroundGenerationData(void *self, float DeltaTime);
 void destroyBackgroundGenerationData(void *self, float DeltaTime);
 
-void resetBackgroundSpritesPositionIfOutOfBounds(void *self, Vector2 position, int idx);
+void resetBackgroundSpritesPositionIfOutOfBounds(void *self, Vector2 position, Vector2 scale, int idx);
 void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObjectIndex);
 
 BackgroundSprite_SpriteData *getSpriteListInCurrentLayer(void *self);

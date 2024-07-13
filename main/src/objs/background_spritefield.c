@@ -67,7 +67,8 @@ int _BackgroundSprites_Draw(void *self, float DeltaTime)
         // or if it was the star brush we rolled
         BackgroundSprite_SpriteData *spriteDataList = getSpriteListInCurrentLayer(self);
         Vector2 currentSpritePosition = Vector2Add(THIS->position, (Vector2){BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position.x + BACKGROUND_DATA->backgroundGeneratedObjects[i].spritePositionOffset, BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_position.y});
-        resetBackgroundSpritesPositionIfOutOfBounds(self, currentSpritePosition, i);
+        Vector2 currSpriteScale = GetScaledSize(BACKGROUND_DATA->backgroundGeneratedObjects[i].bgSpace_scale);
+        resetBackgroundSpritesPositionIfOutOfBounds(self, currentSpritePosition, currSpriteScale, i);
         
         // draw it
         RenderSpriteRelative(
@@ -124,11 +125,12 @@ GameObj_Base *CreateBackgroundSprites(enum LAYER_ID layer)
     return obj_ptr;
 }
 
-void resetBackgroundSpritesPositionIfOutOfBounds(void *self, Vector2 position, int idx)
+void resetBackgroundSpritesPositionIfOutOfBounds(void *self, Vector2 position, Vector2 scale, int idx)
 {
-    if (((int)position.x) < cameraPosition.x-100)
+    if (((position.x * scale.x)) < (cameraPosition.x - cameraBounds.x))
     {
-        BACKGROUND_DATA->backgroundGeneratedObjects[idx].spritePositionOffset += 100+cameraBounds.x*scaleFactor.x;
+        rollForBackgroundObjectData(self,0.0f,idx);
+        // BACKGROUND_DATA->backgroundGeneratedObjects[idx].spritePositionOffset += 100+cameraBounds.x*scaleFactor.x;
     }
 }
 
@@ -385,14 +387,14 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     // === positioning
     switch (generatedType){
         case BG_SPRITETYPE_ENVIRONMENT:
-            SetScaleFactor(1.0f);
+            // SetScaleFactor(1.0f);
             generatedPosition = (Vector2){
                 (PLAYER_OBJECT_REF->position.x + PLAYER_OBJECT_REF->velocity.x) + (FLOAT_RAND * WORMHOLE_TRAVEL_DISTANCE) + (2*cameraBounds.x) + generatedScale.x + ENVIRONMENT_POSITION_GENERATION_BUFFER,
                 (0.0f)};
             break;
         default:
             generatedPosition = (Vector2){
-                (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_X),
+                ((PLAYER_OBJECT_REF->position.x + PLAYER_OBJECT_REF->velocity.x) + (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_X*generatedScale.x) + (2*cameraBounds.x)),
                 (FLOAT_RAND * BACKGROUND_SPAWN_MAX_DISTANCE_Y - BACKGROUND_SPAWN_MAX_DISTANCE_Y / 2.0f)};
             break;
     }
