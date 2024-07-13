@@ -22,7 +22,6 @@ int _Player_Init(void* self, float DeltaTime) {
 
     cameraVelocity.x = CAMERA_COAST_SPEED;
     
-    PLAYER_DATA->sprite = CreateSprite(SPACESHIP_SPRITE_PATH);
 
     CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
     CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
@@ -34,9 +33,9 @@ int _Player_Update(void* self, float DeltaTime) {
     PLAYER_DATA->deltaTimeSinceLastImpact -= DeltaTime;
 
     // ================
-    updateThrustingSoundState(self, DeltaTime);
+    if(playerCanControl) updateThrustingSoundState(self, DeltaTime);
     
-    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD || !playerCanControl) return 0;
+    if (!IsPlayerAlive() || !playerCanControl) return 0;
 
     handlePlayerMovement(self, DeltaTime);
 
@@ -61,22 +60,24 @@ int _Player_Update(void* self, float DeltaTime) {
 }
 
 int _Player_Draw(void* self, float DeltaTime) {
-    if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
-        RenderSpriteRelative(PLAYER_DATA->sprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
+    // if (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD)
+    if (IsPlayerAlive())
+        RenderSpriteRelative(_SpriteLibrary_Player_ShipSprite, THIS->position, THIS->size, Vec2Angle(PLAYER_DATA->headingVector) - 180, WHITE);
     // RenderColliderRelative(THIS->position, THIS->radius); // Debug function for colliders
 
-    #ifdef DEBUG_ON
-        char dt_buff[128];
-        gcvt(THIS->position.x, 10, dt_buff);
-        DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
-    #endif
+    // hwat the henk is a gcvt??
+    // #ifdef DEBUG_ON
+    //     char dt_buff[128];
+    //     gcvt(THIS->position.x, 10, dt_buff);
+    //     DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
+    // #endif
     return 0;
 }
 
 int _Player_Destroy(void* self, float DeltaTime) {
-    DestroySprite(PLAYER_DATA->sprite);
     free(PLAYER_DATA);
-
+    THIS->data_struct = 0;
+    
     return 0;
 }
 
@@ -95,6 +96,7 @@ GameObj_Base* CreatePlayer() {
     // ============================================================
 
     obj_ptr->awaitDestroy = 0;
+    _PLAYER_CauseOfDeath = -1;
 
     // properly set up flags here (bitwise)
     // consult the flag file (flags.md) for information on what each flag is.
@@ -115,7 +117,7 @@ GameObj_Base* CreatePlayer() {
 }
 
 void updateThrustingSoundState(void *self, float DeltaTime){
-
+    
     // when starting to thrust
     float trackSettingVolume = 0.0f;
     if (
@@ -193,7 +195,7 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             }
 
             // get the damage rate and apply
-            PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED);
+            PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED, extobj->flags);
 
             // create a spark effect or something
             int randomCount = 2 * ((FLOAT_RAND * 8) + 8);
@@ -229,7 +231,7 @@ void handleGravityInteractions(void *self, float DeltaTime){
         // Check if collision occurs
         if (GetCollided(THIS, extobj, &impartSelf, &impartStar)) {
 
-            PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED);
+            PlayerTakeDamage(self, DeltaTime, STAR_IMPACT_DAMMAGE_HULL, STAR_IMPACT_DAMMAGE_SHIELDED, extobj->flags);
 
 
             // END STATE
@@ -279,20 +281,24 @@ void handlePlayerMovement(void *self, float DeltaTime){
 
     // COSMETIC, CREATES PARTICLES WHEN ACCELERATING.
     if (accel_delta) {
-        float vel = Vector2Length(THIS->velocity);
-        Vector2 ang = Vector2Normalize(PLAYER_DATA->headingVector);
-        Vector2 rorth = (Vector2) { -ang.y, ang.x };
-        Vector2 pos = THIS->position;
+        float playerVelocityDisplacement = Vector2Length(THIS->velocity);
+        Vector2 playerHeading = Vector2Normalize(PLAYER_DATA->headingVector);
 
-        Vector2 origin = pos;
-        float tmp = accel_delta == -1 ? 0.05 : -0.5;
-        origin = Vector2Add(origin, Vector2Scale(ang, tmp));
+        // perpendicular vector
+        Vector2 perpendicularVector = (Vector2) { -playerHeading.y, playerHeading.x };
+        Vector2 playerPos = THIS->position;
 
-        if (accel_delta == 1) ang = Vector2Negate(ang);
+        Vector2 modelOrigin = playerPos;
+        // check if backward, then only move a little from center, otherwise, we move back half the model
+        float forwardBackwardScale = (accel_delta == -1) ? 0.05 : -0.5;
+        modelOrigin = Vector2Add(modelOrigin, Vector2Scale(playerHeading, forwardBackwardScale));
+
+        // positive accel, negate the heading for later calculations
+        if (accel_delta == 1) playerHeading = Vector2Negate(playerHeading);
 
         SpawnParticle(
-            Vector2Add(origin, Vector2Scale(rorth, -0.225)),
-            Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)),
+            Vector2Add(modelOrigin, Vector2Scale(perpendicularVector, -0.225)),
+            Vector2Add(Vector2Scale(playerHeading, playerVelocityDisplacement + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(perpendicularVector, (FLOAT_RAND-0.5)*0.5)),
             Vector2Zero(),
             (Vector2) {0.0625, 0.0625},
             0.5,
@@ -301,8 +307,8 @@ void handlePlayerMovement(void *self, float DeltaTime){
         );
 
         SpawnParticle(
-            Vector2Add(origin, Vector2Scale(rorth, +0.225)),
-            Vector2Add(Vector2Scale(ang, vel + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(rorth, (FLOAT_RAND-0.5)*0.5)),
+            Vector2Add(modelOrigin, Vector2Scale(perpendicularVector, +0.225)),
+            Vector2Add(Vector2Scale(playerHeading, playerVelocityDisplacement + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(perpendicularVector, (FLOAT_RAND-0.5)*0.5)),
             Vector2Zero(),
             (Vector2) {0.0625, 0.0625},
             0.5,
@@ -336,8 +342,10 @@ void handleCameraRelativity(void *self, float DeltaTime){
         cameraVelocity.x = CAMERA_COAST_SPEED;
     }
     else if (THIS->position.x > cameraPosition.x) {
+        // vector from center to player
         float delta = THIS->position.x - cameraPosition.x;
-        delta /= cameraBounds.x;
+        // 0.5f limits the amount we can travel past center
+        delta /= (cameraBounds.x*0.5f);
         cameraVelocity.x = CAMERA_COAST_SPEED + (delta * ((FREE_MAX_SPEED - CAMERA_COAST_SPEED) + 1));
     }
 
@@ -348,7 +356,7 @@ void handleCameraRelativity(void *self, float DeltaTime){
 }
 
 void updateHealth(void *self, float DeltaTime){
-    if (CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISDEAD) return;
+    if (!IsPlayerAlive()) return;
 
     // when hull is gone
     if(GetPlayerHullPercentage()<=0.0f ){
@@ -407,14 +415,16 @@ Color GetImpactParticleColor(){
     return GetHullParticleColor();
 }
 
-void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate){
+void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate, int flagOfDamageSource){
     // TODO: shake the health bar
     if(IsPlayerAlive()){
-        /// ...
+        // ...
         // reset the time since counter
         if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
             return;
         }
+        // otherwise
+        PLAYER_DATA->lastDamageSourceFlag = flagOfDamageSource;
         PLAYER_DATA->deltaTimeSinceLastImpact = PLAYER_DAMAGE_IMMUNITY_TIMEOUT; // set to the timout
 
         float percentageNotAbsorbedByShields = _ShieldObject_TakeDamage(shieldRate) / ((float)shieldRate);
@@ -439,6 +449,7 @@ void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate)
 
 
 void _PLAYER_HandleDeath(void *self, float DeltaTime){
+    _PLAYER_CauseOfDeath = PLAYER_DATA->lastDamageSourceFlag;
 
     // also handle death
     SoundManagerHandleDeath();
@@ -466,6 +477,8 @@ void _PLAYER_HandleDeath(void *self, float DeltaTime){
             Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
             Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
     }
+
+    
 }
 
 
@@ -476,6 +489,7 @@ void _PLAYER_HandleDeath(void *self, float DeltaTime){
 // returns 0 when dead
 //  non zero otherwise, which is treated as true
 int IsPlayerAlive(){
+    
     return (CURRENT_PLAYER_LIFE_STATE != PLAYER_LIFE_STATUS_ISDEAD);
 }
 

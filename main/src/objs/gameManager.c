@@ -12,6 +12,10 @@
     #define _camera
     #include "../camera.c"
 #endif
+#ifndef _timer
+    #define _timer
+    #include "../timer.c"
+#endif
 
 #ifndef _obj_pool
     #define _obj_pool
@@ -23,8 +27,14 @@
     #include "player.c"
 #endif
 
+// #ifndef _background_dustart
+// #define _background_dustart
+// #include "background_dustart.c"
+// #endif
+
 #include "../obj_register.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
 
 
@@ -53,6 +63,7 @@ typedef struct {
 
 // Create everything needed for a scene
 int _GameManager_Init(void* self, float DeltaTime) {
+    printf("%s\n","INIT GAME MANAGER");
 
 
     SoundManager_EnableGameMusic();
@@ -63,6 +74,8 @@ int _GameManager_Init(void* self, float DeltaTime) {
     ClearParticles();
     doTick = 1;
     gettimeofday(&timerStart, NULL);
+
+    resetTimers();
 
     DATA->DoLoadIn = 1;
     DATA->DoLoadOut = 0;
@@ -97,11 +110,15 @@ int _GameManager_Init(void* self, float DeltaTime) {
     AddToPool(WORMHOLE_OBJECT_REF);
 
     // Planet Object
-    PLANET_OBJECT_REF = CreatePlanet();
-    AddToPool(PLANET_OBJECT_REF);
+    PLANET_BODY_REF = CreatePlanet();
+    AddToPool(PLANET_BODY_REF);
 
     // Background Object
     //THIS DOES NOT LAYER THE BACKGROUND. IDK HOW TO FIX. I THINK IT IS TO DO WITH MY CODE.
+
+
+
+     // TODO: have the backgrounnd sprites also use the layers
     BACKGROUNDSTARS_EFFECT_REF_LIST = (GameObj_Base **)malloc(sizeof(GameObj_Base *) * NUMBER_OF_BACKGROUNDSTARS_LAYERS);
     for (int i = 0; i < NUMBER_OF_BACKGROUNDSTARS_LAYERS; i++)
     {
@@ -112,9 +129,17 @@ int _GameManager_Init(void* self, float DeltaTime) {
         BACKGROUND_OBJECT_REF = CreateBackgroundSprites(i);
         AddToPool(BACKGROUND_OBJECT_REF);
     }
+
+
+    AddToPool(CreateBackgroundSprites(3));
+
+    // printf("%s\n","ABOUT TO ADD DUST MANAGER");
+    // // add the background dust manager
+    // // AddToPool(_BackgroundDust_Create());
     
     // BACKGROUND_OBJECT_REF = CreateBackgroundSprites();
     // AddToPool(BACKGROUND_OBJECT_REF);
+    printf("%s\n","DONE INIT GAME MANAGER");
     return 0;
 }
 
@@ -158,6 +183,7 @@ int _GameManager_Update(void* self, float DeltaTime) {
         AddToPool(CreateDeathManager());
         DATA->madeDeathManager = 1;
         doTick = 0;
+        // TODO: lower the star proximity
         setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
     }
 
@@ -184,7 +210,7 @@ int _GameManager_Update(void* self, float DeltaTime) {
         // printf("<%f, %f> to <%f, %f>\n", PLAYER_OBJECT_REF->position.x, PLAYER_OBJECT_REF->position.y, WORMHOLE_OBJECT_REF->position.x, WORMHOLE_OBJECT_REF->position.y);
         DATA->DoLoadOut = 1;
     }
-    else if (!TO_WORMHOLE && GetCollided(PLAYER_OBJECT_REF, PLANET_OBJECT_REF, &a, &b)) {
+    else if (!TO_WORMHOLE && GetCollided(PLAYER_OBJECT_REF, PLANET_BODY_REF, &a, &b)) {
         playerCanControl = 0;
         DATA->DoLoadOut = 1;
     }
@@ -236,6 +262,7 @@ int _GameManager_Draw(void* self, float DeltaTime) {
 }
 
 int _GameManager_Destroy(void* self, float DeltaTime) {
+    printf("%s\n","KILLING GAME MANAGER");
     ClearParticles();
 
     GameObj_Base* obj;
@@ -256,11 +283,12 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     }
 
     WORMHOLE_OBJECT_REF = 0;
-    PLANET_OBJECT_REF = 0;
+    PLANET_BODY_REF = 0;
     STAR_OBJECT_REF = 0;
     
 
     free(BACKGROUNDSTARS_EFFECT_REF_LIST);
+    BACKGROUNDSTARS_EFFECT_REF_LIST = 0;
 
     if (DATA->makeTitleScreen) {
         AddToPool(CreateTitleManager());
@@ -268,8 +296,12 @@ int _GameManager_Destroy(void* self, float DeltaTime) {
     else {
         AddToPool(CreateGameManager());
     }
-    free(DATA);
 
+
+    free(DATA);
+    THIS->data_struct = 0;
+
+    printf("%s\n","KILLED GAME MANAGER");
     return 0;
 }
 

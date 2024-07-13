@@ -7,6 +7,7 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
 
 #ifndef _camera
@@ -25,24 +26,27 @@
     #include "./particle.c"
 #endif
 
-#ifndef _sprite
-    #define _sprite
-    #include "../sprite.c"
-#endif
+#include "../sprite.h"
 
 #ifndef _gm
     #define _gm
     #include "gameManager.c"
 #endif
 
+#include "../SpriteLibrary.h"
+
 typedef struct {
-    Sprite* sprite;
+    int spriteID;
     float distanceFromStart;
     float rotate;
     char active;
+    float deltaTimeSinceLastReroll;
 } Wormhole_Data;
 
 #define WORMHOLE_DATA ((Wormhole_Data *)(THIS->data_struct))
+
+
+#define _WORMHOLE_TIME_BETWEEN_REROLLS 0.6f
 
 int _Wormhole_Init(void* self, float DeltaTime) {
     // we have a reference to our own gameobject from which we can do things.
@@ -50,8 +54,10 @@ int _Wormhole_Init(void* self, float DeltaTime) {
 
     THIS->data_struct = malloc(sizeof(Wormhole_Data));
 
+    WORMHOLE_DATA->deltaTimeSinceLastReroll = 0.0f;
+    WORMHOLE_DATA->spriteID = INT_RAND % _SPRITELIBRARY_WORMHOLE_SPRITELIST_LENGTH;
+
     WORMHOLE_DATA->distanceFromStart = WORMHOLE_TRAVEL_DISTANCE;
-    WORMHOLE_DATA->sprite = CreateSprite("resources/wormhole/w1.png");
 
     // default to active
     WORMHOLE_DATA->active = 1;
@@ -77,10 +83,14 @@ int _Wormhole_Update(void* self, float DeltaTime) {
     // we can cast our data struct to the right data like so:
     Wormhole_Data* data = THIS->data_struct;
 
-    // // dont let the player past the wormhole
-    // if (PLAYER_OBJECT_REF->position.x > THIS->position.x) {
-    //     PLAYER_OBJECT_REF->position.x = THIS->position.x;
-    // }
+    WORMHOLE_DATA->deltaTimeSinceLastReroll += DeltaTime;
+
+
+
+    // if(WORMHOLE_DATA->deltaTimeSinceLastReroll >= _WORMHOLE_TIME_BETWEEN_REROLLS) WORMHOLE_DATA->spriteID = INT_RAND % _SPRITELIBRARY_WORMHOLE_SPRITELIST_LENGTH;
+
+
+
 
     // An example of searching for objects with neutral flag.
     for (int i = 0; i != -1; ) {
@@ -100,7 +110,7 @@ int _Wormhole_Draw(void* self, float DeltaTime) {
     // ibid
     Wormhole_Data* data = THIS->data_struct;
 
-    RenderSpriteRelative(data->sprite, THIS->position, THIS->size, WORMHOLE_DATA->rotate, WHITE);
+    RenderSpriteRelative(_SpriteLibrary_Wormhole_spriteList[WORMHOLE_DATA->spriteID], THIS->position, THIS->size, WORMHOLE_DATA->rotate, WHITE);
 
     // RenderColliderRelative(THIS->position, THIS->radius);
 
@@ -108,13 +118,21 @@ int _Wormhole_Draw(void* self, float DeltaTime) {
 }
 
 int _Wormhole_Destroy(void* self, float DeltaTime) {
+    printf("%s\n","DESTROYING WORMHOLE");
     // ibid.
     // if you malloc anything, destroy it here. this includes your data package.
 
     // free our data struct here. free anything contained.
-    Wormhole_Data* data = THIS->data_struct;
-    free(data->sprite);
-    free(data);
+    // Wormhole_Data* data = THIS->data_struct;
+
+    
+    
+    printf("%s\n","DESTROYING WORMHOLE DATA");
+
+    free(THIS->data_struct);
+    THIS->data_struct = 0;
+
+    printf("%s\n","DONE WORMHOLE DESTROY");
 
     return 0;
 }

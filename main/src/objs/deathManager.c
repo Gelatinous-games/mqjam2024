@@ -25,6 +25,8 @@
 
 #include "../obj_register.h"
 #include "../settings.h"
+#include "../misc_util.h"
+#include "player.h"
 
 
 
@@ -45,7 +47,6 @@ int _DeathManager_Init(void* self, float DeltaTime) {
 
     SoundManager_EnableMenuMusic();
     
-    GameObj_Base* obj = CreateTextObj();
 
     DATA->darkRamp = 0;
     DATA->darkRampMult = 0.1;
@@ -53,15 +54,17 @@ int _DeathManager_Init(void* self, float DeltaTime) {
     DATA->timeToCreateOptions = 5;
     DATA->doneCreatedOptions = 0;
 
-    AddToPool(obj);
+    GameObj_Base* obj = CreateTextObj();
 
     _TextObj_Data* textData = (_TextObj_Data*) obj->data_struct;
     textData->data = "YOU DIED";
     textData->doTextFlash = 1;
     textData->textFlash = 0.75;
     textData->doWidthSubtr = 1;
+    obj->position = (Vector2) { 0, -0.5f };
 
-    obj->position = (Vector2) { 0, 0 };
+    AddToPool(obj);
+
     return 0;
 }
 
@@ -98,6 +101,34 @@ int _DeathManager_Update(void* self, float DeltaTime) {
         textData->doWidthSubtr = 0;
         obj->position = (Vector2) { -cameraBounds.x+1, 2 };
         obj->size = (Vector2) { 0.5, 0.5 };
+
+
+
+        obj = CreateTextObj();
+        textData = (_TextObj_Data*) obj->data_struct;
+        // determine death cause string
+        //  using static strings so we dont have to worry about allocating/deallocating
+        switch(_PLAYER_CauseOfDeath){
+            case FLAG_GRAVITY_WELL:
+                textData->data = "CAUSE OF DEATH: Gravity";
+                break;
+            case FLAG_ASTEROID:
+                textData->data = "CAUSE OF DEATH: Collision";
+                break;
+            case FLAG_ENEMY_OBJECT:
+                textData->data = "CAUSE OF DEATH: Enemy object";
+                break;
+            default:
+                textData->data = "CAUSE OF DEATH: [ DE AD CA FE  BE EF C0 DE ]";
+                break;
+        }
+        textData->doTextFlash = 0;
+        textData->textFlash = 1;
+        textData->doWidthSubtr = 0;
+        obj->position = (Vector2) { -cameraBounds.x+1, 3.75f };
+        obj->size = (Vector2) { 0.25f, 0.25f };
+
+        AddToPool(obj);
     }
     // THIS->awaitDestroy = 1; // Do this to move to next state
     return 0;
@@ -111,6 +142,7 @@ int _DeathManager_Draw(void* self, float DeltaTime) {
 int _DeathManager_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the death screen.
     free(DATA);
+    THIS->data_struct = 0;
     return 0;
 }
 

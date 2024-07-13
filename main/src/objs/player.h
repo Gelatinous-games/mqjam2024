@@ -8,7 +8,10 @@
 
 #include "../base.h"
 #include "../settings.h"
+#include "../misc_util.h"
 #include "shield.h"
+
+#include "../sprite.h"
 
 #ifndef _camera
     #define _camera
@@ -26,18 +29,16 @@
     #include "./particle.c"
 #endif
 
-#ifndef _misc
-    #define _misc
-    #include "../misc.c"
-#endif
-
 #ifndef _star_obj
     #define _star_obj
     #include "star.c"
 #endif
 
+
+#include "../SpriteLibrary.h"
+
 typedef struct {
-    Sprite* sprite;
+    // Sprite* sprite;
     Vector2 headingVector;
     float rotateJerk;
     float rotateRate;
@@ -49,11 +50,13 @@ typedef struct {
     float damageImmunity;
 
     float deltaTimeSinceLastImpact;
+
+    int lastDamageSourceFlag;
 } Player_Data;
 
 
 
-
+int _PLAYER_CauseOfDeath;
 
 
 
@@ -77,7 +80,7 @@ float GetPlayerHullPercentage();
 Color GetHullParticleColor();
 Color GetImpactParticleColor();
 
-void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate);
+void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate, int flagOfDamageSource);
 
 
 void _PLAYER_HandleDeath(void *self, float DeltaTime);

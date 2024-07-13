@@ -6,7 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
-#include "../sound.h"
+#include "../sound_manager.h"
 
 
 #ifndef _camera
@@ -26,12 +26,14 @@
 
 #include "../obj_register.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
+#include "../SpriteLibrary.h"
 
 
 typedef struct {
-    Sprite* shipSprite;
-    Sprite* asteroidSprite;
+    // Sprite* shipSprite;
+    // Sprite* asteroidSprite;
 
     float shipSpriteWobble;
     float asteroidRotate;
@@ -44,6 +46,7 @@ typedef struct {
 
 // Create everything needed for a scene
 int _TitleManager_Init(void* self, float DeltaTime) {
+    printf("%s\n","INIT TITLE MANAGER");
     // Create any objects we need for the title screen HERE.
     // They should be destroyed in our destroy function.
 
@@ -51,16 +54,17 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     SoundManager_EnableMenuMusic();
 
 
-    DATA->shipSprite = CreateSprite(SPACESHIP_SPRITE_PATH);
+    
     cameraPosition = Vector2Zero();
     THIS->size = (Vector2){2, 2};
 
     DATA->shipSpriteWobble = 0;
 
-    DATA->asteroidSprite = CreateSprite("resources/asteroids/A3.png");
 
     DATA->doLoadGame = 0;
     DATA->sphereRadius = 0;
+
+    // ==== title text ====
 
     GameObj_Base* obj = CreateTextObj();
     _TextObj_Data* textData = (_TextObj_Data*) obj->data_struct;
@@ -77,15 +81,34 @@ int _TitleManager_Init(void* self, float DeltaTime) {
 
     AddToPool(obj);
 
+    // ==== note about the webpage ====
+
     obj = CreateTextObj();
     textData = (_TextObj_Data*) obj->data_struct;
 
-    textData->data = "Press space to start";
+    textData->data = "Press [u] to focus";
     textData->doTextFlash = 0;
     textData->textFlash = 0;
     textData->doWidthSubtr = 1;
 
-    obj->position = (Vector2) { 0, 2 };
+    obj->position = (Vector2) { 0, 1.6 };
+    obj->size = (Vector2) { 0.5, 0.5 };
+
+    obj->currentLayer = LAYER_GUI;
+
+    AddToPool(obj);
+
+    // ==== game start key ====
+
+    obj = CreateTextObj();
+    textData = (_TextObj_Data*) obj->data_struct;
+
+    textData->data = "Press [space] to start";
+    textData->doTextFlash = 0;
+    textData->textFlash = 0;
+    textData->doWidthSubtr = 1;
+
+    obj->position = (Vector2) { 0, 2.2 };
     obj->size = (Vector2) { 0.5, 0.5 };
 
     obj->currentLayer = LAYER_GUI;
@@ -93,6 +116,9 @@ int _TitleManager_Init(void* self, float DeltaTime) {
     AddToPool(obj);
 
     setTrackVolume(STAR_PROXIMITY_LOOP_ID, 0);
+
+
+    printf("%s\n","DONE INIT TITLE MANAGER");
 
     return 0;
 }
@@ -147,19 +173,21 @@ int _TitleManager_Update(void* self, float DeltaTime) {
 }
 
 int _TitleManager_Draw(void* self, float DeltaTime) {
-    RenderSpriteRelative(DATA->shipSprite, THIS->position, THIS->size, 0, WHITE);
+    RenderSpriteRelative(_SpriteLibrary_Player_ShipSprite, THIS->position, THIS->size, 0, WHITE);
 
     Vector2 siz = (Vector2) { 8, 8 };
     Vector2 pos = (Vector2) { 0, cameraBounds.y + 2};
-    RenderSpriteRelative(DATA->asteroidSprite, pos, siz, DATA->asteroidRotate, WHITE);
+    RenderSpriteRelative(_SPRITELIBRARY_TITLE_ASTEROID_SPRITE_REF, pos, siz, DATA->asteroidRotate, WHITE);
 
     if (DATA->doLoadGame) {
         RenderCircleAbsolute(Vector2Zero(), DATA->sphereRadius * cameraBounds.x * 1.1, (Color) { 0, 0, 0, 255});
     }
+
     return 0;
 }
 
 int _TitleManager_Destroy(void* self, float DeltaTime) {
+    printf("%s\n","KILLING TITLE MANAGER");
     // Destroy any objects we're using for the title screen.
 
     ClearParticles();
@@ -178,12 +206,12 @@ int _TitleManager_Destroy(void* self, float DeltaTime) {
         obj->awaitDestroy = 1;
     }
 
-    DestroySprite(DATA->shipSprite);
-    DestroySprite(DATA->asteroidSprite);
     free(DATA);
+    THIS->data_struct = 0;
 
     TO_WORMHOLE = 1;
     AddToPool(CreateGameManager());
+    printf("%s\n","DESTROYED TITLE MANAGER");
     return 0;
 }
 

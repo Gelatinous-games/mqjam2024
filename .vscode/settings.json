@@ -9,6 +9,7 @@
         "__node_handle": "c",
         "__split_buffer": "c",
         "bitset": "c",
-        "initializer_list": "c"
+        "initializer_list": "c",
+        "raylib.h": "c"
     }
 }

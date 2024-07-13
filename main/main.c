@@ -35,19 +35,35 @@
 #endif
 
 // project header includes
+#include "src/SpriteLibrary.c"
 #include "src/settings.h"
-#include "src/sound.h"
+
+#ifndef _sprite
+    #define _sprite
+    #include "src/sprite.c"
+#endif
+
+#ifndef _misc_util
+#define _misc_util
+#include "src/misc_util.c"
+#endif
+
+
+#ifndef _sound_manager
+#define _sound_manager
+#include "src/sound_manager.c"
+#endif
 
 
 #include "src/base.h"
 #include "src/obj_register.h"
-#include "src/objs/asteroid.h"
 
 
-#ifndef _mainmenu
-#define _mainmenu
-#include "mainmenu.c"
+#ifndef _asteroid
+#define _asteroid
+#include "src/objs/asteroid.c"
 #endif
+
 
 #ifndef _player
 #define _player
@@ -59,7 +75,10 @@
 #include "src/objs/shield.c"
 #endif
 
+#ifndef _timer
+#define _timer
 #include "src/timer.c"
+#endif
 
 #ifndef _obj_example
 #define _obj_example
@@ -90,18 +109,24 @@
 #define _wormhole_obj
 #include "src/objs/wormhole.c"
 #endif
-#ifndef _planet_obj
-#define _planet_obj
-#include "src/objs/planet.c"
+#ifndef _planet_body
+#define _planet_body
+#include "src/objs/planet_body.c"
 #endif
 
-#ifndef _background_stars
-#define _background_star
-#include "src/objs/background_stars.c"
+// #ifndef _background_dustart
+// #define _background_dustart
+// #include "src/objs/background_dustart.c"
+// #endif
+
+#ifndef _background_starfield
+#define _background_starfield
+#include "src/objs/background_starfield.c"
 #endif
-#ifndef _background
-#define _background
-#include "src/objs/background.c"
+
+#ifndef _background_spritefield
+#define _background_spritefield
+#include "src/objs/background_spritefield.c"
 #endif
 #ifndef _healthbar
 #define _healthbar
@@ -129,6 +154,8 @@ static int GameShouldRender(){
     return (CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_INGAME);
 }
 
+
+
 int main()
 {
     gettimeofday(&timerStart, NULL);
@@ -152,12 +179,13 @@ int main()
     InitAudioDevice(); // Initialize audio device
     //--------------------------------------------------------------------------------------
 
+    _SpriteLibrary_LoadSprites();
     prepareSounds();
     //setAllTracksVolume(0.5f);
     scaleAllTracksVolume(0.5f);
     startSounds();
 
-    _MainMenu_Init();
+    
 
     generateObjects();
 
@@ -175,9 +203,10 @@ int main()
 #endif
 
 
-    _MainMenu_Cleanup();
+    
 
     cleanupSounds();
+    _SpriteLibrary_DestroySprites();
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
@@ -187,14 +216,13 @@ int main()
 
     GameObjPoolDestroy();
 
-    free(ASTEROID_REF_LIST);
-
     return 0;
 }
 
 // Update and draw game frame
 static void UpdateDrawFrame(void)
 {
+    
     // grab it
     float DeltaTime = GetFrameTime();
     // check for render
@@ -210,13 +238,6 @@ static void UpdateDrawFrame(void)
 
         ProcessFreshAdd();
         ProcessAllDestroys();
-    }
-    // handle menus
-    else {
-        if(CURRENT_GAME_SCENE_STATE == GAME_SCENE_STATE_MAINMENU){
-            _MainMenu_Update(DeltaTime);
-            _MainMenu_Draw();
-        }
     }
 }
 

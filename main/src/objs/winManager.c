@@ -6,7 +6,7 @@
 #include "raymath.h"
 
 #include "../base.h"
-#include "../sound.h"
+#include "../sound_manager.h"
 
 
 #ifndef _camera
@@ -31,6 +31,7 @@
 
 #include "../obj_register.h"
 #include "../settings.h"
+#include "../misc_util.h"
 
 
 
@@ -124,6 +125,7 @@ int _WinManager_Draw(void* self, float DeltaTime) {
 int _WinManager_Destroy(void* self, float DeltaTime) {
     // Destroy any objects we're using for the death screen.
     free(DATA);
+    THIS->data_struct = 0;
     return 0;
 }
 

@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "base.h"
+#include "misc_util.h"
 #include "obj_register.h"
 #include <sys/time.h>
 
@@ -31,16 +32,9 @@ enum GAME_SCENE_STATE {
 static int CURRENT_GAME_SCENE_STATE = GAME_SCENE_STATE_INGAME;
 
 
-enum IMPACT_TYPE {
-    HULL_IMPACT,
-    SHIELD_IMPACT,
-    DEATH_IMPACT
-};
-
 // reset this to 0 whenever you take shield damage 
 int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
 
-#define SPACESHIP_SPRITE_PATH "resources/spaceship_outlined_v2.png"
 
 #define CAMERA_COAST_SPEED 3
 
@@ -61,13 +55,13 @@ int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
 
 
 
-#define SHIELD_PARTICLE_SCALE_MIN 0.1f
-#define SHIELD_PARTICLE_SCALE_MAX 0.25f
+#define SHIELD_PARTICLE_SCALE_MIN 0.05f
+#define SHIELD_PARTICLE_SCALE_MAX 0.15f
 #define SHIELD_PARTICLE_LIFE_MIN 0.25f
 #define SHIELD_PARTICLE_LIFE_MAX 1.5f
-#define SHIELD_PARTICLE_ORBIT_RATE_MIN 12
-#define SHIELD_PARTICLE_ORBIT_RATE_MAX 35
-#define SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA 40
+#define SHIELD_PARTICLE_ORBIT_RATE_MIN 10
+#define SHIELD_PARTICLE_ORBIT_RATE_MAX 40
+#define SHIELD_EMITTER_MAX_PARTICLE_PER_DELTA 50
 
 
 #define ASTEROID_IMPACT_DAMMAGE_SHIELDED 150
@@ -106,6 +100,15 @@ int SHIELD_RECHARGE_SOUND_SINCE_LAST_DAMAGE_PLAYED = false;
 #define GAME_SPAWN_ASTEROID 0.6
 
 
+
+
+
+
+
+
+
+
+
 int CURRENT_PLAYER_THRUST_STATE = PLAYER_STATE_NOTHRUST;
 
 int CURRENT_PLAYER_LIFE_STATE = PLAYER_LIFE_STATUS_ISHULL;
@@ -134,51 +137,11 @@ static GameObj_Base **BACKGROUNDSTARS_EFFECT_REF_LIST;
 
 
 const static int NUMBER_OF_ASTEROIDS = 4;
-static GameObj_Base **ASTEROID_REF_LIST;
 
 static GameObj_Base *WORMHOLE_OBJECT_REF;
-static GameObj_Base *PLANET_OBJECT_REF;
+static GameObj_Base *PLANET_BODY_REF;
 static GameObj_Base *STAR_OBJECT_REF;
 
 
 unsigned long long currMillis();
 Vector2 GetRandomUnitVector();
-
-
-
-
-#define THIS ((GameObj_Base *)self)
-#ifndef _WIN32
-// unix randoming
-#define INT_RAND (int)(random())
-#define FLOAT_RAND ((float)(random()) / (float)RAND_MAX)
-#define CHAR_RAND ((char)(random() & 0xff))
-#define GAME_TIME currMillis()
-// #define GAME_TIME GetSystemTime( &systemTime )
-#else
-// windows randoming
-#define INT_RAND (int)(rand())
-#define FLOAT_RAND ((float)(rand()) / (float)RAND_MAX)
-#define CHAR_RAND ((char)(rand() & 0xff))
-#define GAME_TIME GetTime
-#endif
-
-
-
-unsigned long long currMillis(){
-    struct timeval timeVal;
-    unsigned long long millisecondsSinceEpoch;
-
-    gettimeofday(&timeVal, NULL);
-
-    millisecondsSinceEpoch =
-        (unsigned long long)(timeVal.tv_sec) * 1000 +
-        (unsigned long long)(timeVal.tv_usec) / 1000;
-    
-    return millisecondsSinceEpoch;
-}
-
-Vector2 GetRandomUnitVector(){
-    float angle = FLOAT_RAND*360.0;
-    return Vector2Rotate((Vector2){ 1.0f, 0.0f}, angle);
-}

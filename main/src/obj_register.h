@@ -52,10 +52,11 @@ enum PLAYER_STATE {
 
 enum BACKGROUND_SPRITE_TYPE {
     // ...
-    BG_SPRITETYPE_ARTWORK           = 0,
-    BG_SPRITETYPE_TINTABLE_SMALL    = 1,
-    BG_SPRITETYPE_TINTABLE_MEDIUM   = 2,
-    BG_SPRITETYPE_TINTABLE_LARGE    = 3
+    BG_SPRITETYPE_ENVIRONMENT,
+    BG_SPRITETYPE_ARTWORK,
+    BG_SPRITETYPE_TINTABLE_SMALL,
+    BG_SPRITETYPE_TINTABLE_MEDIUM,
+    BG_SPRITETYPE_TINTABLE_LARGE,
 };
 
 enum PLAYER_LIFE_STATUS {
@@ -84,3 +85,5 @@ GameObj_Base* CreateDeathManager();
 GameObj_Base* CreateTextObj();
 GameObj_Base* CreateWinManager();
 GameObj_Base* CreateHealthBar();
+
+GameObj_Base* _BackgroundDust_Create();

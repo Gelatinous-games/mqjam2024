@@ -65,11 +65,12 @@ int _ShieldObject_Destroy(void* self, float DeltaTime) {
 
     // delete the list
     free(SHIELD_DATA->particleDataList);
-
+    SHIELD_DATA->particleDataList = 0;
 
     // free our data struct here. free anything contained.
     // free(SHIELD_DATA->sprite);
     free(SHIELD_DATA);
+    THIS->data_struct = 0;
 
     return 0;
 }
@@ -87,8 +88,8 @@ int _ShieldObject_Init(void* self, float DeltaTime) {
 
     SHIELD_DATA->deltaTimeSinceLastImpact=0.0f;
     SHIELD_DATA->timeSinceLastShieldParticle = 0.0f;
-
-    SHIELD_DATA->shieldRadius = SHIELD_BASE_RADIUS;
+    if(!PLAYER_OBJECT_REF) printf("%s\n","OUCH!");
+    SHIELD_DATA->shieldRadius = PLAYER_OBJECT_REF->radius;
 
 
     SHIELD_DATA->nextParticleDataIndex = 0;     
@@ -125,9 +126,14 @@ int _ShieldObject_Draw(void* self, float DeltaTime) {
 
 
 void _ShieldObject_MirrorPlayer(void *self, float DeltaTime){
-    // ...
-    THIS->position = PLAYER_OBJECT_REF->position;
-    THIS->size = PLAYER_OBJECT_REF->size;
+    if(IsPlayerAlive()){
+        // ..
+        THIS->position = PLAYER_OBJECT_REF->position;
+        THIS->size = PLAYER_OBJECT_REF->size;
+    }
+    THIS->velocity = PLAYER_OBJECT_REF->velocity;
+    THIS->mass = PLAYER_OBJECT_REF->mass;
+    
 }
 
 

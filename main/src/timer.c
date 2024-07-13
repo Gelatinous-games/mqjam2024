@@ -4,21 +4,65 @@
 #include "raylib.h"
 
 #include "./settings.h"
+#include "./misc_util.h"
 
-int storedMS = 0;
+unsigned initialWormholeMS = 0;
+unsigned initialReturnMS = 0;
+unsigned storedWormholeMS = 0;
+unsigned storedReturnMS = 0;
 char doTick = 1;
 
+char *getTimerString(char *buffer, unsigned millis);
+void resetTimers();
+
 void drawTimer() {
-    struct timeval current;
-    gettimeofday(&current, NULL);
+    // colours
+    Color toWormholeColor = WHITE;
+    Color returnColor = DARKGRAY;
+    
+    // make buffers
+    char toWormholeTimer[50];
+    char returnTimer[50];
+
+    
+    // // gram the time stuff
+    // struct timeval current;
+    // gettimeofday(&current, NULL);
+
+    // determine if updating
     if (doTick) {
-        storedMS = (current.tv_sec - timerStart.tv_sec) * 1000000 + current.tv_usec - timerStart.tv_usec;
+        // which direction
+        if(TO_WORMHOLE){
+            if(initialWormholeMS==0) initialWormholeMS = currMillis()*1000;
+            // ...
+            storedWormholeMS = currMillis()*1000 - initialWormholeMS;
+            
+        }
+        else {
+            if(initialReturnMS==0) initialReturnMS = currMillis()*1000;
+            storedReturnMS = currMillis()*1000 - initialReturnMS;
+            toWormholeColor = DARKGRAY;
+            returnColor = WHITE;
+        }
     }
-    int ms = storedMS;
-    char buffer[50];
-    int timerMins = ms/60000000;
-    int timerSecs = ms/1000000;
-    int timerMs = ms/1000;
-    sprintf(buffer,"%02d:%02d.%03d",timerMins,timerSecs%60,timerMs%1000);
-    DrawText(buffer,5,5,36,WHITE);
+    // make the string
+    getTimerString(toWormholeTimer,storedWormholeMS);
+    getTimerString(returnTimer,storedReturnMS);
+    // draw
+    DrawText(toWormholeTimer,5,5,36,toWormholeColor);
+    DrawText(returnTimer,5,45,36,returnColor);
+}
+
+char *getTimerString(char *buffer, unsigned millis){
+    unsigned timerMins = millis/60000000;
+    unsigned timerSecs = millis/1000000;
+    unsigned timerMs = millis/1000;
+    sprintf(buffer,"%02u:%02u.%03u",timerMins,timerSecs%60,timerMs%1000);
+    return buffer;
+}
+
+void resetTimers(){
+    // ...
+    initialWormholeMS = 0;
+    initialReturnMS = 0;
 }
