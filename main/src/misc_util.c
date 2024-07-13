@@ -66,15 +66,18 @@ float Vec2Dist(Vector2 a, Vector2 b) {
 /// @param impartB The velocity imparted onto object B
 /// @return 
 char GetCollided(GameObj_Base* A, GameObj_Base* B, Vector2* impartA, Vector2* impartB) {
-    float dist = Vec2Dist(A->position, B->position);
+    Vector2 aPosition = Vector2Add(A->position,(Vector2){0.000001f,0.000001f});
+    Vector2 bPosition = Vector2Add(B->position,(Vector2){-0.000001f,-0.000001f});
+    
+    float dist = Vec2Dist(aPosition, bPosition);
     // printf("dist is %f to sum radius %f (%f + %f)\n", dist, A->radius + B->radius, A->radius, B->radius);
     if (dist >= (fabsf(A->radius) + fabsf(B->radius))) return 0;
 
     // THE MESSY TASK OF CALCULATING IMPARTED VELOCITIES.
 
     // figure out the angles from each to each other
-    Vector2 angle_A_B = Vector2Subtract(B->position, A->position);
-    Vector2 angle_B_A = Vector2Subtract(A->position, B->position);
+    Vector2 angle_A_B = Vector2Subtract(bPosition, aPosition);
+    Vector2 angle_B_A = Vector2Subtract(aPosition, bPosition);
 
     // calculate effective velocities of both as they impact, and sum together to get the effective collision velocity
     Vector2 vel_Eff_A = Vector2Multiply(A->velocity, angle_A_B);
