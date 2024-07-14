@@ -51,6 +51,7 @@ int _Player_Update(void* self, float DeltaTime) {
     
     #ifdef DEBUG_ON
         if (IsKeyDown(KEY_K))
+            PLAYER_DATA->lastDamageSourceFlag = FLAG_GUI;
             PLAYER_DATA->hullHealth = -1;
     #endif
 
@@ -71,6 +72,7 @@ int _Player_Draw(void* self, float DeltaTime) {
     //     gcvt(THIS->position.x, 10, dt_buff);
     //     DrawText(dt_buff, GetScreenWidth()/2, 0, 32, WHITE);
     // #endif
+
     return 0;
 }
 
@@ -193,15 +195,31 @@ void handleAsteroidCollistions(void *self, float DeltaTime){
             if (PLAYER_DATA->deltaTimeSinceLastImpact > 0) {
                 continue;
             }
-
-            // get the damage rate and apply
-            PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED, extobj->flags);
+            // FIXME: spooky bad, use flags
+            //  possible segfault here
+            Asteroid_Data *asteroidData;
+            asteroidData = ((Asteroid_Data *)(extobj->data_struct));
+            // FIXME: damage should be logarithm of mass or something times the damage rate
+            // float asteroidTonnage = extobj->mass/1000.0f;
+            if(asteroidData->isIcyComet){
+                // comet actually
+                // get the damage rate and apply
+                // slightly lower shield damage to slightly more hull damage
+                PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL*1.1f, ASTEROID_IMPACT_DAMMAGE_SHIELDED*0.7f, extobj->flags);
+            }
+            else{
+                // regular ahh asteroid
+                // get the damage rate and apply
+                PlayerTakeDamage(self, DeltaTime, ASTEROID_IMPACT_DAMMAGE_HULL, ASTEROID_IMPACT_DAMMAGE_SHIELDED, extobj->flags);
+            }
 
             // create a spark effect or something
             int randomCount = 2 * ((FLOAT_RAND * 8) + 8);
             for (int i = 0; i < randomCount; i++) {
-                // pick a palette of 4
-                Color colourVal = GetImpactParticleColor();
+                
+                Color colourVal;
+                GetImpactParticleColor(&colourVal);
+
                 SpawnParticle(
                     midPoint,
                     Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}),
@@ -296,23 +314,28 @@ void handlePlayerMovement(void *self, float DeltaTime){
         // positive accel, negate the heading for later calculations
         if (accel_delta == 1) playerHeading = Vector2Negate(playerHeading);
 
+        // for the variance
+        Color trailColor;
+
+        _PALETTE_Player_ParticleColor_Trail(&trailColor);
         SpawnParticle(
             Vector2Add(modelOrigin, Vector2Scale(perpendicularVector, -0.225)),
             Vector2Add(Vector2Scale(playerHeading, playerVelocityDisplacement + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(perpendicularVector, (FLOAT_RAND-0.5)*0.5)),
             Vector2Zero(),
             (Vector2) {0.0625, 0.0625},
             0.5,
-            (Color) {255, 127, 0, 127 },
+            trailColor,
             (FLOAT_RAND * 1) + 0.5
         );
 
+        _PALETTE_Player_ParticleColor_Trail(&trailColor);
         SpawnParticle(
             Vector2Add(modelOrigin, Vector2Scale(perpendicularVector, +0.225)),
             Vector2Add(Vector2Scale(playerHeading, playerVelocityDisplacement + (accel_delta * DeltaTime * PLAYER_DATA->accelRate)), Vector2Scale(perpendicularVector, (FLOAT_RAND-0.5)*0.5)),
             Vector2Zero(),
             (Vector2) {0.0625, 0.0625},
             0.5,
-            (Color) {255, 127, 0, 127 },
+            trailColor,
             (FLOAT_RAND * 1) + 0.5
         );
 
@@ -397,22 +420,12 @@ float GetPlayerHullPercentage(){
 
 }
 
-Color GetHullParticleColor(){
-    int diceRoll = (INT_RAND%4);
-    switch (diceRoll) {
-        default:
-        case 0: return(Color) {245, 141, 38, 127};
-        case 1: return(Color) {38, 217, 245, 127};
-        case 2: return(Color) {252, 233, 112, 127};
-        case 3: return(Color) {216, 214, 203, 127};
-    }
-}
 
-Color GetImpactParticleColor(){
+Color *GetImpactParticleColor( Color *dest ){
     if(CURRENT_PLAYER_LIFE_STATE == PLAYER_LIFE_STATUS_ISSHIELDED){
-        return _ShieldObject_GetShieldParticleColor();
+        return _PALETTE_Player_ParticleColor_ShieldCollision(dest);
     }
-    return GetHullParticleColor();
+    return _PALETTE_Player_ParticleColor_HullCollision(dest);
 }
 
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate, int flagOfDamageSource){
@@ -461,21 +474,13 @@ void _PLAYER_HandleDeath(void *self, float DeltaTime){
     // create a scatter of particles
 
     for (int i = 0; i < 64; i++) {
-        Color col;
-        int rng = FLOAT_RAND * 3;
-        switch (rng) {
-            case 0: col = (Color) {132,132,132,127};
-            break;
-            case 2: col = (Color) {200,200,200,127};
-            break;
-            case 1: col = (Color) {75,75,75,127};
-            break;
-        }
+        Color debrisColour;
+        _PALETTE_Player_ParticleColor_Debris(&debrisColour);
 
         SpawnParticle(
             Vector2Add(THIS->position, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
             Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 1) - 0.5, (FLOAT_RAND * 1) - 0.5}),
-            Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, col, 1);
+            Vector2Zero(), (Vector2) { 0.125, 0.125 }, 5, debrisColour, 1);
     }
 
     

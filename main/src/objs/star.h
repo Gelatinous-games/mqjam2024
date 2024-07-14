@@ -41,8 +41,6 @@ typedef struct {
 } _Star_Data;
 
 
-// d20 dice check for when we roll a black hole for if we should reroll it
-#define BLACK_HOLE_REROLL_DC 9
 // how much we amplify the stats for them
 #define BLACK_HOLE_POWER_FACTOR 1.333333f
 

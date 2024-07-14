@@ -10,6 +10,7 @@
 #include "../settings.h"
 #include "../misc_util.h"
 
+#include "../palette_lib.h"
 
 #ifndef _camera
     #define _camera
@@ -64,7 +65,7 @@ typedef struct {
     float degreeRotationSpeed;
     float degreeRotation;
 
-
+    int isIcyComet;
 } Asteroid_Data;
 
 // #define ASTEROID_SPRITE_COUNT 4
@@ -74,12 +75,9 @@ typedef struct {
 // Sprite** _asteroidSprites;
 int asteroidsUsing = 0;
 
-Color GetAsteroidParticleColor();
-
 
 void _Asteroid_Randomize(void *self);
 int _Asteroid_Init(void* self, float DeltaTime);
 int _Asteroid_Update(void* self, float DeltaTime);
 int _Asteroid_Draw(void* self, float DeltaTime);
 int _Asteroid_Destroy(void* self, float DeltaTime);
-Color GetAsteroidParticleColor();

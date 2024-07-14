@@ -33,8 +33,8 @@ int _SpriteLibrary_LoadSprites(){
     // ============================= star sprites =============================
     _SpriteLibrary_Star_spriteList = malloc(sizeof(Sprite*) * _SPRITELIBRARY_STAR_SPRITELIST_LENGTH);
     index = 0;
-    _SpriteLibrary_Star_spriteList[index++] = CreateSprite("resources/stars/S0.png");
-    _SpriteLibrary_Star_spriteList[index++] = CreateSprite("resources/stars/S1.png");
+    // _SpriteLibrary_Star_spriteList[index++] = CreateSprite("resources/stars/S0.png"); // first
+    // _SpriteLibrary_Star_spriteList[index++] = CreateSprite("resources/stars/S1.png"); // second
     _SpriteLibrary_Star_spriteList[index++] = CreateSprite("resources/stars/S2.png");
     _SpriteLibrary_Star_spriteList[index++] = CreateSprite("resources/stars/S3.png");
     _SpriteLibrary_Star_spriteList[index++] = CreateSprite("resources/stars/S4.png"); // blackhole
@@ -62,6 +62,10 @@ int _SpriteLibrary_LoadSprites(){
     _SpriteLibrary_Asteroid_spritelist[index++] = CreateSprite("resources/asteroids/A1.png");
     _SpriteLibrary_Asteroid_spritelist[index++] = CreateSprite("resources/asteroids/A2.png");
     _SpriteLibrary_Asteroid_spritelist[index++] = CreateSprite("resources/asteroids/A3_updoot.png");
+    _SpriteLibrary_Asteroid_spritelist[index++] = CreateSprite("resources/asteroids/C0.png");
+    _SpriteLibrary_Asteroid_spritelist[index++] = CreateSprite("resources/asteroids/C1.png");
+    _SpriteLibrary_Asteroid_spritelist[index++] = CreateSprite("resources/asteroids/C2.png");
+    _SpriteLibrary_Asteroid_spritelist[index++] = CreateSprite("resources/asteroids/C3.png");
 
 
     // ============================= background sprites =============================

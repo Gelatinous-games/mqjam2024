@@ -26,6 +26,7 @@
 #endif
 
 #include "../sprite.h"
+#include "../palette_lib.h"
 #include "../SpriteLibrary.h"
 
 enum SPRITE_LAYER

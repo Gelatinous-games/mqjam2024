@@ -31,6 +31,7 @@
 #endif
 
 #include "../sprite.h"
+#include "../palette_lib.h"
 
 
 
@@ -81,7 +82,7 @@ void _ShieldObject_emitShieldParticle(void *self, float DeltaTime);
 
 
 float _ShieldObject_GetPlayerShieldPercentage();
-Color _ShieldObject_GetShieldParticleColor();
+// Color _ShieldObject_GetShieldParticleColor();
 float _ShieldObject_TakeDamage(float rawDamage);
 
 

@@ -20,11 +20,30 @@ void _Asteroid_Randomize(void *self) {
     // sprite
     ASTEROIDDATA->spriteID = INT_RAND % _SPRITELIBRARY_ASTEROID_SPRITELIST_LENGTH;
 
+
     // size
-    float rng = (FLOAT_RAND * 2.25) + .25;
+    float rng = Lerp(0.25f, 2.25f, FLOAT_RAND);
     THIS->size = (Vector2) { rng, rng };
 
-    THIS->mass = rng * 1000;
+    switch(ASTEROIDDATA->spriteID){
+        // regular ahh asteroid
+        default:
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            ASTEROIDDATA->isIcyComet = 0;
+            THIS->mass = rng * 1105;
+            break;
+        // icy McComet 
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            ASTEROIDDATA->isIcyComet = 1;
+            THIS->mass = rng * 980;
+            break;
+    }
 
     // we'll shave off just a bit to make it a bit more forgiving.
     THIS->radius = (rng - 0.125) / 2;
@@ -113,7 +132,8 @@ int _Asteroid_Update(void* self, float DeltaTime) {
             int randNum = (FLOAT_RAND * 4) + 4;
             for (int i = 0; i < randNum; i++) {
                 // pick a palette of 4
-                Color col = GetAsteroidParticleColor();
+                Color col;
+                _PALETTE_Asteroid_ParticleColor_Collision(&col, ASTEROIDDATA->isIcyComet);
                 SpawnParticle(midPoint, Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .125), (FLOAT_RAND * 1.75) + .25, col, 1);
             }
         }
@@ -134,7 +154,8 @@ int _Asteroid_Update(void* self, float DeltaTime) {
             int randNum = (FLOAT_RAND * 128) + 128;
             for (int i = 0; i < randNum; i++) {
                 // pick a palette of 4
-                Color col = GetAsteroidParticleColor();
+                Color col;
+                _PALETTE_Asteroid_ParticleColor_Collision(&col, ASTEROIDDATA->isIcyComet);
                 SpawnParticle(Vector2Add(THIS->position, (Vector2){(FLOAT_RAND - 0.5) * THIS->size.x, (FLOAT_RAND - 0.5) * THIS->size.y}), Vector2Add(THIS->velocity, (Vector2) { (FLOAT_RAND * 3) / 2, (FLOAT_RAND * 3) / 2}), Vector2Zero(), Vector2Scale(Vector2One(), FLOAT_RAND * .125), (FLOAT_RAND * 1.75) + .25, col, 1);
             }
 
@@ -192,15 +213,4 @@ GameObj_Base* CreateAsteroid() {
     obj_ptr->size = (Vector2) {2, 2};
 
     return obj_ptr;
-}
-
-Color GetAsteroidParticleColor(){
-    int diceRoll = (INT_RAND % 4);
-    switch (diceRoll) {
-        default:
-        case 0: return (Color) {75, 35, 35, 127};
-        case 1: return (Color) {142, 27, 27, 127};
-        case 2: return (Color) {50, 44, 44, 127};
-        case 3: return (Color) {100, 100, 100, 127};
-    }
 }

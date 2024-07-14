@@ -96,21 +96,35 @@ int _StarObject_Draw(void* self, float DeltaTime) {
     // RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange, (Color) { 255, 127, 0, 100 });
     // // RenderCircleRelative(THIS->position, THIS->radius, (Color) { 255, 127, 0, 127 });
 
+    // going down from 100 as squares
+    float gravityWellFalloffRanges[] = {
+        1.00f,
+        0.81f,
+        0.64f,
+        0.49f,
+        0.36f,
+        0.25f,
+        0.16f,
+        0.09f,
+        0.04f,
+        0.01f
+    };
+    // printf("has the size of %lu\n", sizeof(gravityWellFalloffRanges)/sizeof(float));
     // star glow
+
     int additiveAlpha = 15;
     int shadeValue = 100;
+    int numberOfRings = sizeof(gravityWellFalloffRanges)/sizeof(float);
+    float ringRadius = 1.0f;
+    //  average of the x and y, then divide in half for the radius
+    float starRadius = ((THIS->size.x + THIS->size.y) / 2.0f) / 2.0f;
     Color additiveColor = (Color) { shadeValue, shadeValue, shadeValue, additiveAlpha };
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*1.0f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.9f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.8f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.7f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.6f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.5f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.4f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.3f, additiveColor);
-    RenderCircleRelative(THIS->position, STAR_NEARBY_DATA->maxRange*0.2f, additiveColor);
-    
 
+    for( int i = 0; i < numberOfRings; i++ ){
+        ringRadius = starRadius + ( (STAR_NEARBY_DATA->maxRange) * (gravityWellFalloffRanges[i]) );
+        RenderCircleRelative(THIS->position, ringRadius, additiveColor);
+    }
+    
     RenderSpriteRelative(
         _SpriteLibrary_Star_spriteList[STAR_NEARBY_DATA->spriteID],
         THIS->position,
