@@ -22,7 +22,7 @@ void _Asteroid_Randomize(void *self) {
 
 
     // size
-    float rng = (FLOAT_RAND * 2.25) + .25;
+    float rng = Lerp(0.25f, 2.25f, FLOAT_RAND);
     THIS->size = (Vector2) { rng, rng };
 
     switch(ASTEROIDDATA->spriteID){
