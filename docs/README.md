@@ -20,6 +20,7 @@ https://www.mingw-w64.org
 Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be run from here.
 
 * itch page is [this page](https://refreshingcucumber.itch.io/light-shift)
+* live page is [this page](https://gelatinous.games/mqjam2024)
 
 ---
 
@@ -37,64 +38,35 @@ A little wrapper for sprites is found under sprite.c, with the CreateSprite func
 This sprite object can be passed to the variants of RenderSprite to draw it at any position. This supports rotations.
 
 
-* UNIX uses:
+### UNIX building
+
+* if you wanna use the terminal, open the `main` folder, then use:
+
 ```bash
 cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 ```
 
----
-
-
-## TODO items
-
-* move sprite loading to main/game manager
-
-
----
-
-## Planning things
-
-###  Sound / Music
-
-* something for asteroid impacting stars, brown noise maybe?
-
-### Sprites
-
-* more stars
-* removing black layer from the background sprites
-* asteroid variants
-
-### Shields
-
-* smaller particles
-* matches the collision radius
-
-### Gravity reader
-
-* shows how much gravity is effecting your ship like a geiger counter
-
-### Health / damage
-
-* damage number toasts
-* neaten up the health bar?
-
-### Timer
-
-* holds how long it took you to get to wormhole
-* new counter below it for the return
-* shows times in the win screen
+* but if you get the cmake extensions for vscode
+  * then open `/main/main.code-workspace`
+  * you can just use the little buttons in the bottom strip for setting up cmake
+  * wrench and screwdriver then select a build
+    * aurora uses the clang one
+  * build it first with the cog
+  * then debug it with the bug
 
 ---
 
-## web building
+### web building
 
 * get emscripten
 
 * needed to install ninja via brew
 actually using:
+
 ```bash
 cmake -S . -B buildweb -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=<fullpath_to_emsdk>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
 ```
+
 * aurora uses:
 ```bash
 cmake -S . -B buildweb -G Ninja -DPLATFORM=Web "-DCMAKE_TOOLCHAIN_FILE=/Users/auroragriffith/emscripten_pain/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" -DCMAKE_BUILD_TYPE=Release
