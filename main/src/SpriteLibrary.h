@@ -27,7 +27,12 @@ Sprite **_SpriteLibrary_Wormhole_spriteList;
 
 
 // === star sprites ===
-#define _SPRITELIBRARY_STAR_SPRITELIST_LENGTH 9
+
+// d20 dice check for when we roll a black hole for if we should reroll it
+//  match or higher for reroll
+#define BLACK_HOLE_REROLL_DC 7
+
+#define _SPRITELIBRARY_STAR_SPRITELIST_LENGTH 7
 Sprite** _SpriteLibrary_Star_spriteList;
 
 // the ID of black hole
