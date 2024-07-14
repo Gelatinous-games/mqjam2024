@@ -9,6 +9,7 @@
 #include "../base.h"
 #include "../settings.h"
 #include "../misc_util.h"
+#include "../palette_lib.h"
 
 #ifndef _camera
 #define _camera
@@ -63,3 +64,10 @@ GameObj_Base *player;
 // BGStar_Data BGstars[100];
 int offsetX = 0;
 float scaleF = 1; // camera zoom
+
+int _BackgroundStars_Init(void *self, float DeltaTime);
+int _BackgroundStars_Update(void *self, float DeltaTime);
+int _BackgroundStars_Draw(void *self, float DeltaTime);
+int _BackgroundStars_Destroy(void *self, float DeltaTime);
+
+void _BackgroundStars_Populate(void *self);

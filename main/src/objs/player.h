@@ -34,8 +34,12 @@
     #include "star.c"
 #endif
 
+// FIXME: spooky bad
+#include "asteroid.h"
 
 #include "../SpriteLibrary.h"
+#include "../palette_lib.h"
+
 
 typedef struct {
     // Sprite* sprite;
@@ -77,8 +81,7 @@ Vector2 GetRandomUnitVector();
 float GetPlayerHullPercentage();
 
 
-Color GetHullParticleColor();
-Color GetImpactParticleColor();
+Color *GetImpactParticleColor( Color *dest );
 
 void PlayerTakeDamage(void *self, float DeltaTime, int hullRate, int shieldRate, int flagOfDamageSource);
 

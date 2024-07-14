@@ -22,6 +22,12 @@ int _BackgroundStars_Init(void *self, float DeltaTime)
     for (int i = 0; i < BACKGROUNDSTARFIELD_DATA->numStars; ++i)
     {
         BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i] = malloc(sizeof(BGStar_Data));
+
+        // laggy as all henk
+        // // // remember it exists,
+        // // BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i]->colour;
+        // // now scribble over it
+        // _PALETTE_Sprite_TintColor_brushes( &(BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i]->colour) );
         BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[i]->colour = CLITERAL(Color){253, 249, 200, 100}; // yellow
     }
     return 0;
@@ -40,41 +46,6 @@ int _BackgroundStars_Update(void *self, float DeltaTime)
     // THIS->position = Vector2Add(THIS->position, Vector2Scale(THIS->velocity, DeltaTime));
 
     return 0;
-}
-
-void _BackgroundStars_Populate(void *self)
-{
-    // BackgroundStarField_Data *data = THIS->data_struct;
-    scaleFactor = (Vector2){BACKGROUNDSTARFIELD_DATA->ObScale, BACKGROUNDSTARFIELD_DATA->ObScale};
-    // get the tail lenth with player velocity. ma
-    int tailLength = Vector2Length(player->velocity) * 0.666667f;
-    tailLength = tailLength == 0 ? 1 : tailLength;
-    tailLength = tailLength < 0 ? -1 * tailLength : tailLength;
-
-    for (int j = 0; j < BACKGROUNDSTARFIELD_DATA->numStars; ++j) // populate the screen with stars at random posistion
-    {
-        // set star's random seeded posistions
-        float xVal = 0.01 * (float)BACKGROUNDSTARFIELD_DATA->listRandomSequence[j]; // add the tail
-        float yVal = 0.01 * (float)BACKGROUNDSTARFIELD_DATA->listRandomSequence[BACKGROUNDSTARFIELD_DATA->numStars + j];
-
-        // add the player velocity to the stars. make the stars move
-        Vector2 pos = Vector2Subtract(BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[j]->position, (Vector2){xVal, yVal});
-
-        // camera left screen bounds reposition the start to the right
-        if (pos.x < -16.0f * BACKGROUNDSTARFIELD_DATA->ObScale)
-        {
-            BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[j]->position = (Vector2){16, 0};
-        }
-
-        // scale the pos with the screenFactor
-        // pos = Vector2Scale(pos, BACKGROUNDSTARFIELD_DATA->ObScale);
-
-        // draw STAR
-        Vector2 v3 = (Vector2){pos.x, pos.y};
-        Vector2 v2 = (Vector2){pos.x, pos.y - (BACKGROUNDSTARFIELD_DATA->starSize)};
-        Vector2 v1 = (Vector2){pos.x + 1 * tailLength, pos.y - (BACKGROUNDSTARFIELD_DATA->starSize) * 3 * -(player->velocity.y)}; // tail point;
-        RenderTriangleAbsolute(v1, v2, v3, BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[j]->colour);
-    }
 }
 
 int _BackgroundStars_Draw(void *self, float DeltaTime)
@@ -145,4 +116,43 @@ GameObj_Base *CreateBackgroundStars(enum LAYER_ID layer, float objectScale)
     obj_ptr->size = (Vector2){2, 2};
 
     return obj_ptr;
+}
+
+
+
+
+
+void _BackgroundStars_Populate(void *self)
+{
+    // BackgroundStarField_Data *data = THIS->data_struct;
+    scaleFactor = (Vector2){BACKGROUNDSTARFIELD_DATA->ObScale, BACKGROUNDSTARFIELD_DATA->ObScale};
+    // get the tail lenth with player velocity. ma
+    int tailLength = Vector2Length(player->velocity) * 0.666667f;
+    tailLength = tailLength == 0 ? 1 : tailLength;
+    tailLength = tailLength < 0 ? -1 * tailLength : tailLength;
+
+    for (int j = 0; j < BACKGROUNDSTARFIELD_DATA->numStars; ++j) // populate the screen with stars at random posistion
+    {
+        // set star's random seeded posistions
+        float xVal = 0.01 * (float)BACKGROUNDSTARFIELD_DATA->listRandomSequence[j]; // add the tail
+        float yVal = 0.01 * (float)BACKGROUNDSTARFIELD_DATA->listRandomSequence[BACKGROUNDSTARFIELD_DATA->numStars + j];
+
+        // add the player velocity to the stars. make the stars move
+        Vector2 pos = Vector2Subtract(BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[j]->position, (Vector2){xVal, yVal});
+
+        // camera left screen bounds reposition the start to the right
+        if (pos.x < -16.0f * BACKGROUNDSTARFIELD_DATA->ObScale)
+        {
+            BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[j]->position = (Vector2){16, 0};
+        }
+
+        // scale the pos with the screenFactor
+        // pos = Vector2Scale(pos, BACKGROUNDSTARFIELD_DATA->ObScale);
+
+        // draw STAR
+        Vector2 v3 = (Vector2){pos.x, pos.y};
+        Vector2 v2 = (Vector2){pos.x, pos.y - (BACKGROUNDSTARFIELD_DATA->starSize)};
+        Vector2 v1 = (Vector2){pos.x + 1 * tailLength, pos.y - (BACKGROUNDSTARFIELD_DATA->starSize) * 3 * -(player->velocity.y)}; // tail point;
+        RenderTriangleAbsolute(v1, v2, v3, BACKGROUNDSTARFIELD_DATA->BGSTAR_POOL[j]->colour);
+    }
 }

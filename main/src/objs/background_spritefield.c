@@ -330,29 +330,7 @@ void rollForBackgroundObjectData(void *self, float DeltaTime, int backgroundObje
     case BG_SPRITETYPE_TINTABLE_SMALL:
     case BG_SPRITETYPE_TINTABLE_MEDIUM:
     case BG_SPRITETYPE_TINTABLE_LARGE:
-        switch (INT_RAND % colourCount)
-        {
-        default:
-        case 0:
-            generatedTint = WHITE;
-            break;
-        case 1:
-            // lavender
-            generatedTint = (Color){0xdc, 0xd3, 0xff, 255};
-            break;
-        case 2:
-            // light cyan
-            generatedTint = (Color){0xc4, 0xfa, 0xf8, 255};
-            break;
-        case 3:
-            // light orange
-            generatedTint = (Color){0xff, 0xdb, 0xcc, 255};
-            break;
-        case 4:
-            // light yellow
-            generatedTint = (Color){0xf9, 0xff, 0xb5, 255};
-            break;
-        }
+        _PALETTE_Sprite_TintColor_brushes(&generatedTint);
         break;
     }
 

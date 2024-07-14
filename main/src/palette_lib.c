@@ -1,16 +1,4 @@
-#pragma once
-
-#include "raylib.h"
-#include "misc_util.h"
-
-
-/**
- * @brief the express purpose of this file is for producing
- *      random colours, and should be kept to minimal overhead
- * 
- */
-
-
+#include "palette_lib.h"
 
 /// @brief get random debris particle colour
 /// @param dest already allocated pointer to colour var we change
@@ -97,26 +85,49 @@ Color *_PALETTE_Player_ParticleColor_ShieldCollision( Color *dest ){
     return dest;
 }
 
+
 /// @brief get random asteroid collision particle colour
+/// [replaces]: GetAsteroidParticleColor()
 /// @param dest already allocated pointer to colour var we change
 /// @return dest
-Color *_PALETTE_Asteroid_ParticleColor_Collision( Color *dest ){
+Color *_PALETTE_Asteroid_ParticleColor_Collision( Color *dest, int isIcyComet ){
     // [0,1,2,3]
     int rng = INT_RAND % 4;
-    switch (rng) {
-        default:
-        case 0:
-            *dest = (Color) {75, 35, 35, 127};
-            break;
-        case 1:
-            *dest = (Color) {142, 27, 27, 127};
-            break;
-        case 2:
-            *dest = (Color) {50, 44, 44, 127};
-            break;
-        case 3:
-            *dest = (Color) {100, 100, 100, 127};
-            break;
+    if(isIcyComet){
+        // icy comet
+        switch (rng) {
+            default:
+            case 0:
+                *dest = (Color) {189, 222, 236, 127};
+                break;
+            case 1:
+                *dest = (Color) {92, 182, 189, 127};
+                break;
+            case 2:
+                *dest = (Color) {225, 236, 231, 127};
+                break;
+            case 3:
+                *dest = (Color) {164, 240, 216, 127};
+                break;
+        }
+    }
+    else {
+        // regular ahh asteroid
+        switch (rng) {
+            default:
+            case 0:
+                *dest = (Color) {75, 35, 35, 127};
+                break;
+            case 1:
+                *dest = (Color) {142, 27, 27, 127};
+                break;
+            case 2:
+                *dest = (Color) {50, 44, 44, 127};
+                break;
+            case 3:
+                *dest = (Color) {100, 100, 100, 127};
+                break;
+        }
     }
     return dest;
 }

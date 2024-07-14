@@ -36,6 +36,7 @@
 
 // project header includes
 #include "src/SpriteLibrary.c"
+#include "src/palette_lib.c"
 #include "src/settings.h"
 
 #ifndef _sprite

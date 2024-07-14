@@ -188,7 +188,8 @@ void _ShieldObject_emitShieldParticle(void *self, float DeltaTime){
     Vector2 randomVec = Vector2Scale(GetRandomUnitVector(), SHIELD_DATA_GLOBAL_ACCESS->shieldRadius);
     float speedVal = Lerp(SHIELD_PARTICLE_ORBIT_RATE_MIN, SHIELD_PARTICLE_ORBIT_RATE_MAX, FLOAT_RAND);
 
-    
+    Color particleColor;
+    _PALETTE_Player_ParticleColor_ShieldCollision(&particleColor);
     // spawn a particle
     SpawnParticleEX(
         // v-- pos --v
@@ -209,7 +210,7 @@ void _ShieldObject_emitShieldParticle(void *self, float DeltaTime){
             FLOAT_RAND
         ),
         // v-- color --v
-        _ShieldObject_GetShieldParticleColor(),
+        particleColor,
         // v-- do outline --v
         true,
         // v-- do fadeout --v
@@ -248,17 +249,6 @@ float _ShieldObject_GetPlayerShieldPercentage(){
     return (SHIELD_DATA_GLOBAL_ACCESS->shieldHealth) / MAXIMUM_SHIELDS;
 }
 
-
-Color _ShieldObject_GetShieldParticleColor(){
-    int diceRoll = (INT_RAND%4);
-    switch (diceRoll) {
-        default:
-        case 0: return SHIELD_PARTICLE_COLOUR_0;
-        case 1: return SHIELD_PARTICLE_COLOUR_1;
-        case 2: return SHIELD_PARTICLE_COLOUR_2;
-        case 3: return SHIELD_PARTICLE_COLOUR_3;
-    }
-}
 
 // returns the amount that wasnt absorbed by shields
 float _ShieldObject_TakeDamage(float rawDamage){
