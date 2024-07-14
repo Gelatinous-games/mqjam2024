@@ -41,7 +41,7 @@ Sprite** _SpriteLibrary_Planet_spritelist;
 
 
 // === asteroid sprites ===
-#define _SPRITELIBRARY_ASTEROID_SPRITELIST_LENGTH 4
+#define _SPRITELIBRARY_ASTEROID_SPRITELIST_LENGTH 8
 Sprite** _SpriteLibrary_Asteroid_spritelist;
 
 
