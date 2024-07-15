@@ -1,15 +1,17 @@
 {
-    "files.associations": {
-        "raymath.h": "c",
-        "array": "c",
-        "string": "c",
-        "string_view": "c",
-        "vector": "c",
-        "stdio.h": "c",
-        "__node_handle": "c",
-        "__split_buffer": "c",
-        "bitset": "c",
-        "initializer_list": "c",
-        "raylib.h": "c"
-    }
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/*.o": true,
+		"**/*.exe": true,
+	},
+	"files.associations": {
+		"obj_register.c": "cpp",
+		"memory.h": "c",
+		"stdlib.h": "c",
+		"base.h": "c"
+	}
 }

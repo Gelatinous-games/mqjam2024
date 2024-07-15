@@ -1,8 +1,4 @@
 # MQJAM 2024 -- RE-ENTRY
-## STABLE - branch
-
-* this branch is only to be used for last *most* stable code.
-* new features should only be added to this once they're tested.
 
 ## About:
 
@@ -11,13 +7,13 @@ Using C & Raylib.
 
 Built for Windows & (later) WebGL.
 
-The project is located under `/main/`. To run it you must have the raylib installed:
+To run the project you must have the raylib installed:
 https://raysan5.itch.io/raylib
 
 You will also want mingw32
 https://www.mingw-w64.org
 
-Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be run from here.
+Open `./main.code-workspace` in VSCode, and navigate to `./main.c`. It can be run from here.
 
 * itch page is [this page](https://refreshingcucumber.itch.io/light-shift)
 * live page is [this page](https://gelatinous.games/mqjam2024)
@@ -26,7 +22,7 @@ Open `/main/main.code-workspace/` in VSCode, and navigate to `main.c`. It can be
 
 ## Developers:
 
-The code you should worry about is creating objects. The data structure of an object can be found under `/main/src/base.h`, and an example on how to create a unique object is under `main/src/objs/Object_Example.h`.
+The code you should worry about is creating objects. The data structure of an object can be found under `./src/base.h`, and an example on how to create a unique object is under `./src/objs/Object_Example.h`.
 If you encounter problems contact Harris.
 
 ### Important notes:
@@ -34,20 +30,20 @@ As mentioned above, the bulk of editable code is expanding on `base.h`. An examp
 Each object base has 4 function references which you can overwrite in a dedicated creation function for your object. These functions are for initialization, 
 destruction, frame logic & rendering. Make sure to destroy all resources.
 
-A little wrapper for sprites is found under sprite.c, with the CreateSprite function. Make sure to destroy this sprite once your object is destroyed.
-This sprite object can be passed to the variants of RenderSprite to draw it at any position. This supports rotations.
+A little wrapper for sprites is found under `sprite.c`, with the `CreateSprite` function. Make sure to destroy this sprite once your object is destroyed.
+This sprite object can be passed to the variants of `RenderSprite` to draw it at any position. This supports rotations.
 
 
 ### UNIX building
 
-* if you wanna use the terminal, open the `main` folder, then use:
+* if you wanna use the terminal, open the workspace folder, then use:
 
 ```bash
 cmake -DBUILD_SHARED_LIBS=ON -B build && cmake --build build && ./build/gamer
 ```
 
 * but if you get the cmake extensions for vscode
-  * then open `/main/main.code-workspace`
+  * then open `./main.code-workspace`
   * you can just use the little buttons in the bottom strip for setting up cmake
   * wrench and screwdriver then select a build
     * aurora uses the clang one
