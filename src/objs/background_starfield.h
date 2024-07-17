@@ -28,10 +28,6 @@
 
 #include "../sprite.h"
 
-#ifndef _camera
-#define _camera
-#include "../camera.c"
-#endif
 
 
 
